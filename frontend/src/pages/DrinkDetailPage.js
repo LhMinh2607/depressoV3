@@ -2,7 +2,8 @@ import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router';
 import { Link } from 'react-router-dom';
-import { detailsOfDrink } from '../actions/drinkAction';
+import { detailsOfDrink, showRelatedDrinkList } from '../actions/drinkAction';
+import DrinkPanel from '../components/DrinkPanel';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 
@@ -23,6 +24,10 @@ export default function DrinkDetailPage(props) {
     const drinkDetail = useSelector((state)=> state.drinkDetail);
     const {loading, error, drink} = drinkDetail;
 
+    const relatedDrinkList = useSelector(state=>state.relatedDrinkList);
+    const {loading: loadingRelated, error: errorRelated, relatedDrinks} = relatedDrinkList;
+
+
     useEffect(()=>{
         // dispatch({type: USER_FILTER_COMMENT_BY_STAR_RESET});
         // dispatch(getProductRating(productId));
@@ -40,9 +45,10 @@ export default function DrinkDetailPage(props) {
         //     dispatch(showRelatedProductList(productId));
         // }, 50); //time to delay so that i can execute the getProductRating first (update the rating field in Product) before getting productDetails
         dispatch(detailsOfDrink(id));
+        dispatch(showRelatedDrinkList(id));
     }, [dispatch, id]);
     return (
-        <div>
+        <div className="row top">
             {
                 loading ? (
                 <LoadingBox></LoadingBox>
@@ -69,7 +75,7 @@ export default function DrinkDetailPage(props) {
                 <div className="col-1">
                     <ul>
                         <li>
-                            <h1>Tên: {drink.name}</h1>
+                            <h1>{drink.name}</h1>
                         </li>
                         {/* <li>
                             <Rating
@@ -86,7 +92,7 @@ export default function DrinkDetailPage(props) {
 
                         </li>
                         <li>
-                            <label className="bold-text">Price:</label> ${drink.price}
+                            <label className="bold-text">Giá:</label> {drink.price} đồng
                         </li>
                         <li>
                             <h1>Mô tả:</h1> <p>{drink.description}</p> 
@@ -110,7 +116,28 @@ export default function DrinkDetailPage(props) {
                     </ul>
                 </div>
             </div>
-            </div>)}
+            <div>
+                <div className="row center">
+                    {
+                        loadingRelated ? (<LoadingBox></LoadingBox>) : errorRelated ? (<MessageBox variant="error">{errorRelated}</MessageBox>)
+                    :
+                    relatedDrinks && (
+                            relatedDrinks.length>0 ? (
+                                <div>
+                                    <MessageBox variant="info">SẢN PHẨM TƯƠNG TỰ</MessageBox>
+                                    {relatedDrinks.map(d=>(
+                                        <DrinkPanel d = {d}></DrinkPanel>
+                                    ))}
+                                </div>
+                            ) : <MessageBox variant="info">KHÔNG CÓ SẢN PHẨM TƯƠNG TỰ</MessageBox>
+                        )
+                    }
+                </div>
+            </div>
+            </div>
+            
+            )}
+
         </div>
     )
 }
