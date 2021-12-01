@@ -19,5 +19,17 @@ drinkRouter.get('/:id', expressAsyncHandler(async(req, res)=>{
 }));
 
 
+drinkRouter.get('/related/:id', expressAsyncHandler(async(req, res)=>{
+
+    const drink = await Drink.findById(req.params.id);
+    const relatedDrinks = await Drink.find({tags: {$in: drink.tags}, _id: {$nin: req.params.id}}).sort({rating: 1, reviewNum: 1}).limit(4);
+    
+    if(relatedDrinks){
+        res.send(relatedDrinks);
+    }else{
+        res.status(404).send({message: 'Không có sản phẩm liên quan'});
+    }
+}));
+
 
 export default drinkRouter;

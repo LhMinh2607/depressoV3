@@ -1,6 +1,6 @@
 import {createStore, compose, applyMiddleware, combineReducers} from 'redux';
 import thunk from 'redux-thunk';
-import {drinkListReducer, drinksDetailReducer} from './reducers/drinkReducer';
+import {drinkListReducer, drinksDetailReducer, relatedDrinkListReducer} from './reducers/drinkReducer';
 import { userDetailReducer, userListReducer, userSigninReducer, userSignupReducer, userUpdateProfileReducer } from './reducers/userReducer';
 import {cartReducer} from './reducers/cartReducer';
 
@@ -26,7 +26,7 @@ const reducer = combineReducers({
     drinkDetail: drinksDetailReducer,
     userDetail: userDetailReducer,
     userUpdateProfile: userUpdateProfileReducer,
-    
+    relatedDrinkList: relatedDrinkListReducer,
 })
 
 
