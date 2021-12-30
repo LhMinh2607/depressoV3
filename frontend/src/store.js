@@ -1,8 +1,8 @@
 import {createStore, compose, applyMiddleware, combineReducers} from 'redux';
 import thunk from 'redux-thunk';
-import {drinkListReducer, drinksDetailReducer, relatedDrinkListReducer} from './reducers/drinkReducer';
 import { userDetailReducer, userListReducer, userSigninReducer, userSignupReducer, userUpdateProfileReducer } from './reducers/userReducer';
-import {cartReducer} from './reducers/cartReducer';
+import { postCommentDeletingReducers, postCommentEditingReducers, postCommentPostingReducers, postCreatingReducers, postDeletingReducers, postDetailsReducers, postEditingReducers, postFilteringReducers, postKeywordsAddingReducer, postKeywordsRemovingReducer, postListReducers, postSearchingReducers, postSortingReducers } from './reducers/postReducer';
+import { categoryListReducer } from './reducers/categoryReducer';
 
 const initialState = {
     userSignin: {
@@ -18,15 +18,30 @@ const initialState = {
 };
 
 const reducer = combineReducers({
-    drinkList: drinkListReducer,
     userSignup: userSignupReducer,
     userSignin: userSigninReducer,
     userList: userListReducer,
-    cart: cartReducer,
-    drinkDetail: drinksDetailReducer,
     userDetail: userDetailReducer,
     userUpdateProfile: userUpdateProfileReducer,
-    relatedDrinkList: relatedDrinkListReducer,
+
+    postCreating: postCreatingReducers,//#streak #1
+    postList: postListReducers,
+    postDetails: postDetailsReducers,
+    postEditing: postEditingReducers,
+    postDeleting: postDeletingReducers,
+    postCommentPosting: postCommentPostingReducers,
+    postComemntEditing: postCommentEditingReducers,
+    postCommentDeleting: postCommentDeletingReducers,
+    postSearching: postSearchingReducers,
+    postSorting: postSortingReducers,
+    postFiltering: postFilteringReducers,
+    // streak 2-3: building post UI I guess
+    categoryList: categoryListReducer, //streak #4? implementing text editor
+
+    //streak #5
+    postKeywordsAdding: postKeywordsAddingReducer,
+    postKeywordsRemoving: postKeywordsRemovingReducer,
+
 })
 
 

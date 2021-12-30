@@ -3,15 +3,17 @@ import { Route, Routes } from 'react-router';
 import { BrowserRouter, Link } from 'react-router-dom';
 import LoadingBox from './components/LoadingBox';
 import MessageBox from './components/MessageBox';
-import DrinkPage from './pages/DrinkPage';
 import HomePage from './pages/HomePage';
 import SigninPage from './pages/SigninPage';
 import {useDispatch, useSelector} from 'react-redux';
 import SignUpPage from './pages/SignupPage';
 import { signout } from './actions/userAction';
-import CartPage from './pages/CartPage';
-import DrinkDetailPage from './pages/DrinkDetailPage';
 import ProfilePage from './pages/ProfilePage';
+import ForumPage from './pages/ForumPage';
+import PostDetailPage from './pages/PostDetailPage';
+import NotFoundPage from './pages/NotFoundPage';
+import DateComponent from './components/DateComponent';
+import CategoryIcon from './components/CategoryIcon';
 
 
 function App() {
@@ -25,26 +27,23 @@ function App() {
     dispatch(signout());
   };
 
-  const cart = useSelector((state)=> state.cart);
-  const {cartItems} = cart;
+
+  const userList = useSelector(state=>state.userList);
+  const {loading: loadingUL, error: errorUL, users} = userList;
+
+  
 
   return (
       <BrowserRouter>
         <div className="grid-containter">
               <header className="row navigation-bar">
                   <div>
-                    <Link to="/" className="brand">MilkTea WebStore</Link>
+                    <Link to="/" className="brand">dataStructureLW</Link>
                   </div>
                   <div>
-                    <Link to="/drink" className="">Xem thêm</Link>
+                    <Link to="/forum" className="">Xem thêm</Link>
                   </div>
-                    <Link to="/shopping_cart">Giỏ hàng
-                      <i className="fa fa-shopping-cart"></i>
-                    {
-                    cartItems.length>0
-                    && (<span className="cart-items-count">{cartItems.reduce((a, c) => a + Number(c.qty), 0)}</span>)
-                    }</Link>
-                      {userInfo && userInfo.role==='user' ? (
+                      {userInfo ? (
                         <div className="dropDown">
                           <Link to="#">{userInfo.name} <i className="fa fa-caret-down"></i></Link>
                         
@@ -53,36 +52,30 @@ function App() {
                               <Link to={`/user/${userInfo._id}`}>Tài khoản<i className="fa fa-user"></i></Link>
                             </li>
                             <li>
-                              <Link  to={`/user/${userInfo._id}/order_history`}>Lịch sử mua hàng<i className="fa fa-history"></i></Link>
-                            </li>
-                            <li>
                               <Link to="/" onClick={signOutHandler}>
                                 Đăng xuất<i className="fa fa-hand-o-left"></i>
                               </Link>
                             </li>
                           </ul> 
                         </div>) : <Link to="/signin" className="">Đăng nhập</Link>}
+                        
               </header>
               <main>
+              
+              
                 <Routes>
                   {/* React Router Dom v6 syntax */}
                   <Route exact path="/" element={<HomePage></HomePage>}></Route>
                   
                   <Route exact path="/signin" element={<SigninPage></SigninPage>}></Route>
                   <Route exact path="/signup" element={<SignUpPage></SignUpPage>}></Route>
-                </Routes>
-                <Routes>
-                  <Route exact path="/drink" element={<DrinkPage></DrinkPage>}></Route>
-                  <Route exact path="/drink/:drinkId" element={<DrinkDetailPage></DrinkDetailPage>}></Route>
-                </Routes>
-                <Routes>
-                  <Route path="/shopping_cart" element={<CartPage></CartPage>}></Route>
-                  <Route path="/shopping_cart/:drinkId" element={<CartPage></CartPage>}></Route>
-                  <Route path="/shopping_cart/:drinkId/:qty" element={<CartPage></CartPage>}></Route>
-                </Routes>
-                <Routes>
                   <Route path="/user/:id" element={<ProfilePage></ProfilePage>}></Route>
+                  <Route exact path="/forum" element={<ForumPage></ForumPage>}></Route> 
+                  <Route exact path="/forum/post/:id" element={<PostDetailPage></PostDetailPage>}></Route> 
+                  <Route path="*" element={<NotFoundPage/>} /> 
                 </Routes>
+
+                
               </main>
               {/* <footer className="row-bottom">
                   <div className="nav-menu-item">

@@ -25,13 +25,13 @@ export default function DateComponent(props) {
                 
             {
                 !isBirthDate && (
-                publishedDay === 2 ? <> Mon</> : 
-                publishedDay === 3 ? <> Tue</> :
-                publishedDay === 4 ? <> Wed</> :
-                publishedDay === 5 ? <> Thu</> :
-                publishedDay === 6 ? <> Fri</> :
-                publishedDay === 7 ? <> Sat</> :
-                publishedDay === 1 && <> Sun</>)
+                publishedDay === 2 ? <> Thứ Hai</> : 
+                publishedDay === 3 ? <> Thứ Ba</> :
+                publishedDay === 4 ? <> Thứ Tư</> :
+                publishedDay === 5 ? <> Thứ Năm</> :
+                publishedDay === 6 ? <> Thứ Sáu</> :
+                publishedDay === 7 ? <> Thứ Bảy</> :
+                publishedDay === 1 && <> Chủ Nhật</>)
             }
             
             {!isBirthDate && ", "}

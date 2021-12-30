@@ -9,7 +9,6 @@ const userSchema = new mongoose.Schema({
     gender: {type: String, required: true},
     birthDate: {type: Date, required: true},
     phoneNumber: {type: String, required: false},
-    totalMoneySpent: {type: Number, default: 0},
 },
     {
         timestamps: true,
