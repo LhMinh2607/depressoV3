@@ -5,6 +5,12 @@ import bcrypt from 'bcryptjs';
 import {generateToken, isAuth} from '../utils.js'
 
 const userRouter = express.Router();
+userRouter.get('/list', expressAsyncHandler(async (req, res)=>{
+    const users = await User.find({});
+
+    res.send(users);
+    
+}));
 userRouter.post('/signup', expressAsyncHandler(async(req, res)=>
 {
     const user = new User({

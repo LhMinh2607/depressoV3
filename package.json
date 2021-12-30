@@ -7,9 +7,10 @@
     "express": "^4.17.1",
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^8.5.1",
+    "marked": "^4.0.8",
     "mongoose": "^6.0.13"
   },
-  "name": "milkteawebstore",
+  "name": "dataStructureLW",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

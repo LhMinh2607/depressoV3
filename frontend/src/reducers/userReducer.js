@@ -43,7 +43,7 @@ export const userListReducer = (state = {loading: true, users: []}, action) =>{
         case USER_LIST_REQUEST: 
             return {loading: true};
         case USER_LIST_SUCCESSFUL:
-            return {loading: false, drinks: action.payload};
+            return {loading: false, users: action.payload}; //fixed from drinks, like wtf why didn't I change it?
         case USER_LIST_FAILED:
             return {loading: false, error: action.payload};
         default:
