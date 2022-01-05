@@ -4,8 +4,8 @@ import {Link} from 'react-router-dom'
 export default function HomePage() {
     return (
         <div>
-            <div>
-                <Link className="linkButton" to="/drink">MUA LIỀN!!!</Link>
+            <div className='row center'>
+                <Link className="linkButton" to="/forum">BẮT ĐẦU</Link>
             </div>
         </div>
     )

@@ -1,7 +1,7 @@
 import {createStore, compose, applyMiddleware, combineReducers} from 'redux';
 import thunk from 'redux-thunk';
 import { userDetailReducer, userListReducer, userSigninReducer, userSignupReducer, userUpdateProfileReducer } from './reducers/userReducer';
-import { postCommentDeletingReducers, postCommentEditingReducers, postCommentPostingReducers, postCreatingReducers, postDeletingReducers, postDetailsReducers, postEditingReducers, postFilteringReducers, postKeywordsAddingReducer, postKeywordsRemovingReducer, postListReducers, postSearchingReducers, postSortingReducers } from './reducers/postReducer';
+import { nestedPostListReducer, postCommentDeletingReducers, postCommentEditingReducers, postCommentPostingReducers, postCreatingReducers, postDeletingReducers, postDetailsReducers, postEditingReducers, postFilteringReducers, postKeywordsAddingReducer, postKeywordsRemovingReducer, postListReducers, postSearchingReducers, postSortingReducers, relatedPostListReducer } from './reducers/postReducer';
 import { categoryListReducer } from './reducers/categoryReducer';
 
 const initialState = {
@@ -41,6 +41,8 @@ const reducer = combineReducers({
     //streak #5
     postKeywordsAdding: postKeywordsAddingReducer,
     postKeywordsRemoving: postKeywordsRemovingReducer,
+    nestedPostList: nestedPostListReducer,
+    relatedPostList: relatedPostListReducer,
 
 })
 

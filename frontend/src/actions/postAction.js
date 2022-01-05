@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { CREATE_POST_COMMENT_FAILED, CREATE_POST_COMMENT_REQUEST, CREATE_POST_COMMENT_SUCCESSFUL, CREATE_POST_FAILED, CREATE_POST_REQUEST, CREATE_POST_SUCCESSFUL, DELETE_POST_COMMENT_FAILED, DELETE_POST_COMMENT_REQUEST, DELETE_POST_COMMENT_SUCCESSFUL, DELETE_POST_FAILED, DELETE_POST_REQUEST, DELETE_POST_SUCCESSFUL, EDIT_POST_COMMENT_FAILED, EDIT_POST_COMMENT_REQUEST, EDIT_POST_COMMENT_SUCCESSFUL, EDIT_POST_FAILED, EDIT_POST_REQUEST, EDIT_POST_SUCCESSFUL, FILTER_TOPIC_FAILED, FILTER_TOPIC_REQUEST, FILTER_TOPIC_SUCCESSFUL, POST_ADD_KEYWORD_FAILED, POST_ADD_KEYWORD_REQUEST, POST_ADD_KEYWORD_SUCCESSFUL, POST_COMMENT_LIST_FAILED, POST_COMMENT_LIST_REQUEST, POST_COMMENT_LIST_SUCCESSFUL, POST_DETAILS_FAILED, POST_DETAILS_REQUEST, POST_DETAILS_SUCCESSFUL, POST_REMOVE_KEYWORD_FAILED, POST_REMOVE_KEYWORD_REQUEST, POST_REMOVE_KEYWORD_SUCCESSFUL, SEARCH_POST_FAILED, SEARCH_POST_REQUEST, SEARCH_POST_SUCCESSFUL, SHOW_POST_FAILED, SHOW_POST_REQUEST, SHOW_POST_SUCCESSFUL, SORT_POST_FAILED, SORT_POST_REQUEST, SORT_POST_SUCCESSFUL } from '../constants/postConst';
+import { CREATE_POST_COMMENT_FAILED, CREATE_POST_COMMENT_REQUEST, CREATE_POST_COMMENT_SUCCESSFUL, CREATE_POST_FAILED, CREATE_POST_REQUEST, CREATE_POST_SUCCESSFUL, DELETE_POST_COMMENT_FAILED, DELETE_POST_COMMENT_REQUEST, DELETE_POST_COMMENT_SUCCESSFUL, DELETE_POST_FAILED, DELETE_POST_REQUEST, DELETE_POST_SUCCESSFUL, EDIT_POST_COMMENT_FAILED, EDIT_POST_COMMENT_REQUEST, EDIT_POST_COMMENT_SUCCESSFUL, EDIT_POST_FAILED, EDIT_POST_REQUEST, EDIT_POST_SUCCESSFUL, FILTER_TOPIC_FAILED, FILTER_TOPIC_REQUEST, FILTER_TOPIC_SUCCESSFUL, NESTED_POST_LIST_FAILED, NESTED_POST_LIST_REQUEST, NESTED_POST_LIST_SUCCESSFUL, POST_ADD_KEYWORD_FAILED, POST_ADD_KEYWORD_REQUEST, POST_ADD_KEYWORD_SUCCESSFUL, POST_COMMENT_LIST_FAILED, POST_COMMENT_LIST_REQUEST, POST_COMMENT_LIST_SUCCESSFUL, POST_DETAILS_FAILED, POST_DETAILS_REQUEST, POST_DETAILS_SUCCESSFUL, POST_REMOVE_KEYWORD_FAILED, POST_REMOVE_KEYWORD_REQUEST, POST_REMOVE_KEYWORD_SUCCESSFUL, RELATED_POST_LIST_FAILED, RELATED_POST_LIST_REQUEST, RELATED_POST_LIST_SUCCESSFUL, SEARCH_POST_FAILED, SEARCH_POST_REQUEST, SEARCH_POST_SUCCESSFUL, SHOW_POST_FAILED, SHOW_POST_REQUEST, SHOW_POST_SUCCESSFUL, SORT_POST_FAILED, SORT_POST_REQUEST, SORT_POST_SUCCESSFUL } from '../constants/postConst';
 
 
 export const createPost = (userId, title, content, category) => async (dispatch) =>{
@@ -130,12 +130,12 @@ export const listOfPosts = () => async (dispatch) =>{
     }
 };
 
-export const listOfSortedPosts = (topic) => async (dispatch) =>{
+export const listOfSortedPosts = (topic, sorting) => async (dispatch) =>{
     dispatch({
-        type: SORT_POST_REQUEST, payload: {topic}
+        type: SORT_POST_REQUEST, payload: {topic, sorting}
     });
     try {
-        const {data} = await axios.get(`/api/forum/sort/filter/${topic}`);
+        const {data} = await axios.get(`/api/forum/sort/${sorting}/filter/${topic}`);
         dispatch({type: SORT_POST_SUCCESSFUL, payload: data});
     } catch (error) {
         dispatch({type: SORT_POST_FAILED, 
@@ -199,7 +199,9 @@ export const addKeywordToPost = (postId, keywordContent) =>async(dispatch) => {
         type: POST_ADD_KEYWORD_REQUEST, payload: {postId, keywordContent}
     });
     try {
+        //alert(`/api/forum/keyword/add/${postId}`);
         const {data} = await axios.put(`/api/forum/keyword/add/${postId}`, {postId, keywordContent});
+        
         dispatch({type: POST_ADD_KEYWORD_SUCCESSFUL, payload: data});
     } catch (error) {
             dispatch({type: POST_ADD_KEYWORD_FAILED,
@@ -211,12 +213,12 @@ export const addKeywordToPost = (postId, keywordContent) =>async(dispatch) => {
     }
 }
 
-export const removeKeywordFromPost = (postId) =>async(dispatch) => {
+export const removeKeywordFromPost = (postId, keyword) =>async(dispatch) => {
     dispatch({
-        type: POST_REMOVE_KEYWORD_REQUEST, payload: postId
+        type: POST_REMOVE_KEYWORD_REQUEST, payload: {postId, keyword}
     });
     try {
-        const {data} = await axios.put(`/api/forum/keyword/remove/${postId}`);
+        const {data} = await axios.put(`/api/forum/keyword/remove/${postId}/keyword/${keyword}`);
         dispatch({type: POST_REMOVE_KEYWORD_SUCCESSFUL, payload: data});
     } catch (error) {
             dispatch({type: POST_REMOVE_KEYWORD_FAILED,
@@ -227,3 +229,35 @@ export const removeKeywordFromPost = (postId) =>async(dispatch) => {
         });
     }
 }
+
+export const listOfNestedPosts = (postId) => async (dispatch) =>{
+    dispatch({
+        type: NESTED_POST_LIST_REQUEST
+    });
+    try {
+        const {data} = await axios.get(`/api/forum/post/${postId}/nested`);
+        dispatch({type: NESTED_POST_LIST_SUCCESSFUL, payload: data});
+    } catch (error) {
+        dispatch({type: NESTED_POST_LIST_FAILED, 
+            payload: error.response 
+            && error.response.data.message 
+            ? error.response.data.message
+            : error.message,});
+    }
+};
+
+export const listOfRelatedPosts = (postId) => async (dispatch) =>{
+    dispatch({
+        type: RELATED_POST_LIST_REQUEST
+    });
+    try {
+        const {data} = await axios.get(`/api/forum/post/${postId}/related`);
+        dispatch({type: RELATED_POST_LIST_SUCCESSFUL, payload: data});
+    } catch (error) {
+        dispatch({type: RELATED_POST_LIST_FAILED, 
+            payload: error.response 
+            && error.response.data.message 
+            ? error.response.data.message
+            : error.message,});
+    }
+};

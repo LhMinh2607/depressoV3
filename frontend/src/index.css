@@ -306,13 +306,16 @@ header .navbar-button{
 
 .floatingDiv{
   position: fixed;
-  bottom: 0;
+  bottom: 3rem;
   right: 0;
   background-color: #6e9fe7;
   /* padding: 2rem; */
   border-radius: 2rem;
   transition: .3s;
-
+}
+.floatingDiv.down{
+  bottom: 0;
+  right: 0;
 }
 .floatingDiv > button:hover{
   transition: .3s;
@@ -897,7 +900,7 @@ textarea{
   margin: auto;
   /* max-width: 20rem; */
   transition: .2s;
-  width: 100%;
+  width: 60%;
 }
 .postBasic:hover{
   transition: .2s;
@@ -1555,6 +1558,8 @@ pre {
 
 code {
   font-size: 1.2rem !important;
+  background-color: rgb(216, 213, 213) !important;
+  border-radius: 0.5rem !important;
 }
 
 /*comment in code block*/
@@ -1570,7 +1575,8 @@ code {
   overflow-y: scroll;
   width: 90rem;
   padding-left: 25%;
-  word-break: break-all;
+  /* word-break: break-all; */
+  word-break: break-word;
 }
 
 .Editor{
@@ -1582,4 +1588,9 @@ code {
   height: auto;
   word-wrap: break-word;
   background-color: #FFF;
+}
+
+.buttonLink{
+  background-color: transparent;
+  color: #000;
 }
