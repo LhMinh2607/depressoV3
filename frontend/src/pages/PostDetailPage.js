@@ -3,7 +3,7 @@ import Linkify from 'react-linkify';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { listOfUsers } from '../actions/userAction';
-import { addKeywordToPost, createPostComment, deletePost, detailsOfPost, editPost, listOfPosts, removeKeywordFromPost } from '../actions/postAction';
+import { addKeywordToPost, createPostComment, deletePost, detailsOfPost, editPost, listOfNestedPosts, listOfPosts, listOfRelatedPosts, removeKeywordFromPost } from '../actions/postAction';
 import DateComponent from '../components/DateComponent';
 import DeletePostCommentButton from '../components/DeletePostCommentButton';
 import LoadingBox from '../components/LoadingBox';
@@ -61,6 +61,12 @@ export default function PostDetailPage() {
     const postList = useSelector(state=>state.postList);
     const {loading: loadingPost, error: errorPost, posts} = postList;
 
+    const nestedPostList = useSelector(state=>state.nestedPostList);
+    const {loading: loadingNested, error: errorNested, nestedPosts} = nestedPostList;
+
+    const relatedPostList = useSelector(state=>state.relatedPostList);
+    const {loading: loadingRelated, error: errorRelated, relatedPosts} = relatedPostList;
+
     const [replyContent, setReplyContent] = useState([]);
     const [editCommentStatus, setEditCommentStatus] = useState(false);
 
@@ -71,13 +77,17 @@ export default function PostDetailPage() {
     }
     const [keywordContent, setKeywordContent] = useState('');
     const addKeyword = () =>{
-        dispatch(addKeywordToPost(postId, keywordContent));
-        enableTagEditBox();
-        window.location.reload()
+        //alert(postId+" "+keywordContent);
+        if(keywordContent!==""){
+            dispatch(addKeywordToPost(postId, keywordContent));
+            window.location.reload()
+        }else{
+            alert('Chưa nhập gì kìa!!! BRUH');
+        }
     }
-    const removeKeyword = () => {
-        dispatch(removeKeywordFromPost(postId));
-        window.location.reload()
+    const removeKeyword = (e) => {
+        dispatch(removeKeywordFromPost(postId, e.currentTarget.value));
+        window.location.reload();
     }
 
     const navigate = useNavigate();
@@ -131,10 +141,20 @@ export default function PostDetailPage() {
           });
     }
 
+    const scrollToBottomHandler = () =>{
+        window.scrollTo({
+            left: 0, 
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+          });
+    }
+
     const loadPost = (e) =>{
         navigate(`/forum/post/${e.currentTarget.value}`);
         // alert(e.currentTarget.value);
         dispatch(detailsOfPost(e.currentTarget.value));
+        dispatch(listOfNestedPosts(e.currentTarget.value));
+        dispatch(listOfRelatedPosts(e.currentTarget.value));
     }
 
 
@@ -155,6 +175,8 @@ export default function PostDetailPage() {
         dispatch(listOfUsers());
         dispatch(detailsOfPost(postId));
         dispatch(listOfCategories());
+        dispatch(listOfNestedPosts(postId));
+        dispatch(listOfRelatedPosts(postId));
     }, [dispatch]);
 
     return (
@@ -168,44 +190,64 @@ export default function PostDetailPage() {
         <div className="floatingDiv">
             <button onClick={scrollToTopHandler}><i className="fa fa-arrow-up"></i></button>
         </div>
+        <div className="floatingDiv down">
+            <button onClick={scrollToBottomHandler}><i className="fa fa-arrow-down"></i></button>
+        </div>
         
         <ul className="mobileNavBar">
+            {/* {categories && categories.map(cat=>(
+                loadingPost ? <LoadingBox></LoadingBox> : errorPost ? <MessageBox variant="error">{errorPost}</MessageBox> :
+                posts && (
+                    posts.map(p=>(
+                        <>
+                        <li key={cat._id}>{cat.name}</li>
+                        <li key={p._id}>
+                            {
+                            <button type="submit" className="row left primary" key={p._id} value={p._id} onClick={loadPost}>
+                                
+                                <p>{p.title}</p>    
+                            </button>
+                            }
+                        </li></> 
+                    )
+                ))
+            ))} */}
             {
                 loadingPost ? <LoadingBox></LoadingBox> : errorPost ? <MessageBox variant="error">{errorPost}</MessageBox> :
                 posts && (
                     posts.map(p=>(
-                        <li>
+                        <li key={p._id}>
                             {
                             <button type="submit" className="row left primary" key={p._id} value={p._id} onClick={loadPost}>
-                                <p>{p.title}</p>
+                                
+                                <p>{p.title}</p>    
                             </button>
                             }
-                        </li>
-                        
+                        </li> 
                     )
                 ))
             }
         </ul>
         <div className='scroller'>
             {userInfo &&
-                (userInfo.role==='admin' && post &&
+                (userInfo.role!=='user' && post &&
                     (<div className="card card-body">
-                        <input required={true} type="text" hidden={tagEditBox} className="tagInput basic-slide" onChange={(e)=>setKeywordContent(e.target.value)}></input>
+                        <input required={true} type="text" hidden={tagEditBox} className="tagInput basic-slide" onChange={(e)=>setKeywordContent(e.target.value)} placeholder='Thêm từ khóa ở đây'></input>
                         <button className="admin block" onClick={addKeyword} hidden={tagEditBox}>THÊM</button>
                         <button className="admin block" onClick={enableTagEditBox}>
-                            {tagEditBox ? <label>THÊM TAG</label> : <label>ĐÓNG</label>}
+                            {tagEditBox ? <label>THÊM TỪ KHÓA</label> : <label>ĐÓNG</label>}
                         </button>
                     </div>))
             }
-            {userInfo && (userInfo.role==='admin' ?
-                (<div className="row">
-                    <label className="bold-text">Keywords:</label> {post && post.keywords.map(tag=>(
-                <div className="card"><div>{tag}<button style={{width: '50px', height: '50px', textAlign: 'center'}} onClick={removeKeyword} className="admin">x</button></div></div>
+            {userInfo && (userInfo.role!=='user' ?
+                (<div className="row center">
+                    <label className="bold-text">Từ khóa:</label> {post && post.keywords.map(keyword=>(
+                <div className="card"><div>{keyword}<button value={keyword} style={{width: '50px', height: '50px', textAlign: 'center'}} onClick={removeKeyword} className="admin">x</button></div></div>
                     ))}
                 </div>) : (
-                    <div>
-                        <label className="bold-text">Keywords:</label>  {post && post.keywords.map(tag=>(
-                                    <label>{tag}, </label>
+                    <div className='row center'>
+                        <label className="bold-text">Từ khóa:</label>  {post && post.keywords.map(keyword=>(
+                                    <label>{keyword}, </label>
                                 ))}
                     </div>
             ))}
@@ -287,6 +329,22 @@ export default function PostDetailPage() {
                                         required={true}
                                         readOnly={true}
                                     /> 
+                                    {nestedPosts && nestedPosts.length>0 &&
+                                        <div><h2>Bài viết cùng chủ đề:</h2></div>
+                                    }
+                                    {nestedPosts && nestedPosts.map(nest=>(
+                                        <button type="submit" className="row buttonLink" key={nest._id} value={nest._id} onClick={loadPost}>
+                                
+                                        <p>{nest.title}</p>    
+                                    </button>
+                                    ))}
+                                    {relatedPosts && relatedPosts.length>0 &&
+                                        <div><h2>Bài viết liên quan:</h2></div>}
+                                    {relatedPosts && relatedPosts.map(rela=>(
+                                        <button type="submit" className="row buttonLink" key={rela._id} value={rela._id} onClick={loadPost}>
+                                            <p>{rela.title}</p> 
+                                        </button>
+                                    ))}
                                 </div>
                             )
                         }

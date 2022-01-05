@@ -19,6 +19,9 @@ import {  CREATE_POST_COMMENT_FAILED,
     FILTER_TOPIC_FAILED,   
     FILTER_TOPIC_REQUEST,   
     FILTER_TOPIC_SUCCESSFUL,   
+    NESTED_POST_LIST_FAILED,   
+    NESTED_POST_LIST_REQUEST,   
+    NESTED_POST_LIST_SUCCESSFUL,   
     POST_ADD_KEYWORD_FAILED,   
     POST_ADD_KEYWORD_REQUEST,   
     POST_ADD_KEYWORD_SUCCESSFUL,   
@@ -28,6 +31,9 @@ import {  CREATE_POST_COMMENT_FAILED,
     POST_REMOVE_KEYWORD_FAILED, 
     POST_REMOVE_KEYWORD_REQUEST, 
     POST_REMOVE_KEYWORD_SUCCESSFUL, 
+    RELATED_POST_LIST_FAILED, 
+    RELATED_POST_LIST_REQUEST, 
+    RELATED_POST_LIST_SUCCESSFUL, 
     SEARCH_POST_FAILED, 
     SEARCH_POST_REQUEST, 
     SEARCH_POST_SUCCESSFUL, 
@@ -207,3 +213,29 @@ export const postKeywordsRemovingReducer = (state={}, action)=>{
             return state;
     }
 }
+
+export const nestedPostListReducer = (state = {}, action)=>{
+    switch(action.type){
+        case NESTED_POST_LIST_REQUEST:
+            return {loading: true};
+        case NESTED_POST_LIST_SUCCESSFUL:
+            return {loading: false, nestedPosts: action.payload};
+        case NESTED_POST_LIST_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const relatedPostListReducer = (state = {}, action)=>{
+    switch(action.type){
+        case RELATED_POST_LIST_REQUEST:
+            return {loading: true};
+        case RELATED_POST_LIST_SUCCESSFUL:
+            return {loading: false, relatedPosts: action.payload};
+        case RELATED_POST_LIST_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};

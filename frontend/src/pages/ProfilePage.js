@@ -6,7 +6,7 @@ import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import DateComponent from '../components/DateComponent';
 import DatePicker from 'react-datepicker'; //pre-made from react-datepicker
-//import 'react-datepicker/dist/react-datepicker.css'; 
+import 'react-datepicker/dist/react-datepicker.css'; 
 
 
 export default function ProfilePage(props){
