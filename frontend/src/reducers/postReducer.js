@@ -37,6 +37,9 @@ import {  CREATE_POST_COMMENT_FAILED,
     SEARCH_POST_FAILED, 
     SEARCH_POST_REQUEST, 
     SEARCH_POST_SUCCESSFUL, 
+    SHOW_POST_BY_CAT_FAILED, 
+    SHOW_POST_BY_CAT_REQUEST, 
+    SHOW_POST_BY_CAT_SUCCESSFUL, 
     SHOW_POST_FAILED, 
     SHOW_POST_REQUEST, 
     SHOW_POST_SUCCESSFUL, 
@@ -234,6 +237,19 @@ export const relatedPostListReducer = (state = {}, action)=>{
         case RELATED_POST_LIST_SUCCESSFUL:
             return {loading: false, relatedPosts: action.payload};
         case RELATED_POST_LIST_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const postByCatListReducer = (state = {}, action)=>{
+    switch(action.type){
+        case SHOW_POST_BY_CAT_REQUEST:
+            return {loading: true};
+        case SHOW_POST_BY_CAT_SUCCESSFUL:
+            return {loading: false, postsByCat: action.payload};
+        case SHOW_POST_BY_CAT_FAILED:
             return {loading: false, error: action.payload};
         default:
             return state;

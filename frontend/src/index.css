@@ -353,6 +353,10 @@ a.brand:hover{
   justify-content: left;
 }
 
+.row.right{
+  justify-content: right;
+}
+
 .row.top{
   align-items: flex-start;
 }
@@ -455,9 +459,19 @@ button.primary{
   background-color: #317cc2;
 }
 
+.primary{
+  word-wrap: break-word;
+  width: 100%;
+  white-space: normal;
+}
+
 .admin{
   background-color: #090c91;
+  word-wrap: break-word;
+  width: 100%;
+  white-space: normal;
 }
+
 
 button.admin::after{
   background-clip: padding-box;
@@ -1593,4 +1607,8 @@ code {
 .buttonLink{
   background-color: transparent;
   color: #000;
+}
+
+button > p{
+  word-break: break-word;
 }

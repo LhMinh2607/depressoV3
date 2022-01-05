@@ -99,10 +99,10 @@ forumRouter.get('/search/:key', expressAsyncHandler(async (req, res)=>{
         {title: {$regex: (searchedKey2.toUpperCase())}},
         {title: {$regex: (searchedKey2.charAt(0).toUpperCase() + searchedKey2.slice(1))}},
         {title: {$regex: (splitStr.join(' '))}},
-        {content: {$regex: (searchedKey2)}},
-        {content: {$regex: (searchedKey2.toUpperCase())}},
-        {content: {$regex: (searchedKey2.charAt(0).toUpperCase() + req.params.key.slice(1))}},
-        {content: {$regex: (splitStr.join(' '))}},
+        // {content: {$regex: (searchedKey2)}},
+        // {content: {$regex: (searchedKey2.toUpperCase())}},
+        // {content: {$regex: (searchedKey2.charAt(0).toUpperCase() + req.params.key.slice(1))}},
+        // {content: {$regex: (splitStr.join(' '))}},
         {keywords: {$regex: (searchedKey2)}}, 
         {keywords: {$regex: (searchedKey2.toLowerCase())}}, 
 
@@ -121,6 +121,16 @@ forumRouter.get('/search/:key', expressAsyncHandler(async (req, res)=>{
         res.send(searchedPosts);
     }else{
         res.status(404).send({message: "KHÔNG CÓ BÀI ĐĂNG NÀO"});
+    }
+}));
+
+forumRouter.get('/post/category/:id', expressAsyncHandler(async (req, res)=>{
+    const postsByCat = await Post.find({category: mongoose.Types.ObjectId(req.params.id)});
+    //console.log(posts);
+    if(postsByCat){
+        res.send(postsByCat);
+    }else{
+        res.status(404).send({message: "404 KHÔNG CÓ BÀI ĐĂNG NÀO"});
     }
 }));
 

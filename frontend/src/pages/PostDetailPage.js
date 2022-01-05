@@ -3,7 +3,7 @@ import Linkify from 'react-linkify';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { listOfUsers } from '../actions/userAction';
-import { addKeywordToPost, createPostComment, deletePost, detailsOfPost, editPost, listOfNestedPosts, listOfPosts, listOfRelatedPosts, removeKeywordFromPost } from '../actions/postAction';
+import { addKeywordToPost, createPostComment, deletePost, detailsOfPost, editPost, listOfNestedPosts, listOfPosts, listOfPostsByCat, listOfRelatedPosts, removeKeywordFromPost } from '../actions/postAction';
 import DateComponent from '../components/DateComponent';
 import DeletePostCommentButton from '../components/DeletePostCommentButton';
 import LoadingBox from '../components/LoadingBox';
@@ -66,6 +66,9 @@ export default function PostDetailPage() {
 
     const relatedPostList = useSelector(state=>state.relatedPostList);
     const {loading: loadingRelated, error: errorRelated, relatedPosts} = relatedPostList;
+
+    const postByCatList = useSelector(state=>state.postByCatList);
+    const {loading: loadingPostsByCat, error: errorPostsByCat, postsByCat} = postByCatList;
 
     const [replyContent, setReplyContent] = useState([]);
     const [editCommentStatus, setEditCommentStatus] = useState(false);
@@ -157,6 +160,10 @@ export default function PostDetailPage() {
         dispatch(listOfRelatedPosts(e.currentTarget.value));
     }
 
+    const loadPostByCat = (e) =>{
+        dispatch(listOfPostsByCat(e.currentTarget.value));
+    }
+
 
     const markdown = `{code .}
     `;
@@ -212,7 +219,7 @@ export default function PostDetailPage() {
                     )
                 ))
             ))} */}
-            {
+            {/* {
                 loadingPost ? <LoadingBox></LoadingBox> : errorPost ? <MessageBox variant="error">{errorPost}</MessageBox> :
                 posts && (
                     posts.map(p=>(
@@ -226,7 +233,38 @@ export default function PostDetailPage() {
                         </li> 
                     )
                 ))
+            } */}
+            {
+                loadingCategory ? <LoadingBox></LoadingBox> : errorCategory ? <MessageBox variant="error">{errorCategory}</MessageBox> :
+                categories && (
+                    categories.map(p=>(
+                        <li key={p._id}>
+                            {
+                            <div>
+                                <button type="submit" className="row left admin" key={p._id} value={p._id} onClick={loadPostByCat}>
+                                    
+                                    <p>{p.name}</p>    
+                                </button>
+                                {
+                                    loadingPostsByCat ? <LoadingBox></LoadingBox> : errorPostsByCat ? <MessageBox variant="error">{errorPostsByCat}</MessageBox> : 
+                                    postsByCat && (
+                                        postsByCat.map(pbc => (
+                                            pbc.category === p._id &&
+                                        <div className='row right'>
+                                            <button type="submit" style={{width: '80%'}} className="primary row" key={pbc._id} value={pbc._id} onClick={loadPost}>
+                                        
+                                                <p>{pbc.title}</p>    
+                                            </button>
+                                        </div>
+                                    )))
+                                }
+                            </div>
+                            }
+                        </li> 
+                    )
+                ))
             }
+            
         </ul>
         <div className='scroller'>
             {userInfo &&
