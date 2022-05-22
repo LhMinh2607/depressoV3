@@ -46,13 +46,13 @@ export default function SigninPage(props) {
                 {error && <MessageBox variant="error">{error}</MessageBox>}
                 <div>
                     <label htmlFor="email">Email</label>
-                    <input type="email" id="email" placeholder="Enter email here" required
+                    <input type="email" id="email" placeholder="Nhập email" required className='basic-slide'
                         onChange={e => setEmail(e.target.value)}>
                         </input>
                 </div>
                 <div>
                     <label htmlFor="password">Mật khẩu</label>
-                    <input type="password" id="password" placeholder="Enter password here" required
+                    <input type="password" id="password" placeholder="Nhập mật khẩu" required className='basic-slide'
                         onChange={e => setPassword(e.target.value)}>
                         </input>
                 </div>

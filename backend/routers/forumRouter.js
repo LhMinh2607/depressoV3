@@ -15,7 +15,7 @@ forumRouter.get('/', expressAsyncHandler(async (req, res)=>{
     if(posts.length>0){
         res.send(posts);
     }else{
-        res.status(404).send({message: "KHÔNG CÓ BÀI ĐĂNG NÀO"});
+        res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
     }
 }));
 
@@ -28,7 +28,7 @@ forumRouter.get('/sort/:sorting/filter/:category', expressAsyncHandler(async (re
             if(sortedPosts.length>0){
                 res.send(sortedPosts);
             }else{
-                res.status(404).send({message: "KHÔNG CÓ BÀI ĐĂNG NÀO"});
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
             }
         }else if(req.params.sorting==="-1"){
             const sortedPosts = await Post.find({}).sort({createdAt: -1});
@@ -36,7 +36,7 @@ forumRouter.get('/sort/:sorting/filter/:category', expressAsyncHandler(async (re
             if(sortedPosts.length>0){
                 res.send(sortedPosts);
             }else{
-                res.status(404).send({message: "KHÔNG CÓ BÀI ĐĂNG NÀO"});
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
             }
         }else if(req.params.sorting===""){
             const sortedPosts = await Post.find({}).sort({name: 1});
@@ -44,7 +44,7 @@ forumRouter.get('/sort/:sorting/filter/:category', expressAsyncHandler(async (re
             if(sortedPosts.length>0){
                 res.send(sortedPosts);
             }else{
-                res.status(404).send({message: "KHÔNG CÓ BÀI ĐĂNG NÀO"});
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
             }
         }
     }else if(req.params.category=="none"){
@@ -53,7 +53,7 @@ forumRouter.get('/sort/:sorting/filter/:category', expressAsyncHandler(async (re
         if(sortedPosts.length>0){
             res.send(sortedPosts);
         }else{
-            res.status(404).send({message: "KHÔNG CÓ BÀI ĐĂNG NÀO"});
+            res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
         }
     }
     
@@ -65,7 +65,7 @@ forumRouter.get('/filter/:category/sort/:time', expressAsyncHandler(async (req, 
     if(filteredPosts.length>0){
         res.send(filteredPosts);
     }else{
-        res.status(404).send({message: "KHÔNG CÓ BÀI ĐĂNG NÀO"});
+        res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
     }
 }));
 
@@ -94,17 +94,18 @@ forumRouter.get('/search/:key', expressAsyncHandler(async (req, res)=>{
     // console.log(searchedKey2);
     // console.log(fullTextSearchVi(searchedKey2));
 
-    const searchedPosts = await Post.find({$or: [
-        {title: {$regex: (searchedKey2)}},
-        {title: {$regex: (searchedKey2.toUpperCase())}},
-        {title: {$regex: (searchedKey2.charAt(0).toUpperCase() + searchedKey2.slice(1))}},
-        {title: {$regex: (splitStr.join(' '))}},
+    let searchedPosts = await Post.find({$or: [
+        // {title: {$regex: (searchedKey2)}},
+        // {title: {$regex: (searchedKey2.toUpperCase())}},
+        // {title: {$regex: (searchedKey2.charAt(0).toUpperCase() + searchedKey2.slice(1))}},
+        // {title: {$regex: (splitStr.join(' '))}},
+        // {keywords: {$regex: (searchedKey2)}}, 
+        // {keywords: {$regex: (searchedKey2.toLowerCase())}}, 
         // {content: {$regex: (searchedKey2)}},
         // {content: {$regex: (searchedKey2.toUpperCase())}},
         // {content: {$regex: (searchedKey2.charAt(0).toUpperCase() + req.params.key.slice(1))}},
         // {content: {$regex: (splitStr.join(' '))}},
-        {keywords: {$regex: (searchedKey2)}}, 
-        {keywords: {$regex: (searchedKey2.toLowerCase())}}, 
+        {$text: {$search: searchedKey2}},
 
         // {title: {$regex: fullTextSearchVi(searchedKey2)}},
         // {title: {$regex: fullTextSearchVi(searchedKey2.toUpperCase())}},
@@ -116,21 +117,52 @@ forumRouter.get('/search/:key', expressAsyncHandler(async (req, res)=>{
         // {content: {$regex: fullTextSearchVi(splitStr.join(' '))}},
         // {keywords: {$regex: fullTextSearchVi(searchedKey2)}}, 
         // {keywords: {$regex: fullTextSearchVi(searchedKey2.toLowerCase())}}, 
-    ]});
+    ]},
+    { 
+        score: { $meta: 'textScore'} 
+    }).sort({score: { $meta: 'textScore'} }).limit(10);
+
+    if(searchedPosts.length===0){
+        searchedPosts = await Post.find({$or: [
+            {title: {$regex: (searchedKey2)}},
+            {title: {$regex: (searchedKey2.toUpperCase())}},
+            {title: {$regex: (searchedKey2.charAt(0).toUpperCase() + searchedKey2.slice(1))}},
+            {title: {$regex: (splitStr.join(' '))}},
+            {keywords: {$regex: (searchedKey2)}}, 
+            {keywords: {$regex: (searchedKey2.toLowerCase())}}, 
+            {content: {$regex: (searchedKey2)}},
+            {content: {$regex: (searchedKey2.toUpperCase())}},
+            {content: {$regex: (searchedKey2.charAt(0).toUpperCase() + req.params.key.slice(1))}},
+            {content: {$regex: (splitStr.join(' '))}},
+    
+            // {title: {$regex: fullTextSearchVi(searchedKey2)}},
+            // {title: {$regex: fullTextSearchVi(searchedKey2.toUpperCase())}},
+            // {title: {$regex: fullTextSearchVi(searchedKey2.charAt(0).toUpperCase() + searchedKey2.slice(1))}},
+            // {title: {$regex: fullTextSearchVi(splitStr.join(' '))}},
+            // {content: {$regex: fullTextSearchVi(searchedKey2)}},
+            // {content: {$regex: fullTextSearchVi(searchedKey2.toUpperCase())}},
+            // {content: {$regex: fullTextSearchVi(searchedKey2.charAt(0).toUpperCase() + req.params.key.slice(1))}},
+            // {content: {$regex: fullTextSearchVi(splitStr.join(' '))}},
+            // {keywords: {$regex: fullTextSearchVi(searchedKey2)}}, 
+            // {keywords: {$regex: fullTextSearchVi(searchedKey2.toLowerCase())}}, 
+        ]},).limit(10);
+    }
+
+
     if(searchedPosts.length>0){
         res.send(searchedPosts);
     }else{
-        res.status(404).send({message: "KHÔNG CÓ BÀI ĐĂNG NÀO"});
+        res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
     }
 }));
 
 forumRouter.get('/post/category/:id', expressAsyncHandler(async (req, res)=>{
-    const postsByCat = await Post.find({category: mongoose.Types.ObjectId(req.params.id)});
+    const postsByCat = await Post.find({category: mongoose.Types.ObjectId(req.params.id)}).sort({title: 1});;
     //console.log(posts);
     if(postsByCat){
         res.send(postsByCat);
     }else{
-        res.status(404).send({message: "404 KHÔNG CÓ BÀI ĐĂNG NÀO"});
+        res.status(404).send({message: "404 KHÔNG CÓ BÀI VIẾT NÀO"});
     }
 }));
 
@@ -190,8 +222,9 @@ forumRouter.put('/edit_post', expressAsyncHandler(async (req, res)=>{
     //console.log(post);
     if(post){
         post.title = req.body.title;
-        post.description = post.description;
+        post.description = req.body.description;
         post.content = req.body.content;
+        post.category = req.body.category;
 
         //console.log(post);
         const updatedPost =  await post.save();
@@ -207,7 +240,7 @@ forumRouter.put('/edit_post', expressAsyncHandler(async (req, res)=>{
         });
     }else{
         res.status(404).send({
-            message: "404 KHÔNG CÓ BÀI ĐĂNG NÀO"
+            message: "404 KHÔNG CÓ BÀI VIẾT NÀO"
         });
     }
 }));
@@ -270,17 +303,19 @@ forumRouter.put('/post/:id/delete_reply', expressAsyncHandler(async (req, res)=>
 
 
 forumRouter.put('/keyword/add/:id', expressAsyncHandler(async(req, res)=>{
-    //console.log("weffffffffffffffff");
+    //console.log(req.body.keywordContent);
     const post = await Post.findById(req.params.id);
     
     if(post){
-        console.log(req.body.keywordContent);
+        // console.log(req.body.keywordContent);
         if(req.body.keywordContent.includes(',')){
+            var string = req.body.keywordContent;
             var array = string.split(',');
-            keyray = post.keywords;
-            console.log(keyray);
-            post.keywords = keyray.concat(array);
-            console.log(post.keywords);
+            console.log(array.length);
+            for(var i=0;i<array.length;i++){
+                post.keywords.push(array[i]);
+                console.log(array[i]);
+            }
         }else{
             post.keywords.push(req.body.keywordContent);
         }
@@ -293,11 +328,11 @@ forumRouter.put('/keyword/add/:id', expressAsyncHandler(async(req, res)=>{
     }
 }));
 
-forumRouter.put('/keyword/remove/:id/keyword/:keyword', expressAsyncHandler(async(req, res)=>{ //if keyword is a link then this is fucked lol
+forumRouter.put('/keyword/remove/:id', expressAsyncHandler(async(req, res)=>{ //if keyword is a link then this is fucked lol
     //console.log("sfweff");
     const post = await Post.findById(req.params.id);
     if(post){
-        const theKeyWord = post.keywords.filter(word => word === req.params.keyword);
+        const theKeyWord = post.keywords.filter(word => word === req.body.keyword);
         //console.log(theKeyWord);
         const index = post.keywords.indexOf(theKeyWord);
         //console.log(index);

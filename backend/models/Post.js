@@ -9,12 +9,25 @@ const postSchema = new mongoose.Schema({
     content: {type: String, required: true},
     keywords: [{type: String}],
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
+    postComments: [
+        {   
+            commenter: {type: String}, //userId
+            content: {type: String},
+            createdAt: {type: Date},
+            updatedAt: {type: Date},
+        },
+    ],
 },
     {
         timestamps: true,
     },
 );
 
+postSchema.index({ title: 'text', keywords: 'text' });
+
+
 const Post = mongoose.model('Post', postSchema);
+
+Post.createIndexes();
 
 export default Post;

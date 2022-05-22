@@ -12,6 +12,10 @@ import { listOfCategories } from '../actions/categoryAction';
 // import 'react-markdown-editor-lite/lib/index.css';
 // import MarkdownIt from 'markdown-it';
 import Editor from "rich-markdown-editor";
+import Select from "react-dropdown-select";
+import { CATEGORY_LIST_RESET } from '../constants/categoryConst';
+
+
 
 export default function ForumPage() {
 
@@ -20,7 +24,7 @@ export default function ForumPage() {
 
     const [title, settitle] = useState('');
     const [content, setContent] = useState('');
-    const [category, setCategory] = useState('');
+    const [category, setCategory] = useState(null);
     const [keyword, setKeyword] = useState('');
     //const [isPublic, setIsPublic] = useState('');
 
@@ -81,10 +85,14 @@ export default function ForumPage() {
           });
     }
 
-    const sortThePosts = (e) =>{
-        setSorting(e.target.value);
+    const sortThePosts = (selectedValues) =>{
+        //alert(JSON.stringify(selectedValues));
+        // setSorting(e.target.value);
+        setSorting(selectedValues[0].value);
+        setFilter('');
+        setKeyword('');
         //alert(e.target.value);
-        if(e.target.value==="1"){
+        if(selectedValues[0].value==="1"){
             //alert("1");
             if(filter===""){
                 //alert("none");
@@ -94,7 +102,7 @@ export default function ForumPage() {
                 //alert(e.target.value);
                 dispatch(listOfSortedPosts(sorting));
             }
-        }else if(e.target.value==="-1"){
+        }else if(selectedValues[0].value==="-1"){
             if(filter===""){
                 //alert("none");
                 dispatch(listOfSortedPosts("none", "-1"));
@@ -103,16 +111,37 @@ export default function ForumPage() {
                 //alert(e.target.value);
                 dispatch(listOfSortedPosts(sorting));
             }
-        }else if(e.target.value==="abc"){
+        }else if(selectedValues[0].value==="abc"){
             //alert("");
             dispatch(listOfPosts());
         }
     }
 
-    const filterThePosts = (e)=>{
-        setFilter(e.target.value);
-        setSorting("none");
-        dispatch(listOfFilteredPosts(e.target.value, sorting));
+    const filterThePosts = (selectValues)=>{
+        // setFilter(e.target.value);
+        //alert(JSON.stringify(selectValues));
+        if(selectValues.length>=1){
+            setFilter(selectValues[0].value)
+            setSorting("none");
+            dispatch(listOfFilteredPosts(selectValues[0].value, sorting));
+        }else{
+            setFilter("");
+            setSorting("none");
+            dispatch(listOfPosts());
+        }
+            
+    }
+
+    const sortingOptions = [
+        {value: "none", label: "Theo tên (A-Z)"},
+        {value: "-1", label: "Mới nhất"},
+        {value: "1", label: "Cũ nhất"},
+    ]
+
+    const setValuesForCategory = (selectedValues) => {
+        // alert(JSON.stringify(selectedValues[0].value));
+        setCategory(selectedValues[0].value);
+        // alert(category);
     }
 
     useEffect(()=>{
@@ -122,24 +151,30 @@ export default function ForumPage() {
         dispatch(listOfUsers());
         dispatch(listOfPosts());  
         dispatch(listOfCategories());
+        dispatch({type: CATEGORY_LIST_RESET});
+        
     }, [dispatch])
+
 
     return (
         <div>
             <div className="floatingDiv">
                 <button onClick={scrollToTopHandler}><i className="fa fa-arrow-up"></i></button>
             </div>
-            <div className="row center cyan-background">
+            <div className="row center">
                 <div className="row center search-background"> 
-                    <div> 
+                    {/* <div> 
                         <div className='box'><select onChange={sortThePosts} className="" value={sorting}>
                             <option value="none">Theo tên</option>
                             <option value="-1">Mới nhất</option>
                             <option value="1">Cũ nhất</option>
                             
                         </select></div>
+                    </div> */}
+                    <div>
+                    <Select dropdownGap={20} options={sortingOptions} onChange={sortThePosts} placeholder='Sắp xếp'></Select>
                     </div>
-                    <div> 
+                    {/* <div> 
                         <div className='box'><select onChange={filterThePosts} className="">
                             <option value="">Tất cả</option>
                             { 
@@ -148,12 +183,18 @@ export default function ForumPage() {
                                 ))
                             }
                         </select></div>
+                    </div> */}
+                    <div>
+                        {/* {categories && <Select options={[
+                            {value: categories.map(ca=>ca.name), label: categories.map(ca=>ca.name)},
+                            ]} onChange={(values) => setCategory(values)} />} */}
+                        {categories && <Select dropdownHeight="10rem" placeholder='Lọc theo nội dung bài học' options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={filterThePosts} clearable/>}
                     </div>
                     <div>
-                        <input type="text" id="searchField" className="basic-slide" value={keyword} onChange={setTheKeyword} placeholder="🔍Tìm bài đăng"></input>
+                        <input type="text" id="searchField" className="basic-slide" value={keyword} onChange={setTheKeyword} placeholder="Tìm bài viết"></input>
                     </div>
                     
-                    {userInfo && <div><button className="primary" onClick={enablePosting}>{createAPost ? <>ĐÓNG</> : <>TẠO BÀI ĐĂNG</>}</button></div>}
+                    {userInfo && <div><button className="admin" onClick={enablePosting}>{createAPost ? <>ĐÓNG</> : <>TẠO BÀI VIẾT</>}</button></div>}
 
                 </div>
             </div>
@@ -162,28 +203,39 @@ export default function ForumPage() {
                 loading ? <LoadingBox></LoadingBox> : error ? <MessageBox variant="error">{error}</MessageBox> : 
                 success && <MessageBox>Posted</MessageBox>
             }
-            {userInfo ? userInfo.role!=='user' && (createAPost && (
+            {userInfo ?  (createAPost && (
+            <div className='postHere'>
+                <div className="row center">Tạo 1 bài viết dưới tên ‎<label className="bold-text">{userInfo.name}</label></div>
+
+                <div className='row center'>{
+                    userInfo.role==='user' ?
+                    (categories && <Select style={{width: '60rem', minWidth: '10rem'}} dropdownHeight="10rem" placeholder='Chọn chủ đề' options={categories.filter((ca)=>!ca.name.includes("Thông báo")).map(ca=>({value: ca._id, label: ca.name}))} onChange={values => setValuesForCategory(values)}/>)
+                    : userInfo.role==='admin' &&
+                    (categories && <Select style={{width: '60rem', minWidth: '10rem'}} dropdownHeight="10rem" placeholder='Chọn chủ đề' options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={values => setValuesForCategory(values)}/>)
+                }</div>
             <form onSubmit={postHandler}>
-                <div className="row center">Tạo 1 bài đăng dưới tên ‎<label className="bold-text">{userInfo.name}</label></div>
-                <div>
+                {/* <div>
                     <div className='box'><select className="category" required={true} onChange={(e)=> setCategory(e.target.value)}>
                         <option value="" hidden>Chọn chủ đề</option>
-                        {/* {   userInfo.role!=='user' &&
+                        {   userInfo.role==='user' &&
                             categories && posts && categories.concat(posts).map(ca=>(
                                 ca.name ? <option value={ca._id}>{ca.name}</option> :
                                 <option value={ca._id}>{ca.title}</option>
                             ))
-                        } */}
-                        {   userInfo.role!=='user' &&
+                        }
+                        {   userInfo.role==='user' &&
                             categories && categories.map(ca=>(
                                 ca.name ? <option value={ca._id}>{ca.name}</option> :
                                 <option value={ca._id}>{ca.title}</option>
                             ))
                         }
-                    </select></div>
-                </div>
+                    </select>
+                    
+                    
+                    </div>
+                </div> */}
                 <div>
-                    <input className="title" required={true} placeholder="Tiêu đề" value={title} className="basic-slide" type="text" onChange={(e)=> settitle(e.target.value)}>
+                    <input required={true} placeholder="Tiêu đề" value={title} className=" basic-slide" type="text" onChange={(e)=> settitle(e.target.value)}>
                     </input>
                 </div><div>
                     {/* <textarea className="content" required={true} placeholder="Nội dung" value={content} className="basic-slide" type="textarea" onChange={(e)=> setContent(e.target.value)}>
@@ -204,18 +256,18 @@ export default function ForumPage() {
                         onChange={(value) => setContent(value)}
                         className='Editor'
                         placeholder='Nội dung'
-                        required={true}
+                        // required={true}
                     /> 
 
                 </div>
-                    <button type="submit" className="primary block">ĐĂNG</button>
-            </form>))
+                    <button type="submit" className="admin block">ĐĂNG</button>
+            </form></div>))
             : (<div>
-                        <div className="row center">
+                        {/* <div className="row center">
                             <MessageBox variant="info">ĐĂNG NHẬP ĐỂ THAM GIA TRÒ CHUYỆN</MessageBox> 
-                        </div>
+                        </div> */}
                         <div className="row center">
-                            <Link to={`/signin?redirect=forum`}>Đăng nhập</Link>
+                            Muốn đóng góp nội dung? ‎<Link to={`/signin?redirect=forum`}>Đăng nhập</Link>
                         </div>
                     
                     </div>)}
@@ -230,7 +282,7 @@ export default function ForumPage() {
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div className="" key={p._id}>
                                         <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><h2>{p.title}</h2></Link>
+                                            <Link to={`/forum/post/${p._id}`}><h1>{p.title}</h1></Link>
                                         </div>
                                         <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
                                         <div className="row left">
@@ -258,7 +310,7 @@ export default function ForumPage() {
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
                                         <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><h2>{p.title}</h2></Link>
+                                            <Link to={`/forum/post/${p._id}`}><h1>{p.title}</h1></Link>
                                         </div>
                                         <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
                                         <div className="row left">
@@ -286,7 +338,7 @@ export default function ForumPage() {
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
                                         <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><h2>{p.title}</h2></Link>
+                                            <Link to={`/forum/post/${p._id}`}><h1>{p.title}</h1></Link>
                                         </div>
                                         <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
                                         <div className="row left">
@@ -314,7 +366,7 @@ export default function ForumPage() {
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
                                         <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><h2>{p.title}</h2></Link>
+                                            <Link to={`/forum/post/${p._id}`}><h1>{p.title}</h1></Link>
                                         </div>
                                         <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
                                         <div className="row left">
@@ -342,7 +394,7 @@ export default function ForumPage() {
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
                                         <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><h2>{p.title}</h2></Link>
+                                            <Link to={`/forum/post/${p._id}`}><h1>{p.title}</h1></Link>
                                         </div>
                                         <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
                                         <div className="row left">

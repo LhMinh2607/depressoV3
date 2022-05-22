@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { USER_DETAIL_FAILED, USER_DETAIL_REQUEST, USER_DETAIL_SUCCESSFUL, USER_LIST_FAILED, USER_LIST_REQUEST, USER_LIST_SUCCESSFUL, USER_SIGNIN_FAILED, USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESSFUL, USER_SIGNOUT, USER_SIGN_UP_FAILED, USER_SIGN_UP_REQUEST, USER_SIGN_UP_SUCCESSFUL, USER_UPDATE_PROFILE_FAILED, USER_UPDATE_PROFILE_REQUEST, USER_UPDATE_PROFILE_SUCCESSFUL } from '../constants/userConst';
+import { USER_CONVERSATION_HISTORY_FAILED, USER_CONVERSATION_HISTORY_REQUEST, USER_CONVERSATION_HISTORY_SUCCESSFUL, USER_DETAIL_FAILED, USER_DETAIL_REQUEST, USER_DETAIL_SUCCESSFUL, USER_LIST_FAILED, USER_LIST_REQUEST, USER_LIST_SUCCESSFUL, USER_SIGNIN_FAILED, USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESSFUL, USER_SIGNOUT, USER_SIGN_UP_FAILED, USER_SIGN_UP_REQUEST, USER_SIGN_UP_SUCCESSFUL, USER_UPDATE_PROFILE_FAILED, USER_UPDATE_PROFILE_REQUEST, USER_UPDATE_PROFILE_SUCCESSFUL } from '../constants/userConst';
 
 
 export const signout = () => (dispatch) =>{
@@ -9,10 +9,10 @@ export const signout = () => (dispatch) =>{
     dispatch({type: USER_SIGNOUT});
 }
 
-export const signup = (name, email, password, gender, birthDate, phoneNumber) => async(dispatch) =>{
-    dispatch({type: USER_SIGN_UP_REQUEST, payload: {name, email, password, gender, birthDate, phoneNumber}});
+export const signup = (name, username, email, password, gender, dob, phoneNumber, address, occupation) => async(dispatch) =>{
+    dispatch({type: USER_SIGN_UP_REQUEST, payload: {name, username, email, password, gender, dob, phoneNumber, address, occupation}});
     try {
-        const {data} = await axios.post('/api/user/signup', {name, email, password, gender, birthDate, phoneNumber});
+        const {data} = await axios.post('/api/user/signup', {name, username, email, password, gender, dob, phoneNumber, address, occupation});
         dispatch({type: USER_SIGN_UP_SUCCESSFUL, payload: data});
         //dispatch({type: USER_SIGNIN_SUCCESSFUL, payload: data});
         //localStorage.setItem('userInfo', JSON.stringify(data));
@@ -96,5 +96,20 @@ export const updateUserProfile = (user) => async (dispatch, getState)=>{
             ? error.response.data.message
             : error.message
         dispatch({type: USER_UPDATE_PROFILE_FAILED, payload: message});
+    }
+};
+
+export const getUserConversationHistory = (id) => async(dispatch) =>{
+    dispatch({type: USER_CONVERSATION_HISTORY_REQUEST, payload: {id}});
+    try {
+        const {data} = await axios.get(`/api/user/${id}/conversation/history`, {id});
+        dispatch({type: USER_CONVERSATION_HISTORY_SUCCESSFUL, payload: data});
+    } catch (error) {
+        dispatch({type: USER_CONVERSATION_HISTORY_FAILED, 
+            payload: error.response 
+            && error.response.data.message 
+            ? error.response.data.message
+            : error.message,
+        });
     }
 };

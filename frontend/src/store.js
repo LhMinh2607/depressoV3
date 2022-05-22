@@ -1,8 +1,10 @@
 import {createStore, compose, applyMiddleware, combineReducers} from 'redux';
 import thunk from 'redux-thunk';
-import { userDetailReducer, userListReducer, userSigninReducer, userSignupReducer, userUpdateProfileReducer } from './reducers/userReducer';
+import { userConversationHistoryReducer, userDetailReducer, userListReducer, userSigninReducer, userSignupReducer, userUpdateProfileReducer } from './reducers/userReducer';
 import { nestedPostListReducer, postByCatListReducer, postCommentDeletingReducers, postCommentEditingReducers, postCommentPostingReducers, postCreatingReducers, postDeletingReducers, postDetailsReducers, postEditingReducers, postFilteringReducers, postKeywordsAddingReducer, postKeywordsRemovingReducer, postListReducers, postSearchingReducers, postSortingReducers, relatedPostListReducer } from './reducers/postReducer';
 import { categoryListReducer } from './reducers/categoryReducer';
+import { feedbackListReducer, userFeedbackListReducer } from './reducers/feedbackReducer';
+import { imageSearchListReducer, userImageSearchListReducer } from './reducers/imageSearchReducer';
 
 const initialState = {
     userSignin: {
@@ -46,6 +48,15 @@ const reducer = combineReducers({
 
     //streak #6
     postByCatList: postByCatListReducer,
+
+    //streak 7, 8, 9
+    conversation: userConversationHistoryReducer,
+
+    //streak ??? too many streaks on both projects (this and the chatbot), didn't count
+    feedbackList: feedbackListReducer,
+    userFeedbackList: userFeedbackListReducer,
+    imageSearchList: imageSearchListReducer,
+    userImageSearchList: userImageSearchListReducer,
     
 
 })

@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <link rel="icon" href="https://images-ext-1.discordapp.net/external/m3y4F194axXZCtIY2ooyrk26e1WIlYsAkpCOJMISZE8/%3Fsize%3D48%26quality%3Dlossless/https/cdn.discordapp.com/emojis/967412208323674243.webp" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#000000" />
     <meta
@@ -25,12 +25,59 @@
       Learn how to configure a non-root public URL by running `npm run build`.
     -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">  
-    <title>Data Structure Learning Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> 
+    <!-- <link href="path/to/lightbox.css" rel="stylesheet" />  -->
+    <title>Mental Health Website</title>
+    <meta property="og:URL" content="%PUBLIC_URL%/localImage.jpg" />
+
+    <meta property="og:type" content="article" />
+        
+    <meta property="og:title" content="Depresso" />
+        
+    <meta property="og:description" content="Web tư vấn tâm lý" />
+
+    <meta property="og:image" content="https://c.tenor.com/BP70qe8X0J8AAAAC/crycat-crying-cat.gif" />
   </head>
   <body>
+    <!-- <script src="path/to/lightbox.js"></script> -->
     <noscript>You need to enable JavaScript to run this app.</noscript>
-    <div id="root"></div>
+    <div id="root">
+      <div id="webchat"></div>
+      <!-- <script>!(function () {
+          let e = document.createElement("script"),
+            t = document.head || document.getElementsByTagName("head")[0];
+          (e.src =
+            "https://cdn.jsdelivr.net/npm/rasa-webchat@1.x.x/lib/index.js"),
+            // Replace 1.x.x with the version that you want
+            (e.async = !0),
+            (e.onload = () => {
+              window.WebChat.default(
+                {
+                  // initPayload: '/greet',
+                  customData: { language: "en", userId: "" },
+                  socketUrl: "http://localhost:5005/",
+                  // add other props here
+                  showFullScreenButton: "true",
+                  displayUnreadCount: "true",
+                  showMessageDate: "true",
+                  title: "MentalBot",
+                  initPayload: "hi",
+                },
+                null
+              );
+            }),
+            t.insertBefore(e, t.firstChild);
+        })();
+        </script> -->
+      <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.3/socket.io.js"
+      integrity="sha512-PU5S6BA03fRv1Q5fpwXjg5nlRrgdoguZ74urFInkbABMCENyx5oP3hrDzYMMPh3qdLdknIvrGj3yqZ4JuU7Nag=="
+      crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+      <script>
+
+      </script> -->
+      <!-- <div id="rasa-chat-widget" data-initial-payload='hi' data-websocket-url="http://localhost:5005" data-width="400" data-avatar-url="https://cdn.discordapp.com/emojis/967412208323674243.webp"></div>
+      <script src="https://unpkg.com/@rasahq/rasa-chat" type="application/javascript"></script> -->
+    </div>
     <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

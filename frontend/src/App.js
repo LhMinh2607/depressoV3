@@ -14,6 +14,10 @@ import PostDetailPage from './pages/PostDetailPage';
 import NotFoundPage from './pages/NotFoundPage';
 import DateComponent from './components/DateComponent';
 import CategoryIcon from './components/CategoryIcon';
+import MentalBotPage from './pages/MentalBotPage';
+import AdminRoute from './components/AdminRoute';
+import FeedbackPage from './pages/FeedbackPage';
+import UserListPage from './pages/UserListPage';
 
 
 function App() {
@@ -38,10 +42,13 @@ function App() {
         <div className="grid-containter">
               <header className="row navigation-bar">
                   <div>
-                    <Link to="/" className="brand">dataStructureLW</Link>
+                    <Link to="/" className="brand">Depresso</Link>
                   </div>
                   <div>
-                    <Link to="/forum" className="">Xem thêm</Link>
+                    {userInfo && <Link to={`/user/${userInfo._id}`} className="">Mental Bot</Link>}
+                  </div>
+                  <div>
+                    {<Link to={`/forum`} className="">Diễn đàn</Link>}
                   </div>
                       {userInfo ? (
                         <div className="dropDown">
@@ -51,6 +58,17 @@ function App() {
                             <li>
                               <Link to={`/user/${userInfo._id}`}>Tài khoản<i className="fa fa-user"></i></Link>
                             </li>
+                          {
+                            userInfo.role==="admin" && 
+                            <>
+                              <li>
+                                <Link to={`/feedback`}>Xem feedback<i className="fa fa-book"></i></Link>
+                              </li>
+                              <li>
+                                <Link to={`/user/list`}>Danh sách người dùng<i className="fa fa-user"></i></Link>
+                              </li>
+                            </>
+                          }
                             <li>
                               <Link to="/" onClick={signOutHandler}>
                                 Đăng xuất<i className="fa fa-hand-o-left"></i>
@@ -70,8 +88,13 @@ function App() {
                   <Route exact path="/signin" element={<SigninPage></SigninPage>}></Route>
                   <Route exact path="/signup" element={<SignUpPage></SignUpPage>}></Route>
                   <Route path="/user/:id" element={<ProfilePage></ProfilePage>}></Route>
-                  <Route exact path="/forum" element={<ForumPage></ForumPage>}></Route> 
-                  <Route exact path="/forum/post/:id" element={<PostDetailPage></PostDetailPage>}></Route> 
+                  {/* <Route exact path="/forum" element={<ForumPage></ForumPage>}></Route>  */}
+                  <Route exact path="/mentalbot" element={<MentalBotPage></MentalBotPage>}></Route> 
+                  {/* <Route exact path="/forum/post/:id" element={<PostDetailPage></PostDetailPage>}></Route> */}
+                  <Route exact path="/feedback" element={<AdminRoute><FeedbackPage></FeedbackPage></AdminRoute>}></Route> 
+                  <Route exact path="/user/list" element={<AdminRoute><UserListPage></UserListPage></AdminRoute>}></Route> 
+                  <Route exact path="/forum" element={<ForumPage></ForumPage>}></Route>
+                  <Route exact path="/forum/post/:id" element={<PostDetailPage></PostDetailPage>}></Route>
                   <Route path="*" element={<NotFoundPage/>} /> 
                 </Routes>
 

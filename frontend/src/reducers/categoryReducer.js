@@ -1,4 +1,4 @@
-import { CATEGORY_LIST_FAILED, CATEGORY_LIST_REQUEST, CATEGORY_LIST_SUCCESSFUL } from "../constants/categoryConst";
+import { CATEGORY_LIST_FAILED, CATEGORY_LIST_REQUEST, CATEGORY_LIST_RESET, CATEGORY_LIST_SUCCESSFUL } from "../constants/categoryConst";
 
 
 export const categoryListReducer = (state = {loading: true, categories: []}, action) =>{
@@ -9,6 +9,8 @@ export const categoryListReducer = (state = {loading: true, categories: []}, act
             return {loading: false, categories: action.payload};
         case CATEGORY_LIST_FAILED:
             return {loading: false, error: action.payload};
+        case CATEGORY_LIST_RESET:
+            return {categories: []};
         default:
             return state;
     }
