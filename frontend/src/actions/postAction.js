@@ -18,12 +18,12 @@ export const createPost = (userId, title, content, category) => async (dispatch)
     }
 };
 
-export const editPost = (postId, title, content) => async (dispatch) =>{
+export const editPost = (postId, title, content, category) => async (dispatch) =>{
     dispatch({
         type: EDIT_POST_REQUEST, payload: {postId, title, content}
     });
     try {
-        const {data} = await axios.put(`/api/forum/edit_post`, {postId, title, content});
+        const {data} = await axios.put(`/api/forum/edit_post`, {postId, title, content, category});
         dispatch({type: EDIT_POST_SUCCESSFUL, payload: data});
     } catch (error) {
         dispatch({type: EDIT_POST_FAILED, 
@@ -218,7 +218,7 @@ export const removeKeywordFromPost = (postId, keyword) =>async(dispatch) => {
         type: POST_REMOVE_KEYWORD_REQUEST, payload: {postId, keyword}
     });
     try {
-        const {data} = await axios.put(`/api/forum/keyword/remove/${postId}/keyword/${keyword}`);
+        const {data} = await axios.put(`/api/forum/keyword/remove/${postId}`, {postId, keyword});
         dispatch({type: POST_REMOVE_KEYWORD_SUCCESSFUL, payload: data});
     } catch (error) {
             dispatch({type: POST_REMOVE_KEYWORD_FAILED,

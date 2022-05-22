@@ -1,11 +1,12 @@
 import React from 'react'
 
-export default function DateComponent(props) {
+export default function UnixDateComponent(props) {
 
     const {passedDate} = props;
-    const {isbirthDate} = props;
+    const {showTime=true} = props;
+    const {showDate=true} = props;
 
-    const date = new Date(passedDate);
+    const date = new Date(passedDate * 1000);
     const publishedHour = date.getHours();
     const publishedMin = date.getMinutes();
     const publishedDay = date.getDay()+1;
@@ -17,14 +18,14 @@ export default function DateComponent(props) {
 
         <div>
             {props.children}
-            {!isbirthDate && (publishedHour+":")}
+            {showTime && (publishedHour+":")}
             {
-                !isbirthDate &&
+                showTime &&
                 (publishedMin < 10 ? <>0{publishedMin}</> : publishedMin)
             }
                 
             {
-                !isbirthDate && (
+                showDate && (
                 publishedDay === 2 ? <> Thứ Hai</> : 
                 publishedDay === 3 ? <> Thứ Ba</> :
                 publishedDay === 4 ? <> Thứ Tư</> :
@@ -34,8 +35,8 @@ export default function DateComponent(props) {
                 publishedDay === 1 && <> Chủ Nhật</>)
             }
             
-            {!isbirthDate && ", "}
-            {publishedDate+"/"+publishedMonth+"/"+publishedYear}
+            {showDate && ", "}
+            {showDate && publishedDate+"/"+publishedMonth+"/"+publishedYear}
         </div>
     )
 }

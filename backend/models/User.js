@@ -3,12 +3,18 @@ const {Schema} = mongoose;
 
 const userSchema = new mongoose.Schema({
     name: {type: String, required: true},
+    username: {type: String, required: true},
     email: {type: String, required: true, unique: true},
     password: {type: String, required: true},
     role: {type: String, default: 'user'},
     gender: {type: String, required: true},
-    birthDate: {type: Date, required: true},
+    dob: {type: Date, required: true},
     phoneNumber: {type: String, required: false},
+    address: {type: String, required: true},
+    occupation: {type: String, required: true},
+    issues: [{type: String, required: false}],
+    mood: {type: String, required: false},
+    progress: {type: Number, required: true, default: 0},
 },
     {
         timestamps: true,

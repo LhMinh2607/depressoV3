@@ -1,27 +1,21 @@
 {
   "name": "frontend",
-  "proxy": "http://192.168.0.128:5000",
+  "proxy": "http://localhost:5000",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
     "axios": "^0.24.0",
-    "draft-js-rte": "^0.0.9",
-    "jodit-react": "^1.1.15",
-    "markdown-it": "^12.3.0",
-    "marked-react": "^1.0.0",
-    "react": "^17.0.2",
-    "react-date-picker": "^8.3.6",
+    "rasa-webchat": "^1.0.1",
+    "react": "^16.8.3",
     "react-datepicker": "^4.4.0",
-    "react-dom": "^17.0.2",
+    "react-dom": "^16.8.3",
+    "react-dropdown-select": "^4.8.2",
     "react-linkify": "*",
-    "react-markdown": "^7.1.1",
-    "react-markdown-editor-lite": "^1.3.2",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.0.2",
-    "react-scripts": "4.0.3",
+    "react-scripts": "5.0.0",
     "redux": "^4.1.2",
     "redux-thunk": "^2.4.1",
-    "remark-gfm": "^3.0.1",
     "rich-markdown-editor": "^11.21.3",
     "web-vitals": "^1.1.2"
   },
@@ -48,5 +42,12 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "crypto": false,
+    "http": false,
+    "net": false
   }
 }

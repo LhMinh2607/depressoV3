@@ -21,7 +21,7 @@ export default function DeletePostCommentButton(props) {
 
     return (
         <div>
-            <button className="primary" onClick={deletePostCommentHandler}><i className="fa fa-trash"></i>DELETE</button>
+            <button className="primary" onClick={deletePostCommentHandler}><i className="fa fa-trash"></i>XÓA</button>
         </div>
     )
 }
