@@ -34,7 +34,7 @@ export default function UserListPage() {
                             <th>USERNAME</th>
                             <th>TÊN</th>
                             <th>NGÀY THAM GIA</th>
-                            <th>URL NGƯỜI DÙNG</th>
+                            <th>TRANG CÁ NHÂN</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,9 +46,9 @@ export default function UserListPage() {
                                 <td>{u.name}</td>
                                 <td><DateComponent passedDate = {u.createdAt}></DateComponent></td>
                                 <td>
-                                    <button type="button" className="tiny primary" onClick={() => {navigate(`/user/${u._id}`);}}>
-                                        Trang cá nhân
-                                    </button>
+                                    <div className="interactiveText" onClick={() => {navigate(`/user/${u._id}`);}}>
+                                        <i className='fa fa-arrow-right'></i>
+                                    </div>
                                 </td>
                             </tr>
                         ))

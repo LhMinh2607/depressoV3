@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { USER_CONVERSATION_HISTORY_FAILED, USER_CONVERSATION_HISTORY_REQUEST, USER_CONVERSATION_HISTORY_SUCCESSFUL, USER_DETAIL_FAILED, USER_DETAIL_REQUEST, USER_DETAIL_SUCCESSFUL, USER_LIST_FAILED, USER_LIST_REQUEST, USER_LIST_SUCCESSFUL, USER_SIGNIN_FAILED, USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESSFUL, USER_SIGNOUT, USER_SIGN_UP_FAILED, USER_SIGN_UP_REQUEST, USER_SIGN_UP_SUCCESSFUL, USER_UPDATE_PROFILE_FAILED, USER_UPDATE_PROFILE_REQUEST, USER_UPDATE_PROFILE_SUCCESSFUL } from '../constants/userConst';
+import { MESSAGE_STAT_FAILED, MESSAGE_STAT_REQUEST, MESSAGE_STAT_SUCCESSFUL, USER_CONVERSATION_HISTORY_FAILED, USER_CONVERSATION_HISTORY_REQUEST, USER_CONVERSATION_HISTORY_SUCCESSFUL, USER_DETAIL_FAILED, USER_DETAIL_REQUEST, USER_DETAIL_SUCCESSFUL, USER_LIST_FAILED, USER_LIST_REQUEST, USER_LIST_SUCCESSFUL, USER_SIGNIN_FAILED, USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESSFUL, USER_SIGNOUT, USER_SIGN_UP_FAILED, USER_SIGN_UP_REQUEST, USER_SIGN_UP_SUCCESSFUL, USER_UPDATE_PROFILE_FAILED, USER_UPDATE_PROFILE_REQUEST, USER_UPDATE_PROFILE_SUCCESSFUL } from '../constants/userConst';
 
 
 export const signout = () => (dispatch) =>{
@@ -9,10 +9,10 @@ export const signout = () => (dispatch) =>{
     dispatch({type: USER_SIGNOUT});
 }
 
-export const signup = (name, username, email, password, gender, dob, phoneNumber, address, occupation) => async(dispatch) =>{
-    dispatch({type: USER_SIGN_UP_REQUEST, payload: {name, username, email, password, gender, dob, phoneNumber, address, occupation}});
+export const signup = (name, username, email, password, gender, dob, phoneNumber, address, occupation, desc) => async(dispatch) =>{
+    dispatch({type: USER_SIGN_UP_REQUEST, payload: {name, username, email, password, gender, dob, phoneNumber, address, occupation, desc}});
     try {
-        const {data} = await axios.post('/api/user/signup', {name, username, email, password, gender, dob, phoneNumber, address, occupation});
+        const {data} = await axios.post('/api/user/signup', {name, username, email, password, gender, dob, phoneNumber, address, occupation, desc});
         dispatch({type: USER_SIGN_UP_SUCCESSFUL, payload: data});
         //dispatch({type: USER_SIGNIN_SUCCESSFUL, payload: data});
         //localStorage.setItem('userInfo', JSON.stringify(data));
@@ -106,6 +106,21 @@ export const getUserConversationHistory = (id) => async(dispatch) =>{
         dispatch({type: USER_CONVERSATION_HISTORY_SUCCESSFUL, payload: data});
     } catch (error) {
         dispatch({type: USER_CONVERSATION_HISTORY_FAILED, 
+            payload: error.response 
+            && error.response.data.message 
+            ? error.response.data.message
+            : error.message,
+        });
+    }
+};
+
+export const getMessageStat = (id) => async(dispatch) =>{
+    dispatch({type: MESSAGE_STAT_REQUEST, payload: {id}});
+    try {
+        const {data} = await axios.get(`/api/user/${id}/conversation/stat`, {id});
+        dispatch({type: MESSAGE_STAT_SUCCESSFUL, payload: data});
+    } catch (error) {
+        dispatch({type: MESSAGE_STAT_FAILED, 
             payload: error.response 
             && error.response.data.message 
             ? error.response.data.message
