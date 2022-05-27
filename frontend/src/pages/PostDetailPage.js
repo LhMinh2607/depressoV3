@@ -3,7 +3,7 @@ import Linkify from 'react-linkify';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { detailsOfUser, listOfUsers } from '../actions/userAction';
-import { addKeywordToPost, createPostComment, deletePost, detailsOfPost, editPost, listOfNestedPosts, listOfPosts, listOfPostsByCat, listOfRelatedPosts, removeKeywordFromPost } from '../actions/postAction';
+import { addKeywordToPost, createPostComment, deletePost, detailsOfPost, editPost, listOfNestedPosts, listOfPosts, listOfPostsByCat, listOfRelatedPosts, pinPostToHome, removeKeywordFromPost } from '../actions/postAction';
 import DateComponent from '../components/DateComponent';
 import DeletePostCommentButton from '../components/DeletePostCommentButton';
 import LoadingBox from '../components/LoadingBox';
@@ -190,6 +190,14 @@ export default function PostDetailPage() {
         const path = `/user/${id}`;
         navigate(path);
     }
+
+    const pin = () =>{
+        alert("pinned")
+    }
+
+    const pinToHome = (id) => {
+        dispatch(pinPostToHome(id));
+    }
     
     useEffect(()=>{
         if(userInfo){
@@ -258,14 +266,12 @@ export default function PostDetailPage() {
             }
             
         </ul> */}
-        <div className='row'>
             {loadingUL ? <LoadingBox></LoadingBox> : errorUL ? <MessageBox variant="error">{errorUL}</MessageBox> : (
             loading ? <LoadingBox></LoadingBox> : error ? <MessageBox variant="error">{error}</MessageBox> : 
             post &&(
             <div className="row">
                 
-                <div className="row" >
-                    <div className="col-2">
+                <div className="col-2">
                     <div>
                         {userInfo &&
                             (userInfo.role==='user' || userInfo.role==='admin' && post &&
@@ -298,13 +304,13 @@ export default function PostDetailPage() {
                             loadingDeleting ? <LoadingBox></LoadingBox> : errorDeleting ? <MessageBox variant="error">{errorDeleting}</MessageBox> : 
                             successDeleting && <MessageBox>Đã xóa bài viết</MessageBox>
                         }
-                        <div className="card card-body">
+                        <div className="card card-body postDetail">
                             <div><CategoryIcon topicName = {post.topic}></CategoryIcon></div>
                             {users.map(u=>(u._id===post.user && ( u.role==='admin' ? (
-                            <div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)} title={u.name}>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></div>
-                            <div className="userHoverInfo">
+                            <div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)} title={u.name}><span className='avatarSquare'>{u.username[0]}</span>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></div>
+                                <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
                                 <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                <div className='row center'>
+                                <div className='row center userHoverInfoContent'>
                                     <div className=''>
                                         <div className='row left'>{u.name}</div>
                                     </div>
@@ -318,10 +324,10 @@ export default function PostDetailPage() {
                                     </div>
                                 </div>
                             </div>
-                            </div>) : (<div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)}><i className="fa fa-user"></i>{u.name}</div>
-                            <div className="userHoverInfo">
+                            </div>) : (<div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)}><span className='avatarSquare'>{u.username[0]}</span>{u.name}</div>
+                            <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
                                 <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                <div className='row center'>
+                                <div className='row center userHoverInfoContent'>
                                     <div className=''>
                                         <div className='row left'>{u.name}</div>
                                     </div>
@@ -360,7 +366,7 @@ export default function PostDetailPage() {
                             <div>
                                 <div className='row center'>{
                                     userInfo.role==='user' || userInfo.role==='admin' &&
-                                    <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder='Chọn chủ đề' options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={values => setValuesForCategory(values)} required={true}/>
+                                    <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder={categories.map((cat)=>cat._id===category && cat.name)} options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={values => setValuesForCategory(values)} required={true}/>
                                     
                                 }</div>    
                                         <form className="editPostForm" onSubmit={postSubmitingHandler}>
@@ -403,7 +409,11 @@ export default function PostDetailPage() {
                         {
                             !editPostStatus && (
                                 <div className="content">
-                                    <h1>{post.title}</h1>
+                                    <h1 className='contentTitle'>{post.title} 
+                                        {userInfo && userInfo.role==="admin" && 
+                                        <><label className='interactiveText' title="ghim bài viết này" onClick={()=>pin(post._id)}><i className='fa fa-thumb-tack'></i></label>
+                                        <label className='interactiveText' title="đăng lên trang chủ" onClick={()=>pinToHome(post._id)}><i className='fa fa-home'></i></label></>}
+                                    </h1>
                                     {/* <p><Linkify>{post.content}</Linkify></p> */}
                                     {/* <ReactMarkdown children={markdown} remarkPlugins={[remarkGfm]} ></ReactMarkdown> */}
                                     {/* <ReactMarkdown children={post.content} />  */}
@@ -446,42 +456,40 @@ export default function PostDetailPage() {
                             
                         </div>
                     
-                        
+                        <div className="col-0">
+                            {
+                                loadingCommentPosting ? <LoadingBox></LoadingBox> : errorCommentPosting ? <MessageBox variant="error"></MessageBox> :
+                                successPostingComment && <MessageBox>ĐÃ ĐĂNG BÌNH LUẬN</MessageBox>
+                            }
+                            {userInfo ? (<form className="editPostForm" onSubmit={commentPostingHandler}>
+                                <div className="row center">Phản hồi dưới tên <label className="bold-text">{userInfo.name}</label></div>
+                                <div>
+                                    {/* <textarea placeholder="Nội dung" className="basic-slide" required={true} value={replyContent} type="textarea" onChange={(e)=> setReplyContent(e.target.value)}>
+                                    </textarea> */}
+                                    <Editor
+                                        onChange={(value) => setReplyContent(value)}
+                                        className='Editor'
+                                        placeholder='Nội dung'
+                                        required={true}
+                                        defaultValue=""
+                                    />
+                                </div>
+                                <div><button className="child">PHẢN HỒI</button></div>
+                            </form>) : (
+                                <MessageBox><Link to={`/signin?redirect=forum/post/${postId}`}>{`Đăng nhập `}</Link>để tham gia trò chuyện</MessageBox>
+                            )}
+                        </div>  
                     </div>
-                    <div className="col-1">
-                        {
-                            loadingCommentPosting ? <LoadingBox></LoadingBox> : errorCommentPosting ? <MessageBox variant="error"></MessageBox> :
-                            successPostingComment && <MessageBox>ĐÃ ĐĂNG BÌNH LUẬN</MessageBox>
-                        }
-                        {userInfo ? (<form className="editPostForm" onSubmit={commentPostingHandler}>
-                            <div className="row center">Phản hồi dưới tên <label className="bold-text">{userInfo.name}</label></div>
-                            <div>
-                                {/* <textarea placeholder="Nội dung" className="basic-slide" required={true} value={replyContent} type="textarea" onChange={(e)=> setReplyContent(e.target.value)}>
-                                </textarea> */}
-                                <Editor
-                                    onChange={(value) => setReplyContent(value)}
-                                    className='Editor'
-                                    placeholder='Nội dung'
-                                    required={true}
-                                    defaultValue=""
-                                />
-                            </div>
-                            <div><button className="child">PHẢN HỒI</button></div>
-                        </form>) : (
-                            <MessageBox><Link to={`/signin?redirect=forum/post/${postId}`}>Đăng nhập</Link>để tham gia trò chuyện</MessageBox>
-                        )}
-                    </div>    
-                </div> 
-            <div className="row">
+                    
+            {post && post.postComments.length ?
                 <div className="col-2">
                 {
                     loadingCommentDeleting ? <LoadingBox></LoadingBox> : errorCommentDeleting ? <MessageBox variant="error">{errorCommentDeleting}</MessageBox>
                     : successDeletingComment && <MessageBox>ĐÃ XÓA BÌNH LUẬN</MessageBox>
                 }
                 {
-                    <div className="card card-body">
+                    <div className="row">
                         <h1>
-                            
                             {post.postComments.length>1 && <div><i className="fa fa-comment"></i>
                                 {post.postComments.length} phản hồi
                             </div>}
@@ -493,41 +501,37 @@ export default function PostDetailPage() {
                         <div>
                             
                             {userInfo && userInfo._id===pc.commenter && (
-                                <div className="card card-body ">
+                                <div className="card card-body postDetail">
                                     {!editCommentStatus ? (
-                                    <div className="row">
-                                        <div className="col-0">
-                                            <div className='interactiveUsername' onClick={()=>navigateToProfile(userInfo._id)}>{userInfo.name}</div>
-                                            <div className="userHoverInfo">
-                                                <h1>{userInfo.role==="user"&&<i className='fa fa-user'></i>}{userInfo.username}{userInfo.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                                <div className='row center'>
-                                                    <div className=''>
-                                                        <div className='row left'>{userInfo.name}</div>
-                                                    </div>
-                                                    <div className='col-2'>
-                                                        {userInfo.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{userInfo.gender}</div> : 
-                                                            userInfo.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{userInfo.gender}</div> :
-                                                            userInfo.gender==="Khác" && <div className='row left'><i className='fa fa-intersex'/>{userInfo.gender}</div>
-                                                        }
-                                                        <div className='row left'><i className='fas fa-brain'></i>{userInfo.mood ? userInfo.mood : "Tâm trạng không rõ"}</div>
-                                                        <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={userInfo.dob} isbirthDate={true}></DateComponent>} </div>
-                                                    </div>
+                                    <div className="col full">
+                                        <div className='interactiveUsername' onClick={()=>navigateToProfile(userInfo._id)}><span className='avatarSquare'>{userInfo.username[0]}</span>{userInfo.name}</div>
+                                        <div className="userHoverInfo">
+                                            <h1>{userInfo.role==="user"&&<i className='fa fa-user'></i>}{userInfo.username}{userInfo.role==="admin"&&<i className='fa fa-check'></i>}</h1>
+                                            <div className='row center'>
+                                                <div className=''>
+                                                    <div className='row left'>{userInfo.name}</div>
+                                                </div>
+                                                <div className='col-2'>
+                                                    {userInfo.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{userInfo.gender}</div> : 
+                                                        userInfo.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{userInfo.gender}</div> :
+                                                        userInfo.gender==="Khác" && <div className='row left'><i className='fa fa-intersex'/>{userInfo.gender}</div>
+                                                    }
+                                                    <div className='row left'><i className='fas fa-brain'></i>{userInfo.mood ? userInfo.mood : "Tâm trạng không rõ"}</div>
+                                                    <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={userInfo.dob} isbirthDate={true}></DateComponent>} </div>
                                                 </div>
                                             </div>
-                                            <DateComponent passedDate={pc.createdAt}>Phản hồi vào: </DateComponent>
                                         </div>
-                                        <div className="col-2">
-                                            <div className="content">
-                                                {/* <p><Linkify>{pc.content}</Linkify></p> */}
-                                                <Editor
-                                                    defaultValue={pc.content}
-                                                    className='Editor'
-                                                    placeholder='Nội dung'
-                                                    required={true}
-                                                    readOnly={true}
-                                                /> 
-                                            </div>
+                                        <div className="content">
+                                            {/* <p><Linkify>{pc.content}</Linkify></p> */}
+                                            <Editor
+                                                defaultValue={pc.content}
+                                                className='Editor'
+                                                placeholder='Nội dung'
+                                                required={true}
+                                                readOnly={true}
+                                            /> 
                                         </div>
+                                        <DateComponent passedDate={pc.createdAt}>Phản hồi vào: </DateComponent>
                                 </div>) : 
                                     (
                                         <form className="editPostForm" onSubmit={commentEditingHandler}>
@@ -544,40 +548,36 @@ export default function PostDetailPage() {
                                 
                             {
                                 userInfo && userInfo._id !== pc.commenter && (
-                                    <div className="card card-body ">
+                                    <div className="card card-body postDetail">
                                         {users.map(u=>(
                                             u._id===pc.commenter && (
-                                            <div className="row">
-                                                <div className="col-0">
-                                                    <div className="interactiveUsername" onClick={()=>navigateToProfile(u._id)}>{u.name}</div>
-                                                    <div className="userHoverInfo">
-                                                        <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                                        <div className='row center'>
-                                                            <div className=''>
-                                                                <div className='row left'>{u.name}</div>
-                                                            </div>
-                                                            <div className='col-2'>
-                                                                {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
-                                                                    u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
-                                                                    u.gender==="khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
-                                                                }
-                                                                <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
-                                                                <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
-                                                            </div>
+                                            <div className="col full">
+                                                <div className="interactiveUsername" onClick={()=>navigateToProfile(u._id)}><span className='avatarSquare'>{u.username[0]}</span>{u.name}</div>
+                                                <div className="userHoverInfo">
+                                                    <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
+                                                    <div className='row center'>
+                                                        <div className=''>
+                                                            <div className='row left'>{u.name}</div>
+                                                        </div>
+                                                        <div className='col-2'>
+                                                            {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
+                                                                u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
+                                                                u.gender==="khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
+                                                            }
+                                                            <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
+                                                            <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="col-2">
-                                                    <div className="content">
-                                                        {/* <p><Linkify>{pc.content}</Linkify></p> */}
-                                                        <Editor
-                                                            defaultValue={pc.content}
-                                                            className='Editor'
-                                                            placeholder='Nội dung'
-                                                            required={true}
-                                                            readOnly={true}
-                                                        /> 
-                                                    </div>
+                                                <div className="content">
+                                                    {/* <p><Linkify>{pc.content}</Linkify></p> */}
+                                                    <Editor
+                                                        defaultValue={pc.content}
+                                                        className='Editor'
+                                                        placeholder='Nội dung'
+                                                        required={true}
+                                                        readOnly={true}
+                                                    /> 
                                                 </div>
                                             </div>
                                         )))}
@@ -587,40 +587,36 @@ export default function PostDetailPage() {
                             }
                             {
                                 !userInfo && (
-                                    <div className="card card-body ">
+                                    <div className="card card-body postDetail">
                                         {users.map(u=>(
                                             u._id===pc.commenter && (
-                                            <div className="row">
-                                                <div className="col-0">
-                                                    <div className="interactiveUsername" onClick={()=>navigateToProfile(u._id)}>{u.name}</div>
-                                                    <div className="userHoverInfo">
-                                                        <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                                        <div className='row center'>
-                                                            <div className=''>
-                                                                <div className='row left'>{u.name}</div>
-                                                            </div>
-                                                            <div className='col-2'>
-                                                                {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
-                                                                    u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
-                                                                    u.gender==="khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
-                                                                }
-                                                                <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
-                                                                <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
-                                                            </div>
+                                            <div className="col full">
+                                                <div className="interactiveUsername" onClick={()=>navigateToProfile(u._id)}><span className='avatarSquare'>{u.username[0]}</span>{u.name}</div>
+                                                <div className="userHoverInfo">
+                                                    <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
+                                                    <div className='row center'>
+                                                        <div className=''>
+                                                            <div className='row left'>{u.name}</div>
+                                                        </div>
+                                                        <div className='col-2'>
+                                                            {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
+                                                                u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
+                                                                u.gender==="khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
+                                                            }
+                                                            <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
+                                                            <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div className="col-2">
-                                                    <div className="content">
-                                                        {/* <p><Linkify>{pc.content}</Linkify></p> */}
-                                                        <Editor
-                                                            defaultValue={pc.content}
-                                                            className='Editor'
-                                                            placeholder='Nội dung'
-                                                            required={true}
-                                                            readOnly={true}
-                                                        /> 
-                                                    </div>
+                                                <div className="content">
+                                                    {/* <p><Linkify>{pc.content}</Linkify></p> */}
+                                                    <Editor
+                                                        defaultValue={pc.content}
+                                                        className='Editor'
+                                                        placeholder='Nội dung'
+                                                        required={true}
+                                                        readOnly={true}
+                                                    /> 
                                                 </div>
                                             </div>
                                         )))}
@@ -633,12 +629,17 @@ export default function PostDetailPage() {
                         </div>
                     ))
                 }</div>
-            </div>
+             :
+                <div className='row full'>
+                    <div className='col-1'>
+                        <MessageBox variant="info">CHƯA CÓ BÌNH LUẬN</MessageBox>
+                    </div>
+                </div>
+            }
             </div>
             
             ))}
             
-        </div>
         </div>
     )
 }

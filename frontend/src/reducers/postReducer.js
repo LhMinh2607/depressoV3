@@ -19,9 +19,18 @@ import {  CREATE_POST_COMMENT_FAILED,
     FILTER_TOPIC_FAILED,   
     FILTER_TOPIC_REQUEST,   
     FILTER_TOPIC_SUCCESSFUL,   
+    GET_HOME_POSTS_FAILED,   
+    GET_HOME_POSTS_REQUEST,   
+    GET_HOME_POSTS_SUCCESSFUL,   
     NESTED_POST_LIST_FAILED,   
     NESTED_POST_LIST_REQUEST,   
     NESTED_POST_LIST_SUCCESSFUL,   
+    PIN_FAILED,   
+    PIN_REQUEST,   
+    PIN_SUCCESSFUL,   
+    PIN_TO_HOME_FAILED,   
+    PIN_TO_HOME_REQUEST,   
+    PIN_TO_HOME_SUCCESSFUL,   
     POST_ADD_KEYWORD_FAILED,   
     POST_ADD_KEYWORD_REQUEST,   
     POST_ADD_KEYWORD_SUCCESSFUL,   
@@ -31,6 +40,9 @@ import {  CREATE_POST_COMMENT_FAILED,
     POST_REMOVE_KEYWORD_FAILED, 
     POST_REMOVE_KEYWORD_REQUEST, 
     POST_REMOVE_KEYWORD_SUCCESSFUL, 
+    POST_STAT_PER_USER_FAILED, 
+    POST_STAT_PER_USER_REQUEST, 
+    POST_STAT_PER_USER_SUCCESSFUL, 
     RELATED_POST_LIST_FAILED, 
     RELATED_POST_LIST_REQUEST, 
     RELATED_POST_LIST_SUCCESSFUL, 
@@ -250,6 +262,58 @@ export const postByCatListReducer = (state = {}, action)=>{
         case SHOW_POST_BY_CAT_SUCCESSFUL:
             return {loading: false, postsByCat: action.payload};
         case SHOW_POST_BY_CAT_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const postPinningToHomeReducers = (state = {}, action)=>{
+    switch(action.type){
+        case PIN_TO_HOME_REQUEST:
+            return {loading: true};
+        case PIN_TO_HOME_SUCCESSFUL:
+            return {loading: false, success: true};
+        case PIN_TO_HOME_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const postPinningReducers = (state = {}, action)=>{
+    switch(action.type){
+        case PIN_REQUEST:
+            return {loading: true};
+        case PIN_SUCCESSFUL:
+            return {loading: false, success: true};
+        case PIN_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const homePostListReducers = (state = {}, action)=>{
+    switch(action.type){
+        case GET_HOME_POSTS_REQUEST:
+            return {loading: true};
+        case GET_HOME_POSTS_SUCCESSFUL:
+            return {loading: false, posts: action.payload};
+        case GET_HOME_POSTS_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const userPostStatReducers = (state = {}, action)=>{
+    switch(action.type){
+        case POST_STAT_PER_USER_REQUEST:
+            return {loading: true};
+        case POST_STAT_PER_USER_SUCCESSFUL:
+            return {loading: false, posts: action.payload};
+        case POST_STAT_PER_USER_FAILED:
             return {loading: false, error: action.payload};
         default:
             return state;

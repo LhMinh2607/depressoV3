@@ -9,6 +9,8 @@ const postSchema = new mongoose.Schema({
     content: {type: String, required: true},
     keywords: [{type: String}],
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
+    isPinned: {type: Boolean, default: false},
+    isHomepage: {type: Boolean, default: false},
     postComments: [
         {   
             commenter: {type: String}, //userId

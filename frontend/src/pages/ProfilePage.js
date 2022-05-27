@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useParams } from 'react-router-dom';
-import { detailsOfUser, getUserConversationHistory, updateUserProfile } from '../actions/userAction';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { detailsOfUser, getMessageStat, getUserConversationHistory, updateUserProfile } from '../actions/userAction';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
 import DateComponent from '../components/DateComponent';
@@ -10,6 +10,10 @@ import 'react-datepicker/dist/react-datepicker.css';
 import Widget from 'rasa-webchat';
 import Chatbox from '../components/Chatbox';
 import Select from 'react-dropdown-select';
+import { statOfUserPosts } from '../actions/postAction';
+import { Offline, Online } from "react-detect-offline";
+import Gallery from '../components/Gallery';
+
 
 export default function ProfilePage(){
     const [name, setName] = useState();
@@ -23,6 +27,9 @@ export default function ProfilePage(){
     const [occupation, setOccupation] = useState('');
     const [username, setUsername] = useState();
     const [openPopup, setOpenPopup] = useState(false);
+    const [desc, setDesc] = useState('');
+    const [backgroundImage, setBackgroundImage] = useState('');
+    const [backgroundMusic, setBackgroundMusic] = useState('');
 
 
 
@@ -42,14 +49,28 @@ export default function ProfilePage(){
     const conversation = useSelector(state=>state.conversation);
     const {loading: loadingConversation, error: errorConversation, userCon} = conversation;
 
+    const messageStat = useSelector(state=>state.messageStat);
+    const {loading: loadingStat, error: errorStat, msgStat} = messageStat;
+
+    const userPostStat = useSelector(state=>state.userPostStat);
+    const {loading: loadingPostStat, error: errorPostStat, posts} = userPostStat;
+
     var params = useParams();
     var userId = params.id;
+
+    const navigate = useNavigate();
 
     const genders = [
         {_id: "Nam", name: "Nam"},
         {_id: "Nữ", name: "Nữ"},
         {_id: "Khác", name: "3D"},
     ]
+
+    const setTheGender = (selectedValues) =>{
+        setGender(selectedValues[0].value);
+    }
+
+    const [currentTab, setCurrentTab] = useState('info');
     
     
     const userUpdateProfile = useSelector(state => state.userUpdateProfile);
@@ -60,9 +81,13 @@ export default function ProfilePage(){
             alert('Mật khẩu và xác nhận mật phải giống nhau!');
         }else{
             //alert(birthDate);
-            dispatch(updateUserProfile({userId: user._id, name, username, email, password, gender, birthDate, phoneNumber, address, occupation}));
+            dispatch(updateUserProfile({userId: user._id, name, username, email, password, gender, birthDate, phoneNumber, address, occupation, desc, backgroundImage, backgroundMusic}));
         }
     };
+
+    const customizationSubmitHandler = (e) =>{
+        dispatch(updateUserProfile({userId: user._id, name, username, email, password, gender, birthDate, phoneNumber, address, occupation, desc, backgroundImage, backgroundMusic}));
+    }
 
 
     const [disabled, setDisabled] = useState(true); //const disabled = true, const setDisabled = () =>{};
@@ -92,6 +117,26 @@ export default function ProfilePage(){
         setOpenPopup(false);
     }
 
+    const getYouTubeLinkId = (url) =>{
+        var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+        var match = url.match(regExp);
+        return (match&&match[7].length==11)? match[7] : false;
+    }
+
+    // function get_average_rgb(img) {
+    //     var context = document.createElement('canvas').getContext('2d');
+    //     if (typeof img == 'string') {
+    //         var src = img;
+    //         img = new Image;
+    //         img.setAttribute('crossOrigin', ''); 
+    //         img.src = src;
+    //     }
+    //     context.imageSmoothingEnabled = true;
+    //     context.drawImage(img, 0, 0, 1, 1);
+    //     alert(context.getImageData(1, 1, 1, 1).data.slice(0,3));
+    //     return context.getImageData(1, 1, 1, 1).data.slice(0,3);
+    // }
+
 
     // const setThebirthDate = (e) =>{
     //     setbirthDate(e.target.value);
@@ -106,7 +151,8 @@ export default function ProfilePage(){
     // const socketUrl = "https://2fe0-27-2-17-107.ngrok.io"
     // const socketUrl = "https://ad57-27-2-17-107.ngrok.io"
     // const socketUrl = "https://b4c8-27-2-17-107.ngrok.io"
-    const socketUrl = "https://3990-27-2-17-107.ngrok.io";
+    // const socketUrl = "https://3990-27-2-17-107.ngrok.io";
+    const socketUrl = "https://55c2-27-2-17-107.ngrok.io";
 
 
     useEffect(()=>{
@@ -116,34 +162,94 @@ export default function ProfilePage(){
         //dispatch(listTotalMoneySpent(userInfo._id));
         //dispatch({type: CLEAR_ALL}); //a simple line of code that solved the worst bug in my project. That later it also caused a loop bug. Thanks so much dickhead.
         setGender("Gay")
-        if(!user){
-           // dispatch({type: USER_UPDATE_PROFILE_RESET});
-           dispatch(detailsOfUser(userId));
-        }else if(user._id!==userId){
-            dispatch(detailsOfUser(userId));
+        if(userInfo){
+            if(!user){
+                // dispatch({type: USER_UPDATE_PROFILE_RESET});
+                dispatch(detailsOfUser(userId));
+             }else if(user._id!==userId){
+                 dispatch(detailsOfUser(userId));
+             }
+             if(user && user._id===userId){
+                 setName(user.name);
+                 setEmail(user.email);
+                 setbirthDate(user.birthDate);
+                 setGender(user.gender);
+                 setbirthDate(new Date(user.dob));
+                 setPhoneNumber(user.phoneNumber);
+                 setAddress(user.address);
+                 setOccupation(user.occupation);
+                 setMood(user.mood);
+                 setIssues(user.issues.join(", "))
+                 setUsername(user.username);
+                 setDesc(user.desc);
+                 setBackgroundImage(user.backgroundImage);
+                 setBackgroundMusic(user.backgroundMusic);
+                 dispatch(getUserConversationHistory(user._id));
+                 dispatch(getMessageStat(user._id));
+                 dispatch(statOfUserPosts(user._id));
+                 // get_average_rgb(user.backgroundImage);
+             }
+        }else{
+            navigate(`/signin`);
         }
-        if(user){
-            setName(user.name);
-            setEmail(user.email);
-            setbirthDate(user.birthDate);
-            setGender(user.gender);
-            setbirthDate(new Date(user.dob));
-            setPhoneNumber(user.phoneNumber);
-            setAddress(user.address);
-            setOccupation(user.occupation);
-            setMood(user.mood);
-            setIssues(user.issues.join(", "))
-            setUsername(user.username);
-            dispatch(getUserConversationHistory(userId));
-        }
+        
     }, [dispatch, userInfo._id, user]);
     return (
-        <div id='mainprofile'>
-            <button className='primary' onClick={loadConversationHistory}>HIỆN LỊCH SỬ TRÒ CHUYỆN</button>
+        <div className='mainprofile' style={user && user.backgroundImage ? {backgroundImage: `url("${user.backgroundImage}")`, backgroundSize: "contain", backgroundPosition: "top center", backgroundRepeat: "no-repeat"} : 
+        {background: "linear-gradient(#04374b, transparent), linear-gradient(to top, rgb(0, 128, 255), transparent), linear-gradient(to bottom, rgb(127, 194, 248), transparent);"}}>
+            {/* {userInfo && userInfo.backgroundImage && <img className='userbackground' src={userInfo.backgroundImage}></img>} */}
+            <div className='userProfilePicture'>
+                <div className='avatarCircle interactiveText'>
+                    {user && user.username[0]}
+                </div>
+                {user && user.role=="admin" && <div className='avatarCheckmark'><i className='fa fa-check'></i></div>}
+                {/* {user && user.role=="admin" && <div className='avatarCheckmark.offline'><i className='fa fa-check'></i></div>} */}
+                <div className='checkmarkHoverInfo'>
+                    {user && user.role==="admin" && <div>Quản trị viên và điều phối viên</div>}    
+                </div>
+                {user && user.role==="user" && <Online><div className='onlineIcon'></div></Online>}
+                {user && user.role==="user" && <Offline><div className='offlineIcon'></div></Offline>}
+            </div>
+            <div className="row center">
+                {/* <label className="bold-text">Tên: ‎</label>  */}
+                <label className='avatarName'>{name}</label>
+            </div>
+            <div className='row center'>
+                <label className='avatarUsername'>({username})</label>
+            </div>
+            <div className='row center'>
+                {user && <div className='quote'>"{user.desc}"</div>}
+            </div>
+            {user && user.backgroundMusic && <div className='row center'>
+                <embed src={`https://www.youtube.com/v/${getYouTubeLinkId(user.backgroundMusic)}?autoplay=1&mute=0&loop=1`} type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="false" width="500" height="100" allow='autoplay'></embed>
+            </div>}
+            <div className='row center'>
+                <div className='navTab'>
+                    <div className='tabItem interactiveText noHighlight' onClick={()=>setCurrentTab('info')}>
+                        Thông tin
+                        {currentTab==='info' ? <div className='tabLine'></div> : <div className='emptyLine'></div>}
+                    </div>
+
+                    <div className='tabItem interactiveText noHighlight' onClick={()=>setCurrentTab('customization')}>
+                        Cá nhân hóa
+                        {currentTab==='customization' ? <div className='tabLine'></div> : <div className='emptyLine'></div>}
+                    </div>
+
+                    <div className='tabItem interactiveText noHighlight' onClick={()=>setCurrentTab('stat')}>
+                        Thông số
+                        {currentTab==='stat' ? <div className='tabLine'></div> : <div className='emptyLine'></div>}
+                    </div>
+
+                    <div className='tabItem interactiveText noHighlight' onClick={()=>setCurrentTab('gallery')}>
+                        Thư viện ảnh
+                        {currentTab==='gallery' ? <div className='tabLine'></div> : <div className='emptyLine'></div>}
+                    </div>
+                </div>
+            </div>
+            
             {userCon && userInfo && userInfo._id===userId ? <Chatbox messages={userCon} open={openPopup} handleClosePopup={closePopup} userId={userId}></Chatbox> :
             userInfo._id!==userId && <Chatbox messages={userCon} open={openPopup} handleClosePopup={closePopup} userId={userId} botPOV={true}></Chatbox>}
             {/* {userCon && userCon[0].events[0]} */}
-            
             {userInfo && userInfo._id===userId && <Widget
                 initPayload={userInfo._id}
                 socketUrl={socketUrl}
@@ -197,7 +303,7 @@ export default function ProfilePage(){
                         </div>)
                 }
             </div>*/}
-            <form className="form" onSubmit={submitHandler}>
+            { currentTab==="info" ? <form className="form" onSubmit={submitHandler}>
                 {/* <div>
                     <h1>{userInfo.name}'s Info {userInfo.role === 'admin' ? (<i className="fa fa-check" title="Signature of Superiority">Admin</i>) : ("(User)")}</h1>
                     
@@ -255,39 +361,52 @@ export default function ProfilePage(){
                         {disabled ?
                         (
                             <div>
-                                <div className="row left">
-                                    <label className="bold-text">Tên: ‎</label> <label>{name}</label>
+                                <div className='row'>
+                                    <div className='col-0'>
+                                        <div className="row left">
+                                            <i className='fa fa-envelope'></i><label className="bold-text">Email: ‎</label> {email}
+                                        </div>
+                                        <div className="row left">
+                                            <i className='fa fa-phone'></i><label className="bold-text">Số điện thoại: ‎</label> {phoneNumber}
+                                        </div>
+                                        <div className="row left">
+                                            <i className='fa fa-home'></i><label className="bold-text">Địa chỉ: ‎</label> {address}
+                                        </div>
+                                    </div>
+                                    <div className='col-0'>
+                                        <div className="row left">
+                                            {gender==="Nam" ? <i className='fa fa-mars'></i>
+                                        : gender === "Nữ" ? <i className='fa fa-venus'></i> :
+                                        gender === "Khác" && <i className='fa fa-intersex'></i>
+                                        }<label className="bold-text">Giới tính: ‎</label> {gender}
+                                        </div>
+                                        <div className="row left">
+                                            <i className='fa fa-birthday-cake'></i><label className="bold-text">Ngày sinh: ‎</label> <DateComponent isbirthDate = "yes" passedDate = {birthDate}></DateComponent>
+                                        </div>
+                                        <div className="row left">
+                                            <i className='fa fa-tasks'></i><label className="bold-text">Nghề nghiệp: ‎</label> {occupation}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="row left">
-                                    <label className="bold-text">Username: ‎</label> <label>{username}</label>
-                                </div>
-                                <div className="row left">
-                                    <label className="bold-text">Email: ‎</label> {email}
-                                </div>
-                                <div className="row left">
-                                    <label className="bold-text">Giới tính: ‎</label> {gender}
-                                </div>
-                                <div className="row left">
-                                    <label className="bold-text">Ngày sinh: ‎</label> <DateComponent isbirthDate = "yes" passedDate = {birthDate}></DateComponent>
-                                </div>
-                                <div className="row left">
-                                    <label className="bold-text">Số điện thoại: ‎</label> {phoneNumber}
-                                </div>
-                                <div className="row left">
-                                    <label className="bold-text">Địa chỉ: ‎</label> {address}
-                                </div>
-                                <div className="row left">
-                                    <label className="bold-text">Nghề nghiệp: ‎</label> {occupation}
-                                </div>
+                                
+                                
                                 <hr></hr>
                                 <div className="row center">
                                     <label className="bold-text">Thông tin MentalBot thu thập từ bạn: </label> 
                                 </div>
+                                <div className='row left'>
+                                    <label className='bold-text'>Lịch sử trò chuyện: ‎</label> {userInfo && (userInfo._id === userId || userInfo.role==="admin") &&<div className='row center'>
+                                                                                                <div className='interactiveText' onClick={loadConversationHistory}> xem</div>
+                                                                                            </div>}
+                                </div>
+                                {/* <div className='row left'>
+                                    <label className='bold-text'>Thư viện hình: ‎</label> <label onClick={()=>setCurrentTab("gallery")} className='interactiveText'>xem</label>
+                                </div> */}
                                 <div className="row left">
                                     <label className="bold-text">Tâm trạng: ‎</label> {mood}
                                 </div>
                                 <div className="row left">
-                                    <label className="bold-text">Vấn đề: ‎</label> {issues}
+                                    <label className="bold-text">Vấn đề: ‎</label> <div style={{wordBreak: "break-all"}}>{issues}</div>
                                 </div>
                                 <div>
                                     {/* {
@@ -334,7 +453,7 @@ export default function ProfilePage(){
                             <option value="Nữ">Nữ</option>
                             <option value="Khác">3D</option>
                         </select> */}
-                        <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder='Chọn giới tính' options={genders.map(gen=>({value: gen._id, label: gen.name}))} onChange={values => setGender(values)} required={true}/>
+                        <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder='Chọn giới tính' options={genders.map(gen=>({value: gen._id, label: gen.name}))} onChange={setTheGender} required={true}/>
                         <label htmlFor="birthDate">
                             Ngày sinh: 
                         </label>
@@ -370,14 +489,14 @@ export default function ProfilePage(){
                         {userId && userInfo && userInfo._id === userId &&
                         <div className="bottom-button-div-group">
                             <div className="bottom-button-div">
-                                <button className="primary" type="button" onClick={enableEdit}>
+                                <button className="admin" type="button" onClick={enableEdit}>
                                 {editButtonName? (<label>SỬA</label>)
                                 : (<label>HỦY</label>)
                                 }
                                 </button>
                             </div>
                             {!editButtonName && <div className="bottom-button-div">
-                                <button className="primary" type="submit" disabled={disabled}>
+                                <button className="admin" type="submit" disabled={disabled}>
                                     <label>GỬI</label>
                                 </button>
                             </div>}
@@ -389,7 +508,158 @@ export default function ProfilePage(){
                         
                     </div>
                 }
+            </form> : currentTab === "stat" ? 
+            <form>
+                {loadingStat ? <LoadingBox></LoadingBox> : errorStat ? <MessageBox variant="error">{errorStat}</MessageBox> :
+                msgStat &&
+                <div>
+                    <div className='row center'>
+                         <div className='col-0'>
+                            <div className="row left">
+                                <i className='fa fa-comment'></i><label className="bold-text">Đã nhắn ‎ </label> {msgStat.userMsgCount} ‎tin nhắn
+                            </div>
+                            <div className="row left">
+                                <i className='fa fa-comments'></i><label className="bold-text">Có ‎ </label> {msgStat.botMsgCount} ‎tin nhắn của bot
+                            </div>
+                            {/* <div className="row left">
+                                <i className='fa fa-home'></i><label className="bold-text">Lorem ipsum: ‎</label> {address}
+                            </div> */}
+                        </div>
+                        {/* <div className='col-0'>
+                            <div className="row left">
+                                {gender==="Nam" ? <i className='fa fa-mars'></i>
+                            : gender === "Nữ" ? <i className='fa fa-venus'></i> :
+                            gender === "Khác" && <i className='fa fa-intersex'></i>
+                            }<label className="bold-text">Giới tính: ‎</label> {gender}
+                            </div>
+                            <div className="row left">
+                                <i className='fa fa-birthday-cake'></i><label className="bold-text">Ngày sinh: ‎</label> <DateComponent isbirthDate = "yes" passedDate = {birthDate}></DateComponent>
+                            </div>
+                            <div className="row left">
+                                <i className='fa fa-tasks'></i><label className="bold-text">Nghề nghiệp: ‎</label> {occupation}
+                            </div>
+                        </div>  */}
+                        <hr></hr>
+                    </div>
+                    
+                    {posts && <div>Bài viết ({posts.length})</div>}
+                    <div className='col-1'>
+                        {posts && posts.map((post)=>(
+                                <div className='row'>
+                                    <div className='interactiveText' onClick={()=>navigate(`/forum/post/${post._id}`)}>
+                                        <i className='fa fa-arrow-right'></i> {post.title}
+                                    </div>
+                                </div>
+                            ))}
+                    </div>
+                </div>}
             </form>
+            : currentTab==='customization' ?
+            <form className="form" onSubmit={customizationSubmitHandler}>
+                {
+                    loadingUser? <LoadingBox></LoadingBox>
+                    : errorUser ? <MessageBox variant="error">{errorUser}</MessageBox>
+                    :
+                    <div>
+                        <div>
+                            {
+                                loadingUpdateProfile ? (<LoadingBox></LoadingBox>)
+                            
+                                : errorUpdateProfile ? (<MessageBox variant="error">{errorUpdateProfile}</MessageBox>)
+                            
+                                : successUpdateProfile && (<MessageBox variant="info">Profile Updated</MessageBox>)
+                            }
+                        </div>
+                        
+                        
+                        {disabled ?
+                        (
+                            <div>
+                                {/* <div className='row'>
+                                    <div className='col-1'>
+                                    </div>
+                                    <div className='col-1'>
+                                    </div>
+                                </div> */}
+                                <div className='row left'>
+                                    <div className='col-1'>
+                                        <div className='row top'>Giới thiệu về bản thân:</div>
+                                    </div>
+                                    <div className='col-1'>
+                                        {user && <div className='quote'>"{user.desc}"</div>}
+                                    </div>
+                                </div>
+                                <hr></hr>
+                                <div className='row left'>
+                                    <div className='col-1'>
+                                        <div className='row top'>Background:</div>
+                                    </div>
+                                    <div className='col-1'>
+                                        {user && user.backgroundImage && <a href={user.backgroundImage} target="_blank"><img className='displayImage' src={user.backgroundImage}></img></a>}
+                                    </div>
+                                </div>
+                                <hr></hr>
+                                <div className='row left'>
+                                    <div className='col-1'>
+                                        <div className='row top'>Nhạc nền:</div>
+                                    </div>
+                                    <div className='col-1'>
+                                        {user && user.backgroundMusic &&
+                                        <embed src={`https://www.youtube.com/v/${getYouTubeLinkId(user.backgroundMusic)}?autoplay=1&mute=0&loop=1`} type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="false" width="300" height="100" allow='autoplay'></embed>
+                                        }
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            
+                        )
+                        : 
+                        (<>
+                        <div>
+                        <label htmlFor="desc">
+                        Mô tả ngắn gọn về bản thân (không bắt buộc)</label>
+                            <input type="text" id="desc" placeholder="Nhập mô tả" className='basic-slide' value={desc}
+                                onChange={e => setDesc(e.target.value)}>
+                                </input>
+                        </div>
+                        <div>
+                        <label htmlFor="backgroundImage">
+                        Background (không bắt buộc)</label>
+                            <input type="text" id="backgroundImage" placeholder="Nhập đường dẫn cho background cá nhân" className='basic-slide' value={backgroundImage}
+                                onChange={e => setBackgroundImage(e.target.value)}>
+                                </input>
+                        </div>
+                        <div>
+                        <label htmlFor="backgroundMusic">
+                        Nhạc Background từ link youtube (không bắt buộc)</label>
+                            <input type="text" id="backgroundMusic" placeholder="Nhập đường dẫn cho video youtube" className='basic-slide' value={backgroundMusic}
+                                onChange={e => setBackgroundMusic(e.target.value)}>
+                                </input>
+                        </div>
+                        </>)}
+                        {userId && userInfo && userInfo._id === userId &&
+                        <div className="bottom-button-div-group">
+                            <div className="bottom-button-div">
+                                <button className="admin" type="button" onClick={enableEdit}>
+                                {editButtonName? (<label>SỬA</label>)
+                                : (<label>HỦY</label>)
+                                }
+                                </button>
+                            </div>
+                            {!editButtonName && <div className="bottom-button-div">
+                                <button className="admin" type="submit" disabled={disabled}>
+                                    <label>GỬI</label>
+                                </button>
+                            </div>}
+                        </div>}
+                    </div>
+                }
+            </form> :
+            currentTab === "gallery" &&
+            <div className='scrollableDiv'>
+                {userCon && userInfo && <Gallery messages={userCon} userId={userId} botPOV={false}></Gallery>}
+            </div>
+            }
         </div>
     )
 }

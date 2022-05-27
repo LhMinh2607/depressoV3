@@ -15,11 +15,12 @@ export default function SignUpPage(props) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [gender, setGender] = useState();
+    const [gender, setGender] = useState('Khác');
     const [dob, setDOB] = useState();
     const [phoneNumber, setPhoneNumber] = useState('');
     const [address, setAddress] = useState('');
     const [occupation, setOccupation] = useState('');
+    const [desc, setDesc] = useState('');
 
 
 
@@ -39,7 +40,7 @@ export default function SignUpPage(props) {
             alert('Mật khẩu xác nhận không giống mật khẩu ban đầu, Vui lòng nhập lại.');
         }
         else{
-            dispatch(signup(name, username, email, password, gender, dob, phoneNumber, address, occupation));
+            dispatch(signup(name, username, email, password, gender, dob, phoneNumber, address, occupation, desc));
             navigate("/signin");
         }
     };
@@ -49,12 +50,14 @@ export default function SignUpPage(props) {
         {_id: "Nữ", name: "Nữ"},
         {_id: "Khác", name: "3D"},
     ]
-
+    const setTheGender = (selectedValues) =>{
+        setGender(selectedValues[0].value);
+    }
     useEffect(()=>{
         window.scrollTo({
             top: 0, 
           });
-        setGender("Khác");
+        // setGender("Khác");
         // if(userInfo){
         //     //props.history.push(redirect);
         //     navigate("/signin");
@@ -62,6 +65,7 @@ export default function SignUpPage(props) {
     }, [userInfo]);
     return (
         <div>
+            {userInfo && <MessageBox variant="info">Đăng ký thành công</MessageBox>}
             <form className="form" onSubmit={submitHandler}>
                 <div>
                     <h1>Đăng ký</h1>
@@ -108,7 +112,7 @@ export default function SignUpPage(props) {
                     <option value="Nữ">Nữ</option>
                     <option value="Khác">Khác</option>
                 </select> */}
-                <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder='Chọn giới tính' options={genders.map(gen=>({value: gen._id, label: gen.name}))} onChange={values => setGender(values)} required={true}/>
+                <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder='Chọn giới tính' options={genders.map(gen=>({value: gen._id, label: gen.name}))} onChange={setTheGender} required={true}/>
                 <label htmlFor="birthDate">
                     Ngày sinh: 
                 </label>
@@ -143,6 +147,12 @@ export default function SignUpPage(props) {
                     <label htmlFor="name">Số điện thoại</label>
                     <input type="text" id="phoneNumber" placeholder="Nhập số đt" className='basic-slide'
                         onChange={e => setPhoneNumber(e.target.value)}>
+                        </input>
+                </div>
+                <div>
+                    <label htmlFor="desc">Mô tả ngắn gọn về bản thân (không bắt buộc)</label>
+                    <input type="text" id="desc" placeholder="Nhập mô tả" className='basic-slide'
+                        onChange={e => setDesc(e.target.value)}>
                         </input>
                 </div>
                 <div>
