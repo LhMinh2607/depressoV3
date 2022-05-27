@@ -15,6 +15,9 @@ const userSchema = new mongoose.Schema({
     issues: [{type: String, required: false}],
     mood: {type: String, required: false},
     progress: {type: Number, required: true, default: 0},
+    desc: {type: String, required: false},
+    backgroundImage: {type: String, required: false},
+    backgroundMusic: {type: String, required: false},
 },
     {
         timestamps: true,

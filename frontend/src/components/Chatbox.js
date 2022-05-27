@@ -65,7 +65,7 @@ export default function Chatbox(props) { //MessageBox that handles external func
           <div className='chatBoxHeader'>
           </div>
           <button className='confirmBtn xClose' onClick={closePopup}><i className='fa fa-close'></i></button>
-          <div id="chatBox" className='popup info chatWrapper'>
+          <div id="chatBox" className='popupChatBox info chatWrapper'>
               {messages && messages.map((m)=>
                 m && m.events && m.events.map((e)=>
                   e && e.event === "bot" ? (
@@ -74,7 +74,7 @@ export default function Chatbox(props) { //MessageBox that handles external func
                       <div className='col-1'>
                         <div className='row left padding-text'>
                           {e.text && e.text!==null && (e.text.includes("Link hình") ? <div>
-                            {<img className='chatImg' src={e.text.replace('(Link hình)[', '').replace(']', '').replace('Link hình:', '')}></img>}
+                            {<a href={e.text.replace('(Link hình)[', '').replace(']', '').replace('Link hình:', '')} target="_blank"><img className='chatImg' src={e.text.replace('(Link hình)[', '').replace(']', '').replace('Link hình:', '')}></img></a>}
                           </div> : e.text.includes('Nguồn') ? 
                               <div className='bot-text'>
                                 <a href={e.text.replace('(Nguồn)[', '').replace(']', '').replace('Nguồn:', '')} style={{color: "blue"}} target="_blank">Link tới bài đăng gốc</a>
@@ -114,14 +114,15 @@ export default function Chatbox(props) { //MessageBox that handles external func
               ) }
               <div id="latest"></div>
           </div>
-          {/* <div className='popupCoverup'></div> */}
+          <div className='popupCoverup'></div>
         </div>) : (
           open && <div className='rounded-div'>
             <div className='chatBoxHeader'>
               {botName}
             </div>
           <button className='confirmBtn xClose' onClick={closePopup}><i className='fa fa-close'></i></button>
-          <div id="chatBox" className='popup info chatWrapper'>
+          {/* <div className='chatBoxTitleBar'></div> */}
+          <div id="chatBox" className='popupChatBox info chatWrapper'>
               {messages && messages.map((m)=>
                 m && m.events && m.events.map((e)=>
                   e && e.event === "bot" ? (
@@ -153,6 +154,7 @@ export default function Chatbox(props) { //MessageBox that handles external func
                     </div>) : e.event === "user" && (
                     <div className='row left padding-text'>
                     {e.text===userId ? <div className='row center sessionStart'><UnixDateComponent passedDate={e.timestamp}  showTime={false}></UnixDateComponent></div> : 
+                    e.text==="EXTERNAL: EXTERNAL_reminder" ? null :
                       <div className='col-1'>
                         <div className='row left padding-text'>
                           <div className='user-text'>
@@ -170,7 +172,7 @@ export default function Chatbox(props) { //MessageBox that handles external func
               ) }
               <div id="latest"></div>
           </div>
-          {/* <div className='popupCoverup'></div> */}
+          <div className='popupCoverup'></div>
         </div>
         )
       }

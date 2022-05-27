@@ -7,6 +7,8 @@ import categoryRouter from './routers/categoryRouter.js'
 import {MongoClient} from 'mongodb';
 import feedbackRouter from './routers/feedbackRouter.js';
 import imageSearchRouter from './routers/imageSearchRouter.js';
+import callRouter from './routers/callRouter.js';
+import contactRouter from './routers/contactRouter.js';
 
 
 dotenv.config();
@@ -39,6 +41,8 @@ app.use('/api/user', userRouter);
 app.use('/api/category', categoryRouter);
 app.use('/api/feedback', feedbackRouter);
 app.use('/api/imageSearch', imageSearchRouter);
+app.use('/api/call', callRouter);
+app.use('/api/contact', contactRouter);
 
 app.get('/', (req, res) => {
     res.send('Server is ready!');

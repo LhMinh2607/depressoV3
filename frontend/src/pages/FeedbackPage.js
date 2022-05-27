@@ -30,7 +30,7 @@ export default function FeedbackPage() {
                             <th>NỘI DUNG</th>
                             <th>USERNAME</th>
                             <th>NGÀY TẠO</th>
-                            <th>URL NGƯỜI DÙNG</th>
+                            <th>TRANG CÁ NHÂN</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -41,9 +41,9 @@ export default function FeedbackPage() {
                                 <td>{feed.username}</td>
                                 <td><DateComponent passedDate = {feed.createdAt}></DateComponent></td>
                                 <td>
-                                    <button type="button" className="tiny primary" onClick={() => {navigate(`/user/${feed.userId}`);}}>
-                                        Trang cá nhân
-                                    </button>
+                                    <div className="interactiveText" onClick={() => {navigate(`/user/${feed.userId}`);}}>
+                                        <i className='fa fa-arrow-right'></i>
+                                    </div>
                                 </td>
                             </tr>
                         ))

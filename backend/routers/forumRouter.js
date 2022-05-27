@@ -214,6 +214,8 @@ forumRouter.post('/create_post', expressAsyncHandler(async (req, res)=>{
         content: newPost.content,
         category: newPost.category,
         thumbnail: newPost.thumbnail,
+        isPinned: false,
+        isHomepage: false,
     });
 }));
 
@@ -242,6 +244,89 @@ forumRouter.put('/edit_post', expressAsyncHandler(async (req, res)=>{
         res.status(404).send({
             message: "404 KHÔNG CÓ BÀI VIẾT NÀO"
         });
+    }
+}));
+
+forumRouter.put('/pin_to_home/:id', expressAsyncHandler(async (req, res)=>{
+    const post = await Post.findById(req.params.id);
+    console.log(post);
+    if(post){
+        if(post.isHomepage===true){
+            post.isHomepage = false;
+        }else if (post.isHomepage===false){
+            post.isHomepage = true;
+        }
+
+        console.log(post.isHomepage)
+        
+        const updatedPost =  await post.save();
+
+        res.send({
+            _id: updatedPost._id,
+            user: updatedPost.userId,
+            title: updatedPost. title,
+            description: updatedPost.description,
+            content: updatedPost.content,
+            category: updatedPost.category,
+            thumbnail: updatedPost.thumbnail,
+            isHomepage: updatedPost.isHomepage,
+            isPinned: updatedPost.isPinned,
+        });
+    }else{
+        res.status(404).send({
+            message: "404 KHÔNG CÓ BÀI VIẾT NÀO"
+        });
+    }
+}));
+
+forumRouter.put('/pin/:id', expressAsyncHandler(async (req, res)=>{
+    const post = await Post.findById(req.params.postId);
+    //console.log(post);
+    if(post){
+        if(post.isPinned===true){
+            post.isPinned = false;
+        }else if (post.isPinned===false){
+            post.isPinned = true;
+        }
+        
+        const updatedPost =  await post.save();
+
+        res.send({
+            _id: updatedPost._id,
+            user: updatedPost.userId,
+            title: updatedPost. title,
+            description: updatedPost.description,
+            content: updatedPost.content,
+            category: updatedPost.category,
+            thumbnail: updatedPost.thumbnail,
+            isHomepage: updatedPost.isHomepage,
+            isPinned: updatedPost.isPinned,
+        });
+    }else{
+        res.status(404).send({
+            message: "404 KHÔNG CÓ BÀI VIẾT NÀO"
+        });
+    }
+}));
+
+forumRouter.get('/homepost', expressAsyncHandler(async (req, res)=>{
+    // const posts = await Post.find({}).sort({createdAt: -1});
+    const posts = await Post.find({isHomepage: true}).sort({title: 1});
+    //console.log(posts);
+    if(posts.length>0){
+        res.send(posts);
+    }else{
+        res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+    }
+}));
+
+forumRouter.get('/postby/:id', expressAsyncHandler(async (req, res)=>{
+    const posts = await Post.find({user: mongoose.Types.ObjectId(req.params.id)});
+    //console.log(posts);
+    if(posts){
+        res.send(posts);
+    }else{
+        res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
     }
 }));
 

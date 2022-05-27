@@ -188,7 +188,7 @@ export default function ForumPage() {
                         {/* {categories && <Select options={[
                             {value: categories.map(ca=>ca.name), label: categories.map(ca=>ca.name)},
                             ]} onChange={(values) => setCategory(values)} />} */}
-                        {categories && <Select dropdownHeight="10rem" placeholder='Lọc theo nội dung bài học' options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={filterThePosts} clearable/>}
+                        {categories && <Select dropdownHeight="10rem" placeholder='Lọc theo chủ đề' options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={filterThePosts} clearable/>}
                     </div>
                     <div>
                         <input type="text" id="searchField" className="basic-slide" value={keyword} onChange={setTheKeyword} placeholder="Tìm bài viết"></input>
@@ -267,7 +267,7 @@ export default function ForumPage() {
                             <MessageBox variant="info">ĐĂNG NHẬP ĐỂ THAM GIA TRÒ CHUYỆN</MessageBox> 
                         </div> */}
                         <div className="row center">
-                            Muốn đóng góp nội dung? ‎<Link to={`/signin?redirect=forum`}>Đăng nhập</Link>
+                            Muốn tham gia thảo luận? ‎<Link to={`/signin?redirect=forum`}>Đăng nhập</Link>
                         </div>
                     
                     </div>)}
@@ -282,7 +282,7 @@ export default function ForumPage() {
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div className="" key={p._id}>
                                         <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><h1>{p.title}</h1></Link>
+                                            <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
                                         <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
                                         <div className="row left">
@@ -310,7 +310,7 @@ export default function ForumPage() {
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
                                         <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><h1>{p.title}</h1></Link>
+                                            <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
                                         <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
                                         <div className="row left">
@@ -338,7 +338,7 @@ export default function ForumPage() {
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
                                         <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><h1>{p.title}</h1></Link>
+                                            <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
                                         <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
                                         <div className="row left">
@@ -366,7 +366,7 @@ export default function ForumPage() {
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
                                         <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><h1>{p.title}</h1></Link>
+                                            <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
                                         <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
                                         <div className="row left">
@@ -394,7 +394,7 @@ export default function ForumPage() {
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
                                         <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><h1>{p.title}</h1></Link>
+                                            <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
                                         <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
                                         <div className="row left">

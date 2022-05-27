@@ -1,4 +1,4 @@
-import { CLEAR_ALL, USER_CONVERSATION_HISTORY_FAILED, USER_CONVERSATION_HISTORY_REQUEST, USER_CONVERSATION_HISTORY_SUCCESSFUL, USER_DETAIL_FAILED, USER_DETAIL_REQUEST, USER_DETAIL_SUCCESSFUL, USER_LIST_FAILED, USER_LIST_REQUEST, USER_LIST_SUCCESSFUL, USER_SIGNIN_FAILED, USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESSFUL, USER_SIGNOUT, USER_SIGN_UP_FAILED, USER_SIGN_UP_REQUEST, USER_SIGN_UP_SUCCESSFUL, USER_UPDATE_PROFILE_FAILED, USER_UPDATE_PROFILE_REQUEST, USER_UPDATE_PROFILE_RESET, USER_UPDATE_PROFILE_SUCCESSFUL } from "../constants/userConst";
+import { CLEAR_ALL, MESSAGE_STAT_FAILED, MESSAGE_STAT_REQUEST, MESSAGE_STAT_SUCCESSFUL, USER_CONVERSATION_HISTORY_FAILED, USER_CONVERSATION_HISTORY_REQUEST, USER_CONVERSATION_HISTORY_SUCCESSFUL, USER_DETAIL_FAILED, USER_DETAIL_REQUEST, USER_DETAIL_SUCCESSFUL, USER_LIST_FAILED, USER_LIST_REQUEST, USER_LIST_SUCCESSFUL, USER_SIGNIN_FAILED, USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESSFUL, USER_SIGNOUT, USER_SIGN_UP_FAILED, USER_SIGN_UP_REQUEST, USER_SIGN_UP_SUCCESSFUL, USER_UPDATE_PROFILE_FAILED, USER_UPDATE_PROFILE_REQUEST, USER_UPDATE_PROFILE_RESET, USER_UPDATE_PROFILE_SUCCESSFUL } from "../constants/userConst";
 
 
 export const userSignupReducer = (state = {}, action)=>{
@@ -89,6 +89,19 @@ export const userConversationHistoryReducer = (state = {loading: true, userCon: 
         case USER_CONVERSATION_HISTORY_SUCCESSFUL:
             return {loading: false, userCon: action.payload};
         case USER_CONVERSATION_HISTORY_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+}
+
+export const messageStatReducers = (state = {loading: true, msgStat: []}, action) =>{
+    switch(action.type){
+        case MESSAGE_STAT_REQUEST: 
+            return {loading: true};
+        case MESSAGE_STAT_SUCCESSFUL:
+            return {loading: false, msgStat: action.payload};
+        case MESSAGE_STAT_FAILED:
             return {loading: false, error: action.payload};
         default:
             return state;

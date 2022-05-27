@@ -18,6 +18,9 @@ import MentalBotPage from './pages/MentalBotPage';
 import AdminRoute from './components/AdminRoute';
 import FeedbackPage from './pages/FeedbackPage';
 import UserListPage from './pages/UserListPage';
+import Keypad from './components/Keypad';
+import { useState } from 'react';
+import NewsPage from './pages/NewsPage';
 
 
 function App() {
@@ -35,7 +38,8 @@ function App() {
   const userList = useSelector(state=>state.userList);
   const {loading: loadingUL, error: errorUL, users} = userList;
 
-  
+  const [openKeyPad, setOpenKeyPad] = useState(false);
+
 
   return (
       <BrowserRouter>
@@ -44,15 +48,19 @@ function App() {
                   <div>
                     <Link to="/" className="brand">Depresso</Link>
                   </div>
-                  <div>
+                  {/* <div>
                     {userInfo && <Link to={`/user/${userInfo._id}`} className="">Mental Bot</Link>}
+                  </div> */}
+                  <div>
+                    {<Link to={`/news`} className="">Tin tức</Link>}
                   </div>
                   <div>
                     {<Link to={`/forum`} className="">Diễn đàn</Link>}
                   </div>
+                  {userInfo && userInfo.role==="admin" && <div onClick={()=>setOpenKeyPad(!openKeyPad)} className='interactiveText headerBar'><i className="fa fa-phone"></i></div>}
                       {userInfo ? (
                         <div className="dropDown">
-                          <Link to="#">{userInfo.name} <i className="fa fa-caret-down"></i></Link>
+                          <Link to={`/user/${userInfo._id}`}>{userInfo.name} <i className="fa fa-caret-down"></i></Link>
                         
                           <ul className="dropDown-content">
                             <li>
@@ -76,15 +84,13 @@ function App() {
                             </li>
                           </ul> 
                         </div>) : <Link to="/signin" className="">Đăng nhập</Link>}
-                        
+                  {userInfo && userInfo.role==="admin" && openKeyPad && <Keypad></Keypad>}
               </header>
               <main>
-              
-              
+                
                 <Routes>
                   {/* React Router Dom v6 syntax */}
                   <Route exact path="/" element={<HomePage></HomePage>}></Route>
-                  
                   <Route exact path="/signin" element={<SigninPage></SigninPage>}></Route>
                   <Route exact path="/signup" element={<SignUpPage></SignUpPage>}></Route>
                   <Route path="/user/:id" element={<ProfilePage></ProfilePage>}></Route>
@@ -95,6 +101,7 @@ function App() {
                   <Route exact path="/user/list" element={<AdminRoute><UserListPage></UserListPage></AdminRoute>}></Route> 
                   <Route exact path="/forum" element={<ForumPage></ForumPage>}></Route>
                   <Route exact path="/forum/post/:id" element={<PostDetailPage></PostDetailPage>}></Route>
+                  <Route exact path="/news" element={<NewsPage></NewsPage>}></Route>
                   <Route path="*" element={<NotFoundPage/>} /> 
                 </Routes>
 
