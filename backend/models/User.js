@@ -18,6 +18,8 @@ const userSchema = new mongoose.Schema({
     desc: {type: String, required: false},
     backgroundImage: {type: String, required: false},
     backgroundMusic: {type: String, required: false},
+    avatar: {type: String, required: false},
+    globalBackground: {type: Boolean, default: false},
 },
     {
         timestamps: true,

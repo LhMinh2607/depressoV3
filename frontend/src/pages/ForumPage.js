@@ -284,7 +284,7 @@ export default function ForumPage() {
                                         <div className="row left">
                                             <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
-                                        <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
+                                        <label className="bold-text">{u.role==='admin' ? (<label title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></label>) : u.name}</label>
                                         <div className="row left">
                                             <CategoryIcon categoryName = {p.category}></CategoryIcon>
                                         </div>
@@ -312,7 +312,7 @@ export default function ForumPage() {
                                         <div className="row left">
                                             <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
-                                        <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
+                                        <label className="bold-text">{u.role==='admin' ? (<label title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></label>) :   u.name}</label>
                                         <div className="row left">
                                             <CategoryIcon categoryName = {p.category}></CategoryIcon>
                                         </div>
