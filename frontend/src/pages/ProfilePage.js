@@ -30,7 +30,8 @@ export default function ProfilePage(){
     const [desc, setDesc] = useState('');
     const [backgroundImage, setBackgroundImage] = useState('');
     const [backgroundMusic, setBackgroundMusic] = useState('');
-
+    const [avatar, setAvatar] = useState('');
+    const [globalBackground, setGlobalBackground] = useState('');
 
 
     //uneditable
@@ -81,12 +82,12 @@ export default function ProfilePage(){
             alert('Mật khẩu và xác nhận mật phải giống nhau!');
         }else{
             //alert(birthDate);
-            dispatch(updateUserProfile({userId: user._id, name, username, email, password, gender, birthDate, phoneNumber, address, occupation, desc, backgroundImage, backgroundMusic}));
+            dispatch(updateUserProfile({userId: user._id, name, username, email, password, gender, birthDate, phoneNumber, address, occupation, desc, backgroundImage, backgroundMusic, avatar, globalBackground}));
         }
     };
 
     const customizationSubmitHandler = (e) =>{
-        dispatch(updateUserProfile({userId: user._id, name, username, email, password, gender, birthDate, phoneNumber, address, occupation, desc, backgroundImage, backgroundMusic}));
+        dispatch(updateUserProfile({userId: user._id, name, username, email, password, gender, birthDate, phoneNumber, address, occupation, desc, backgroundImage, backgroundMusic, avatar, globalBackground}));
     }
 
 
@@ -121,6 +122,13 @@ export default function ProfilePage(){
         var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
         var match = url.match(regExp);
         return (match&&match[7].length==11)? match[7] : false;
+    }
+    const bools = [
+        {_id: "true", name: "Có"},
+        {_id: "false", name: "Không"},
+    ]
+    const setTheBoolean = (selectedValues) =>{
+        setGlobalBackground(selectedValues[0].value);
     }
 
     // function get_average_rgb(img) {
@@ -184,6 +192,8 @@ export default function ProfilePage(){
                  setDesc(user.desc);
                  setBackgroundImage(user.backgroundImage);
                  setBackgroundMusic(user.backgroundMusic);
+                 setAvatar(user.avatar);
+                 setGlobalBackground(user.setGlobalBackground);
                  dispatch(getUserConversationHistory(user._id));
                  dispatch(getMessageStat(user._id));
                  dispatch(statOfUserPosts(user._id));
@@ -199,13 +209,16 @@ export default function ProfilePage(){
         {background: "linear-gradient(#04374b, transparent), linear-gradient(to top, rgb(0, 128, 255), transparent), linear-gradient(to bottom, rgb(127, 194, 248), transparent);"}}>
             {/* {userInfo && userInfo.backgroundImage && <img className='userbackground' src={userInfo.backgroundImage}></img>} */}
             <div className='userProfilePicture'>
+                {user && user.avatar ? <div className='avatarCircle interactiveText' style={{background: `url("${user.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}>
+                </div> : 
                 <div className='avatarCircle interactiveText'>
                     {user && user.username[0]}
-                </div>
+                </div>}
                 {user && user.role=="admin" && <div className='avatarCheckmark'><i className='fa fa-check'></i></div>}
+                {user && user.role=="bot" && <div className='avatarCheckmark'><i className='fa fa-android'></i></div>}
                 {/* {user && user.role=="admin" && <div className='avatarCheckmark.offline'><i className='fa fa-check'></i></div>} */}
                 <div className='checkmarkHoverInfo'>
-                    {user && user.role==="admin" && <div>Quản trị viên và điều phối viên</div>}    
+                    {user && (user.role==="admin" ? <div>Quản trị viên và điều phối viên</div> : user.role==="bot" && <div>Bot</div>)}    
                 </div>
                 {user && user.role==="user" && <Online><div className='onlineIcon'></div></Online>}
                 {user && user.role==="user" && <Offline><div className='offlineIcon'></div></Offline>}
@@ -221,7 +234,7 @@ export default function ProfilePage(){
                 {user && <div className='quote'>"{user.desc}"</div>}
             </div>
             {user && user.backgroundMusic && <div className='row center'>
-                <embed src={`https://www.youtube.com/v/${getYouTubeLinkId(user.backgroundMusic)}?autoplay=1&mute=0&loop=1`} type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="false" width="500" height="100" allow='autoplay'></embed>
+                <iframe src={`https://www.youtube.com/embed/${getYouTubeLinkId(user.backgroundMusic)}?autoplay=1&mute=0&loop=1&playlist=${getYouTubeLinkId(user.backgroundMusic)}`} type="application/x-shockwave-flash" allowscriptaccess="always" allowFullScreen={false} width="500" height="100" allow='autoplay'></iframe>
             </div>}
             <div className='row center'>
                 <div className='navTab'>
@@ -250,7 +263,7 @@ export default function ProfilePage(){
             {userCon && userInfo && userInfo._id===userId ? <Chatbox messages={userCon} open={openPopup} handleClosePopup={closePopup} userId={userId}></Chatbox> :
             userInfo._id!==userId && <Chatbox messages={userCon} open={openPopup} handleClosePopup={closePopup} userId={userId} botPOV={true}></Chatbox>}
             {/* {userCon && userCon[0].events[0]} */}
-            {userInfo && userInfo._id===userId && <Widget
+            {/* {userInfo && userInfo._id===userId && <Widget
                 initPayload={userInfo._id}
                 socketUrl={socketUrl}
                 customData={{"language": "vi"}} // arbitrary custom data. Stay minimal as this will be added to the socket
@@ -263,7 +276,7 @@ export default function ProfilePage(){
                 profileAvatar={"https://cdn.discordapp.com/emojis/967412208323674243.webp?size=48&quality=lossless"}
                 // openLauncherImage={""}
                 />
-                }
+                } */}
             {/* <div id={`rasa-chat-widget`} data-root-element-id={`mainprofile`} data-websocket-url={`http://localhost:5005`} data-width={`1000`} data-avatar-url={`https://cdn.discordapp.com/emojis/967412208323674243.webp`}></div>
             <script src={`https://unpkg.com/@rasahq/rasa-chat`} type={`application/javascript`}></script> */}
             {/* <div className="row center orange-background"> 
@@ -391,13 +404,14 @@ export default function ProfilePage(){
                                 
                                 
                                 <hr></hr>
+                                {user && user.role!=="bot" && <>
                                 <div className="row center">
                                     <label className="bold-text">Thông tin MentalBot thu thập từ bạn: </label> 
                                 </div>
                                 <div className='row left'>
                                     <label className='bold-text'>Lịch sử trò chuyện: ‎</label> {userInfo && (userInfo._id === userId || userInfo.role==="admin") &&<div className='row center'>
-                                                                                                <div className='interactiveText' onClick={loadConversationHistory}> xem</div>
-                                                                                            </div>}
+                                        <div className='interactiveText' onClick={loadConversationHistory}> xem</div>
+                                    </div>}
                                 </div>
                                 {/* <div className='row left'>
                                     <label className='bold-text'>Thư viện hình: ‎</label> <label onClick={()=>setCurrentTab("gallery")} className='interactiveText'>xem</label>
@@ -408,6 +422,7 @@ export default function ProfilePage(){
                                 <div className="row left">
                                     <label className="bold-text">Vấn đề: ‎</label> <div style={{wordBreak: "break-all"}}>{issues}</div>
                                 </div>
+                                </>}
                                 <div>
                                     {/* {
                                         date
@@ -453,7 +468,7 @@ export default function ProfilePage(){
                             <option value="Nữ">Nữ</option>
                             <option value="Khác">3D</option>
                         </select> */}
-                        <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder='Chọn giới tính' options={genders.map(gen=>({value: gen._id, label: gen.name}))} onChange={setTheGender} required={true}/>
+                        <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder='Chọn giới tính' options={genders.map(gen=>({value: gen._id, label: gen.name}))} onChange={setTheGender} required={false}/>
                         <label htmlFor="birthDate">
                             Ngày sinh: 
                         </label>
@@ -514,7 +529,10 @@ export default function ProfilePage(){
                 msgStat &&
                 <div>
                     <div className='row center'>
-                         <div className='col-0'>
+                        {user && user.role!=="bot" ? <div className='col-0'>
+                            <div className='row left'>
+                                <i className='fa fa-calendar'></i><label className='bold-text'>Ngày tham gia: ‎</label> {user && <DateComponent passedDate={user.createdAt} isbirthDate={false}></DateComponent>}
+                            </div>
                             <div className="row left">
                                 <i className='fa fa-comment'></i><label className="bold-text">Đã nhắn ‎ </label> {msgStat.userMsgCount} ‎tin nhắn
                             </div>
@@ -525,6 +543,15 @@ export default function ProfilePage(){
                                 <i className='fa fa-home'></i><label className="bold-text">Lorem ipsum: ‎</label> {address}
                             </div> */}
                         </div>
+                        : <div className='row center'>
+                            <div className='col-2'>
+                                <div className='row left'>
+                                    <i className='fa fa-date'></i><label className='bold-text'>Ngày tham gia: ‎</label> {user && <DateComponent passedDate={user.createdAt} isbirthDate={false}></DateComponent>}
+                                </div>
+                            </div>
+                        </div>    
+                    
+                    }
                         {/* <div className='col-0'>
                             <div className="row left">
                                 {gender==="Nam" ? <i className='fa fa-mars'></i>
@@ -541,7 +568,6 @@ export default function ProfilePage(){
                         </div>  */}
                         <hr></hr>
                     </div>
-                    
                     {posts && <div>Bài viết ({posts.length})</div>}
                     <div className='col-1'>
                         {posts && posts.map((post)=>(
@@ -592,10 +618,20 @@ export default function ProfilePage(){
                                 <hr></hr>
                                 <div className='row left'>
                                     <div className='col-1'>
+                                        <div className='row top'>Ảnh đại diện:</div>
+                                    </div>
+                                    <div className='col-1'>
+                                        {user && user.avatar && <a href={user.avatar} target="_blank"><img className='displayImage' src={user.avatar}></img></a>}
+                                    </div>
+                                </div>
+                                <hr></hr>
+                                <div className='row left'>
+                                    <div className='col-1'>
                                         <div className='row top'>Background:</div>
                                     </div>
                                     <div className='col-1'>
                                         {user && user.backgroundImage && <a href={user.backgroundImage} target="_blank"><img className='displayImage' src={user.backgroundImage}></img></a>}
+                                        
                                     </div>
                                 </div>
                                 <hr></hr>
@@ -605,7 +641,7 @@ export default function ProfilePage(){
                                     </div>
                                     <div className='col-1'>
                                         {user && user.backgroundMusic &&
-                                        <embed src={`https://www.youtube.com/v/${getYouTubeLinkId(user.backgroundMusic)}?autoplay=1&mute=0&loop=1`} type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="false" width="300" height="100" allow='autoplay'></embed>
+                                        <iframe src={`https://www.youtube.com/embed/${getYouTubeLinkId(user.backgroundMusic)}?mute=0&loop=1`} type="application/x-shockwave-flash" allowscriptaccess="always" allowFullScreen={false} width="300" height="100" allow='autoplay'></iframe>
                                         }
                                     </div>
                                 </div>
@@ -615,6 +651,14 @@ export default function ProfilePage(){
                         )
                         : 
                         (<>
+                        <div>
+                        <label htmlFor="avatar">
+                        Ảnh đại diện (không bắt buộc)</label>
+                            <input type="text" id="avatar" placeholder="Nhập url ảnh đại diện" className='basic-slide' value={avatar}
+                                onChange={e => setAvatar(e.target.value)}>
+                                </input>
+                        </div>
+                        <div></div>
                         <div>
                         <label htmlFor="desc">
                         Mô tả ngắn gọn về bản thân (không bắt buộc)</label>
@@ -630,6 +674,12 @@ export default function ProfilePage(){
                                 </input>
                         </div>
                         <div>
+                        <div>
+                            <div className='row'>Đặt background cho cả trang?</div>
+                            <div className='row'>
+                                <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder='' options={bools.map(bool=>({value: bool._id, label: bool.name}))} onChange={setTheBoolean} required={false}/>
+                            </div>
+                        </div>
                         <label htmlFor="backgroundMusic">
                         Nhạc Background từ link youtube (không bắt buộc)</label>
                             <input type="text" id="backgroundMusic" placeholder="Nhập đường dẫn cho video youtube" className='basic-slide' value={backgroundMusic}

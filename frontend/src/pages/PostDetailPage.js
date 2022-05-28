@@ -269,11 +269,11 @@ export default function PostDetailPage() {
             {loadingUL ? <LoadingBox></LoadingBox> : errorUL ? <MessageBox variant="error">{errorUL}</MessageBox> : (
             loading ? <LoadingBox></LoadingBox> : error ? <MessageBox variant="error">{error}</MessageBox> : 
             post &&(
-            <div className="row">
+            <div className="col-2">
                 
                 <div className="col-2">
                     <div>
-                        {userInfo &&
+                        {/* {userInfo &&
                             (userInfo.role==='user' || userInfo.role==='admin' && post &&
                                 (<div className="card card-body">
                                     <input required={true} type="text" hidden={tagEditBox} className="tagInput basic-slide" onChange={(e)=>setKeywordContent(e.target.value)} placeholder='Thêm từ khóa ở đây (Mỗi từ cách nhau bởi dấu phẩy)'></input>
@@ -294,7 +294,7 @@ export default function PostDetailPage() {
                                                 <label>{keyword}, </label>
                                             ))}
                                 </div>
-                        ))}
+                        ))} */}
                         </div>
                         {
                             loadingEditing ? <LoadingBox></LoadingBox> : errorEditing ? <MessageBox variant="error">{errorEditing}</MessageBox> : 
@@ -307,7 +307,9 @@ export default function PostDetailPage() {
                         <div className="card card-body postDetail">
                             <div><CategoryIcon topicName = {post.topic}></CategoryIcon></div>
                             {users.map(u=>(u._id===post.user && ( u.role==='admin' ? (
-                            <div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)} title={u.name}><span className='avatarSquare'>{u.username[0]}</span>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></div>
+                            <div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)} title={u.name}>
+                                {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
+                                {u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></div>
                                 <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
                                 <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
                                 <div className='row center userHoverInfoContent'>
@@ -324,7 +326,9 @@ export default function PostDetailPage() {
                                     </div>
                                 </div>
                             </div>
-                            </div>) : (<div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)}><span className='avatarSquare'>{u.username[0]}</span>{u.name}</div>
+                            </div>) : (<div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)}>
+                            {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
+                                {u.name}</div>
                             <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
                                 <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
                                 <div className='row center userHoverInfoContent'>
@@ -462,8 +466,8 @@ export default function PostDetailPage() {
                                 successPostingComment && <MessageBox>ĐÃ ĐĂNG BÌNH LUẬN</MessageBox>
                             }
                             {userInfo ? (<form className="editPostForm" onSubmit={commentPostingHandler}>
-                                <div className="row center">Phản hồi dưới tên <label className="bold-text">{userInfo.name}</label></div>
-                                <div>
+                                <div className="row center">Phản hồi dưới tên ‎<label className="bold-text">{userInfo.name}</label></div>
+                                <div className='row center'>
                                     {/* <textarea placeholder="Nội dung" className="basic-slide" required={true} value={replyContent} type="textarea" onChange={(e)=> setReplyContent(e.target.value)}>
                                     </textarea> */}
                                     <Editor
@@ -474,7 +478,7 @@ export default function PostDetailPage() {
                                         defaultValue=""
                                     />
                                 </div>
-                                <div><button className="child">PHẢN HỒI</button></div>
+                                <div className='row center'><button className="child">PHẢN HỒI</button></div>
                             </form>) : (
                                 <MessageBox><Link to={`/signin?redirect=forum/post/${postId}`}>{`Đăng nhập `}</Link>để tham gia trò chuyện</MessageBox>
                             )}
@@ -482,7 +486,7 @@ export default function PostDetailPage() {
                     </div>
                     
             {post && post.postComments.length ?
-                <div className="col-2">
+                <div className="col-0">
                 {
                     loadingCommentDeleting ? <LoadingBox></LoadingBox> : errorCommentDeleting ? <MessageBox variant="error">{errorCommentDeleting}</MessageBox>
                     : successDeletingComment && <MessageBox>ĐÃ XÓA BÌNH LUẬN</MessageBox>
@@ -504,10 +508,12 @@ export default function PostDetailPage() {
                                 <div className="card card-body postDetail">
                                     {!editCommentStatus ? (
                                     <div className="col full">
-                                        <div className='interactiveUsername' onClick={()=>navigateToProfile(userInfo._id)}><span className='avatarSquare'>{userInfo.username[0]}</span>{userInfo.name}</div>
-                                        <div className="userHoverInfo">
+                                        <div className='interactiveUsername' onClick={()=>navigateToProfile(userInfo._id)}>
+                                        {userInfo.avatar ? <span className='avatarSquare' style={{background: `url("${userInfo.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{userInfo.username[0]}</span>}
+                                            {userInfo.name}</div>
+                                            <div className="userHoverInfo" style={userInfo ? userInfo.backgroundImage ? {background: `url("${userInfo.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
                                             <h1>{userInfo.role==="user"&&<i className='fa fa-user'></i>}{userInfo.username}{userInfo.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                            <div className='row center'>
+                                            <div className='row center userHoverInfoContent'>
                                                 <div className=''>
                                                     <div className='row left'>{userInfo.name}</div>
                                                 </div>
@@ -552,10 +558,12 @@ export default function PostDetailPage() {
                                         {users.map(u=>(
                                             u._id===pc.commenter && (
                                             <div className="col full">
-                                                <div className="interactiveUsername" onClick={()=>navigateToProfile(u._id)}><span className='avatarSquare'>{u.username[0]}</span>{u.name}</div>
-                                                <div className="userHoverInfo">
+                                                <div className="interactiveUsername" onClick={()=>navigateToProfile(u._id)}>
+                                                {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
+                                                    {u.name}</div>
+                                                <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
                                                     <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                                    <div className='row center'>
+                                                    <div className='row center userHoverInfoContent'>
                                                         <div className=''>
                                                             <div className='row left'>{u.name}</div>
                                                         </div>
@@ -591,10 +599,12 @@ export default function PostDetailPage() {
                                         {users.map(u=>(
                                             u._id===pc.commenter && (
                                             <div className="col full">
-                                                <div className="interactiveUsername" onClick={()=>navigateToProfile(u._id)}><span className='avatarSquare'>{u.username[0]}</span>{u.name}</div>
-                                                <div className="userHoverInfo">
+                                                <div className="interactiveUsername" onClick={()=>navigateToProfile(u._id)}>
+                                                {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
+                                                    {u.name}</div>
+                                                <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
                                                     <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                                    <div className='row center'>
+                                                    <div className='row center userHoverInfoContent'>
                                                         <div className=''>
                                                             <div className='row left'>{u.name}</div>
                                                         </div>

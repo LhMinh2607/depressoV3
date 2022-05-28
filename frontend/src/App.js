@@ -21,6 +21,8 @@ import UserListPage from './pages/UserListPage';
 import Keypad from './components/Keypad';
 import { useState } from 'react';
 import NewsPage from './pages/NewsPage';
+import Draggable from 'react-draggable';
+
 
 
 function App() {
@@ -39,7 +41,13 @@ function App() {
   const {loading: loadingUL, error: errorUL, users} = userList;
 
   const [openKeyPad, setOpenKeyPad] = useState(false);
+  const [openMusicBox, setOpenMusicBox] = useState(false);
 
+  const getYouTubeLinkId = (url) =>{
+    var regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+    var match = url.match(regExp);
+    return (match&&match[7].length==11)? match[7] : false;
+}
 
   return (
       <BrowserRouter>
@@ -57,7 +65,8 @@ function App() {
                   <div>
                     {<Link to={`/forum`} className="">Diễn đàn</Link>}
                   </div>
-                  {userInfo && userInfo.role==="admin" && <div onClick={()=>setOpenKeyPad(!openKeyPad)} className='interactiveText headerBar'><i className="fa fa-phone"></i></div>}
+                      {userInfo && userInfo.role==="admin" && <div onClick={()=>setOpenKeyPad(!openKeyPad)} className='interactiveText headerBar'><i className="fa fa-phone"></i></div>}
+                      {userInfo && userInfo.backgroundMusic && <div onClick={()=>setOpenMusicBox(!openMusicBox)} className='interactiveText headerBar'><i className="fa fa-music"></i></div>}
                       {userInfo ? (
                         <div className="dropDown">
                           <Link to={`/user/${userInfo._id}`}>{userInfo.name} <i className="fa fa-caret-down"></i></Link>
@@ -85,9 +94,15 @@ function App() {
                           </ul> 
                         </div>) : <Link to="/signin" className="">Đăng nhập</Link>}
                   {userInfo && userInfo.role==="admin" && openKeyPad && <Keypad></Keypad>}
+                  {userInfo && userInfo.backgroundMusic && openMusicBox &&
+                    <Draggable><div className='musicPlayer' draggable={true}>
+                      <div className='row right' style={{display: "flex", flexDirection:"row", justifyContent:"flex-end", color: "#fff"}}><i className='fa fa-close interactiveText' onClick={()=>setOpenMusicBox(!openMusicBox)}></i></div>
+                      <iframe  src={`https://www.youtube.com/embed/${getYouTubeLinkId(userInfo.backgroundMusic)}?autoplay=1&mute=0&loop=1&playlist=${getYouTubeLinkId(userInfo.backgroundMusic)}`} type="application/x-shockwave-flash" allowscriptaccess="always" allowFullScreen={true} width="200" height="100" allow='autoplay'></iframe >
+                    </div></Draggable>}
               </header>
               <main>
-                
+              
+              {userInfo && userInfo.backgroundImage && userInfo.globalBackground==true && (<div className='globalBackground' style={{backgroundImage: `url("${userInfo.backgroundImage}")`, backgroundPosition: "center center", backgroundSize:"contain", position: "fixed", width: "100%", height: "100vh", zIndex: "-100", filter: "brightness(40%)"}}></div>)}
                 <Routes>
                   {/* React Router Dom v6 syntax */}
                   <Route exact path="/" element={<HomePage></HomePage>}></Route>
@@ -104,7 +119,7 @@ function App() {
                   <Route exact path="/news" element={<NewsPage></NewsPage>}></Route>
                   <Route path="*" element={<NotFoundPage/>} /> 
                 </Routes>
-
+                
                 
               </main>
               {/* <footer className="row-bottom">
