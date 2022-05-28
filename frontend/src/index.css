@@ -8,7 +8,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* background-color: #eee8e8; */
-  background-color: #ffffff;
+  /* background-color: #ffffff; */
   background:
   linear-gradient(rgb(9, 2, 51), transparent),
   linear-gradient(to top, rgb(9, 2, 51), transparent),
@@ -22,6 +22,7 @@ code {
 
 #root{
   height: 100%;
+  width: 100%;
 }
 
 /* Layout */
@@ -357,6 +358,7 @@ a.brand:hover{
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
+  flex-direction: row;
 }
 .row.center{
   justify-content: center;
@@ -741,6 +743,7 @@ form label{
   min-width: 10rem;
   /* margin: 0 auto; */
   padding: 1rem;
+  backdrop-filter: none;
 }
 
 .bottom-button-div-group{
@@ -958,7 +961,7 @@ textarea{
   border-style: solid;
   margin-bottom: 1rem;
   box-shadow: none !important;
-  min-height: 10rem;
+  /* min-height: 10rem; */
 }
 .postBasic:hover{
   transition: .1s;
@@ -1663,8 +1666,8 @@ code {
   border-radius: 1rem;
   resize: none; 
   height: auto;
-  word-wrap: break-word;
-  max-width: 48rem;
+  /* word-wrap: break-word; */
+  max-width: 40rem !important;
   width: 100%;
   background-color: rgb(33, 34, 44);
   /* color: #fff; */
@@ -1752,6 +1755,7 @@ button > p{
   border-style: solid;
   background-color: #FFF;
   margin-top: 1rem;
+  max-width: 10rem;
 }
 
 .child:hover{
@@ -1775,6 +1779,9 @@ button > p{
   border-right-color: #09efff;
   border-top: #fff;
   border-bottom: #fff;
+}
+.postHere > form{
+  backdrop-filter: none;
 }
 
 
@@ -2063,7 +2070,7 @@ button > p{
   color:#0074D9;
   text-shadow: 0.05rem 0.05rem;
   transition: 1s;
-  font-weight: 800;
+  font-weight: 700;
 }
 
 .userHoverInfo{
@@ -2155,6 +2162,7 @@ a[href], input[type='submit'], input[type='image'], label[for], select, button, 
     linear-gradient(to bottom, transparent, transparent);
   background-size: 50% auto;
   padding: 2vh;
+  align-items: flex-end;
 }
 .avatarCircle{
   border-radius: 100%;
@@ -2174,8 +2182,8 @@ a[href], input[type='submit'], input[type='image'], label[for], select, button, 
 
 .avatarSquare{
   border-radius: 20%;
-  min-width: 3rem !important;
-  min-height: 3rem !important;
+  width: 1rem !important;
+  height: 1rem !important;
   background:
     linear-gradient(#441cd6, transparent),
     linear-gradient(to top, rgb(0, 128, 255), transparent),
@@ -2189,6 +2197,11 @@ a[href], input[type='submit'], input[type='image'], label[for], select, button, 
   position: relative;
   padding: 1rem;
   margin-right: 1rem;
+  /* display:inline-block;
+  display: flex; */
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .fa-envelope{
@@ -2353,9 +2366,16 @@ main {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
   border-radius: 50%;
   position: absolute;
-  margin-left: 16vh;
-  margin-top: 15vh;
+  /* margin-left: 80px;
+  margin-top: 130px; */
   font-size: 2rem;
+  width: 2rem;
+  height: 2rem;
+  line-height: 2rem;
+  transform: translate(4rem, 0rem);
+  padding: 0.5rem;
+  display: flex;
+  justify-content: center;
 }
 .avatarCheckmark.info{
   background-color: rgb(55, 58, 56);
@@ -2390,6 +2410,7 @@ main {
   z-index: 10;
   padding: 1rem;
   box-shadow: #000 2rem;
+  transform: translate(0rem, 4rem)
 }
 
 .onlineIcon{
@@ -2452,18 +2473,19 @@ main {
   width: 100%;
 }
 .scrollAnimatedText > span{
+  /* transform: translate(10vh, 0vh); */
   position: absolute;
   top: 0;
   animation: verticalSlideText 5s infinite;
   font-weight: bold;
 }
 .scrollAnimatedText {
-  height: 3rem;
-  line-height: 3rem;
+  height: 3vh;
+  line-height: 3vh;
   position: relative;
   overflow: hidden;
   width: 100%;
-  max-width: 60rem;
+  max-width: 60vh;
 }
 /* @keyframes verticalSlideText {
   0% {
@@ -2484,20 +2506,24 @@ main {
     top: 0;
   }
   20% {
-    top: -6rem;
+    top: -6vh;
   }
   40% {
-    top: -12rem;
+    top: -12vh;
   }
   60% {
-    top: -18rem;
+    top: -18vh;
   }
   80%{
-    top: -24rem;
+    top: -24vh;
   }
 }
+/*HOME PAGE ANIMATED DIVS*/
 .scrollAnimatedTextDiv{
-  font-size: 3rem;
+  font-size: 2vh;
+  min-width: 50rem;
+  display: flex;
+  justify-content: center;
 }
 .coffeeMachineTop {
   width: 15rem;
@@ -2602,8 +2628,10 @@ main {
   transform: translate(0rem, 4rem);
   z-index: 101;
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   align-items: center;
+  transition: 0.5s;
+
 }
 .coffeeHandle{
   width: 1rem;
@@ -2612,7 +2640,15 @@ main {
   border: 0.5rem solid #b89f9f;
   position: absolute;
   transform: translate(1.2rem, 0rem);
+  /* -o-transform: translate(4.3rem, 0rem); */
+  /* -webkit-transform: translate(4.3rem, 0rem); */
   z-index: 101;
+}
+.coffeeCup:hover{
+  transition: 0.5s;
+  filter: brightness(60%);
+  width: 6rem;
+  height: 5rem;
 }
 .steam{
   width: 3rem;
@@ -2651,7 +2687,302 @@ main {
     opacity: 0;
   }
 }
+.monitor{
+  width: 20rem;
+  height: 10rem;
+  /* background-color: rgb(158, 150, 150); */
+  background:
+  linear-gradient(rgb(9, 2, 51), transparent),
+  linear-gradient(to top, rgb(45, 37, 87), transparent),
+  linear-gradient(to bottom, rgb(9, 2, 51), transparent);
+  border: 0.5rem solid #ffffff;
+  border-radius: 1rem;
+  transform: translate(0rem, 1rem);
+  animation: resize 4s infinite;
+  z-index: 100;
+  margin: 1rem;
+}
+.monitorStand{
+  width: 1rem;
+  height: 5rem;
+  background-color: #ffffff;
+  /* border-radius: 2rem; */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  animation: resizeStand 4s infinite;
+  z-index: 90;
+}
+.monitorStand2{
+  width: 10rem;
+  height: 1rem;
+  background-color: #ffffff;
+  border-radius: 2rem;
+  animation: resizeStand2 4s infinite;
+  z-index: 90;
+}
+@keyframes resize {
+  0%{
+    width: 20rem;
+    height: 10rem;
+  }
+  20%{
+    width: 11rem;
+    height: 8rem;
+  }
+  40%{
+    width: 5rem;
+    height: 12rem;
+  }
+  60%{
+    width: 2rem;
+    height: 5rem;
+  }
+  80%{
+    width: 15rem;
+    height: 12rem;
+  }
+}
 
+@keyframes resizeStand{
+  0%{
+    width: 1rem;
+    height: 5rem;
+  }
+  40%{
+    width: 0rem;
+    height: 0rem;
+  }
+  80%{
+    width: 0rem;
+    height: 0rem;
+  }
+}
+@keyframes resizeStand2{
+  0%{
+    width: 10rem;
+    height: 1rem;
+  }
+  40%{
+    width: 0rem;
+    height: 0rem;
+  }
+  80%{
+    width: 0rem;
+    height: 0rem;
+  }
+}
+
+.animatedChatBox{
+  width: 20rem;
+  height: 20rem;
+  /* background-color: #0055ff; */
+  border-radius: 1rem;
+  background:
+    linear-gradient(rgb(3, 95, 216), transparent),
+    linear-gradient(to top, rgb(3, 33, 63), transparent),
+    linear-gradient(to bottom, rgb(3, 50, 88), transparent);
+  /* display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start; */
+  padding: 1rem;
+}
+.animateMessage1{
+  width: 10rem;
+  height: 2rem;
+  background-color: #f8f8f8;
+  border-radius: 1rem;
+  color: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+}
+.animateMessage2{
+  width: 10rem;
+  height: 2rem;
+  background-color: #4a83ec;
+  border-radius: 1rem;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1rem;
+}
+.animatedMessageContainer{
+  display: flex;
+  align-items: center;
+  margin: 1rem;
+}
+.animatedMessageContainer.left{
+  justify-content: flex-start;
+}
+.animatedMessageContainer.right{
+  justify-content: flex-end;
+}
+.messageSent1{
+  animation: messageSent 4s infinite;
+}
+.messageSent2{
+  animation: messageSent 4s infinite;
+}
+.messageSent3{
+  animation: messageSent2 4s infinite;
+}
+.messageSent4{
+  animation: messageSent2 4s infinite;
+}
+.messageSent5{
+  animation: messageSent2 4s infinite;
+}
+@keyframes messageSent {
+  0%{
+    width: 0rem;
+    height: 0rem;
+    font-size: 0rem;
+  }
+  50%{
+    width: 10rem;
+    height: 2rem;
+    font-size: 1rem;
+    opacity: 100;
+  }
+  100%{
+    width: 10rem;
+    height: 2rem;
+    font-size: 1rem;
+    opacity: 0;
+  }
+}
+@keyframes messageSent2 {
+  0%{
+    width: 0rem;
+    height: 0rem;
+    font-size: 0rem;
+  }
+  25%{
+    width: 0rem;
+    height: 0rem;
+    font-size: 0rem;
+  }
+  50%{
+    width: 10rem;
+    height: 2rem;
+    font-size: 1rem;
+    opacity: 100;
+  }
+  100%{
+    width: 10rem;
+    height: 2rem;
+    font-size: 1rem;
+    opacity: 0;
+  }
+}
+
+.phonePart{
+  width: 3rem;
+  height: 15rem;
+  background-color: #00ff6a;
+  border-radius: 2rem;
+  transform: rotate(-40deg);
+}
+.phonePart2{
+  width: 6rem;
+  height: 5rem;
+  background-color: #00ff6a;
+  border-top-left-radius: 5rem;
+  border-bottom-left-radius: 5rem;
+  border-top-right-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  transform: translate(0rem, -1rem);
+}
+.phonePart2.bottom{
+  width: 6rem;
+  height: 5rem;
+  background-color: #00ff6a;
+  border-top-left-radius: 5rem;
+  border-bottom-left-radius: 5rem;
+  border-top-right-radius: 2rem;
+  border-bottom-right-radius: 2rem;
+  transform: translate(0rem, 6rem);
+}
+.animatedPointer{
+  /* width: 4rem;
+  height: 4rem; */
+  /* background-color: #fff; */
+  border: 0.5rem solid #000;
+  z-index: 100;
+  position: absolute;
+  display: flex;
+  justify-content: flex-end;
+
+  border-color: transparent transparent rgb(255, 255, 255) transparent;
+  border-style: solid;
+  border-width: 0px 5rem 8rem 5rem;
+  height: 0px;
+  width: 0px;
+  transform: rotate(-40deg);
+  animation: zoomClick 1s infinite;
+}
+.animatedPointerHandle{
+  width: 2rem;
+  height: 8rem;
+  background-color: rgb(255, 255, 255);
+  transform: rotate(-40deg) translate(-1rem, 5rem);
+  animation: zoomClick2 1s infinite;
+}
+@keyframes zoomClick {
+  0%{
+    border-width: 0px 5rem 8rem 5rem;
+  }
+  50%{
+    border-width: 0px 4rem 7rem 4rem;
+  }
+  100%{
+    border-width: 0px 4rem 7rem 4rem;
+  }
+}
+@keyframes zoomClick2 {
+  0%{
+    width: 2rem;
+    height: 8rem;
+  }
+  50%{
+    width: 1rem;
+    height: 7rem;
+  }
+  100%{
+    width: 1rem;
+    height: 7rem;
+  }
+} 
+
+
+
+
+
+/*App.js*/
+/* [draggable=true]{
+  cursor: move;
+} */
+
+.musicPlayer{
+  position: fixed;
+  top: 8rem;
+  resize: both;
+  max-width: 30rem;
+  max-height: 46rem;
+  /* border-left: 0.1rem solid black;
+  border-right: 0.1rem solid black;
+  border-top: 0.1rem solid rgb(54, 112, 219);
+  border-bottom: 0.1rem solid rgb(54, 112, 219); */
+  min-width: 50px;
+  min-height: 50px;
+  background-color: rgb(54, 112, 219);
+  padding: 0.1rem;
+}
 
 
 

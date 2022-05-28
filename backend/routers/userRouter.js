@@ -66,7 +66,10 @@ expressAsyncHandler(async (req, res)=>{
                 issues: user.issues,
                 progress: user.progress,
                 desc: user.desc,
+                avatar: user.avatar,
                 backgroundImage: user.backgroundImage,
+                backgroundMusic: user.backgroundMusic,
+                globalBackground: user.globalBackground,
                 token: generateToken(user),
             });
             return;
@@ -165,11 +168,18 @@ userRouter.put('/profile/update', isAuth, expressAsyncHandler(async(req, res)=>{
         user.desc = req.body.desc || user.desc;
         user.backgroundImage = req.body.backgroundImage || user.backgroundImage;
         user.backgroundMusic = req.body.backgroundMusic || user.backgroundMusic;
+        user.avatar = req.body.avatar || user.avatar;
+        if(req.body.globalBackground==="true")
+        {
+            user.globalBackground = true || user.globalBackground;
+        }else if(req.body.globalBackground==="false"){
+            user.globalBackground = false || user.globalBackground;
+        }
         if(user.backgroundImage || user.backgroundMusic){
             const userImageLog = new UserImageLog({
                 user: req.user._id,
                 backgroundImage: user.backgroundImage,
-                // avatar: user.avatar
+                avatar: user.avatar,
                 backgroundMusic: user.backgroundMusic,
             });
             const createdImagelog = await userImageLog.save();

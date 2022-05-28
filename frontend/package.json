@@ -9,6 +9,7 @@
     "react": "^16.8.3",
     "react-datepicker": "^4.4.0",
     "react-dom": "^16.8.3",
+    "react-draggable": "^4.4.5",
     "react-dropdown-select": "^4.8.2",
     "react-linkify": "*",
     "react-redux": "^7.2.6",
