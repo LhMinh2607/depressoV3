@@ -329,6 +329,58 @@ forumRouter.get('/postby/:id', expressAsyncHandler(async (req, res)=>{
         res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
     }
 }));
+forumRouter.get('/postStat', expressAsyncHandler(async (req, res)=>{
+    const postStatByUserCount = await Post.aggregate([
+        {
+          '$match': {}
+        }, {
+          '$group': {
+            '_id': {
+              'userId': '$user'
+            }, 
+            'user': {
+              '$first': '$user'
+            }, 
+            'count': {
+              '$sum': 1
+            }
+          }
+        }
+      ]).sort({count: -1});
+    //console.log(posts);
+    const commentStatByUserCount = await Post.aggregate([
+        {
+          '$match': {}
+        }, {
+          '$project': {
+            '_id': 0, 
+            'postComments': '$postComments'
+          }
+        }, {
+          '$unwind': {
+            'path': '$postComments', 
+            'includeArrayIndex': 'postCommentCount', 
+            'preserveNullAndEmptyArrays': false
+          }
+        }, {
+          '$group': {
+            '_id': '$postComments.commenter', 
+            'commenter': {
+              '$first': '$postComments.commenter'
+            }, 
+            'count': {
+              '$sum': 1
+            }
+          }
+        }
+      ]).sort({count: -1});
+    const postStat = {postStatByUserCount, commentStatByUserCount};
+    if(postStat){
+        res.send(postStat);
+    }else{
+        res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+    }
+}));
 
 forumRouter.put('/delete_post/:id', expressAsyncHandler(async (req, res)=>{
     const post = await Post.findByIdAndDelete(req.params.id);

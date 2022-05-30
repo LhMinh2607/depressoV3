@@ -40,9 +40,12 @@ import {  CREATE_POST_COMMENT_FAILED,
     POST_REMOVE_KEYWORD_FAILED, 
     POST_REMOVE_KEYWORD_REQUEST, 
     POST_REMOVE_KEYWORD_SUCCESSFUL, 
+    POST_STAT_FAILED, 
     POST_STAT_PER_USER_FAILED, 
     POST_STAT_PER_USER_REQUEST, 
     POST_STAT_PER_USER_SUCCESSFUL, 
+    POST_STAT_REQUEST, 
+    POST_STAT_SUCCESSFUL, 
     RELATED_POST_LIST_FAILED, 
     RELATED_POST_LIST_REQUEST, 
     RELATED_POST_LIST_SUCCESSFUL, 
@@ -314,6 +317,19 @@ export const userPostStatReducers = (state = {}, action)=>{
         case POST_STAT_PER_USER_SUCCESSFUL:
             return {loading: false, posts: action.payload};
         case POST_STAT_PER_USER_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const postStatReducers = (state = {}, action)=>{
+    switch(action.type){
+        case POST_STAT_REQUEST:
+            return {loading: true};
+        case POST_STAT_SUCCESSFUL:
+            return {loading: false, allPostsStat: action.payload};
+        case POST_STAT_FAILED:
             return {loading: false, error: action.payload};
         default:
             return state;

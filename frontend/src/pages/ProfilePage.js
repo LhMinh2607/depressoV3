@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams} from 'react-router-dom';
 import { detailsOfUser, getMessageStat, getUserConversationHistory, updateUserProfile } from '../actions/userAction';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
@@ -13,6 +13,7 @@ import Select from 'react-dropdown-select';
 import { statOfUserPosts } from '../actions/postAction';
 import { Offline, Online } from "react-detect-offline";
 import Gallery from '../components/Gallery';
+import { createNotification } from '../actions/notificationAction';
 
 
 export default function ProfilePage(){
@@ -55,6 +56,9 @@ export default function ProfilePage(){
 
     const userPostStat = useSelector(state=>state.userPostStat);
     const {loading: loadingPostStat, error: errorPostStat, posts} = userPostStat;
+
+    const notificationAdding = useSelector(state=>state.notificationAdding);
+    const {loading: loadingNotificationAdding, error: errorNotificationAdding, success: successNotificationAdding} = notificationAdding;
 
     var params = useParams();
     var userId = params.id;
@@ -130,6 +134,11 @@ export default function ProfilePage(){
     const setTheBoolean = (selectedValues) =>{
         setGlobalBackground(selectedValues[0].value);
     }
+    const addFriend = (receiverId) =>{
+        const content = `${userInfo.name} đã gửi bạn 1 lời mời kết bạn`;
+        const type = "friendRequest";
+        dispatch(createNotification(userInfo._id, receiverId, content, type));
+    }
 
     // function get_average_rgb(img) {
     //     var context = document.createElement('canvas').getContext('2d');
@@ -160,8 +169,9 @@ export default function ProfilePage(){
     // const socketUrl = "https://ad57-27-2-17-107.ngrok.io"
     // const socketUrl = "https://b4c8-27-2-17-107.ngrok.io"
     // const socketUrl = "https://3990-27-2-17-107.ngrok.io";
-    const socketUrl = "https://55c2-27-2-17-107.ngrok.io";
-
+    // const socketUrl = "https://55c2-27-2-17-107.ngrok.io";
+    // const socketUrl = "https://1d35-27-2-17-107.ngrok.io";
+    const url = window.location.pathname.split('/').pop();
 
     useEffect(()=>{
         window.scrollTo({
@@ -203,13 +213,13 @@ export default function ProfilePage(){
             navigate(`/signin`);
         }
         
-    }, [dispatch, userInfo._id, user]);
+    }, [dispatch, userInfo._id, user, url]);
     return (
         <div className='mainprofile' style={user && user.backgroundImage ? {backgroundImage: `url("${user.backgroundImage}")`, backgroundSize: "contain", backgroundPosition: "top center", backgroundRepeat: "no-repeat"} : 
         {background: "linear-gradient(#04374b, transparent), linear-gradient(to top, rgb(0, 128, 255), transparent), linear-gradient(to bottom, rgb(127, 194, 248), transparent);"}}>
             {/* {userInfo && userInfo.backgroundImage && <img className='userbackground' src={userInfo.backgroundImage}></img>} */}
             <div className='userProfilePicture'>
-                {user && user.avatar ? <div className='avatarCircle interactiveText' style={{background: `url("${user.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}>
+                {user && user.avatar ? <div className='avatarCircle interactiveText' style={{background: `url("${user.avatar}")`, backgroundSize: "cover", backgroundPosition: "center center"}}>
                 </div> : 
                 <div className='avatarCircle interactiveText'>
                     {user && user.username[0]}
@@ -220,12 +230,14 @@ export default function ProfilePage(){
                 <div className='checkmarkHoverInfo'>
                     {user && (user.role==="admin" ? <div>Quản trị viên và điều phối viên</div> : user.role==="bot" && <div>Bot</div>)}    
                 </div>
-                {user && user.role==="user" && <Online><div className='onlineIcon'></div></Online>}
-                {user && user.role==="user" && <Offline><div className='offlineIcon'></div></Offline>}
+                {userInfo && user && userInfo._id!== user._id && userInfo.friends && userInfo.friends.length>=0 && userInfo.friends.map((friend)=>(
+                    friend.friendId!==user._id ? <div className='addFriendButton interactiveText' onClick={()=>addFriend(user._id)}>Thêm bạn</div> : friend.friendId===user._id && <div className='addFriendButton'>Bạn bè</div>
+                )) }
+                {userInfo && user && userInfo._id!== user._id && !userInfo.friends && <div className='addFriendButton interactiveText' onClick={()=>addFriend(user._id)}>Thêm bạn</div>}
             </div>
             <div className="row center">
                 {/* <label className="bold-text">Tên: ‎</label>  */}
-                <label className='avatarName'>{name}</label>
+                <label className='avatarName'>{name}</label>    
             </div>
             <div className='row center'>
                 <label className='avatarUsername'>({username})</label>
@@ -263,20 +275,7 @@ export default function ProfilePage(){
             {userCon && userInfo && userInfo._id===userId ? <Chatbox messages={userCon} open={openPopup} handleClosePopup={closePopup} userId={userId}></Chatbox> :
             userInfo._id!==userId && <Chatbox messages={userCon} open={openPopup} handleClosePopup={closePopup} userId={userId} botPOV={true}></Chatbox>}
             {/* {userCon && userCon[0].events[0]} */}
-            {/* {userInfo && userInfo._id===userId && <Widget
-                initPayload={userInfo._id}
-                socketUrl={socketUrl}
-                customData={{"language": "vi"}} // arbitrary custom data. Stay minimal as this will be added to the socket
-                title={"MentalBot"}
-                showFullScreenButton={true}
-                displayUnreadCount={true}
-                showMessageDate={true}
-                subtitle={"🟢Đang rảnh"}
-                inputTextFieldHint={"Nhắn tin cho bot"}
-                profileAvatar={"https://cdn.discordapp.com/emojis/967412208323674243.webp?size=48&quality=lossless"}
-                // openLauncherImage={""}
-                />
-                } */}
+            
             {/* <div id={`rasa-chat-widget`} data-root-element-id={`mainprofile`} data-websocket-url={`http://localhost:5005`} data-width={`1000`} data-avatar-url={`https://cdn.discordapp.com/emojis/967412208323674243.webp`}></div>
             <script src={`https://unpkg.com/@rasahq/rasa-chat`} type={`application/javascript`}></script> */}
             {/* <div className="row center orange-background"> 

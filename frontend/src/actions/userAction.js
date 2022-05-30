@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { MESSAGE_STAT_FAILED, MESSAGE_STAT_REQUEST, MESSAGE_STAT_SUCCESSFUL, USER_CONVERSATION_HISTORY_FAILED, USER_CONVERSATION_HISTORY_REQUEST, USER_CONVERSATION_HISTORY_SUCCESSFUL, USER_DETAIL_FAILED, USER_DETAIL_REQUEST, USER_DETAIL_SUCCESSFUL, USER_LIST_FAILED, USER_LIST_REQUEST, USER_LIST_SUCCESSFUL, USER_SIGNIN_FAILED, USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESSFUL, USER_SIGNOUT, USER_SIGN_UP_FAILED, USER_SIGN_UP_REQUEST, USER_SIGN_UP_SUCCESSFUL, USER_UPDATE_PROFILE_FAILED, USER_UPDATE_PROFILE_REQUEST, USER_UPDATE_PROFILE_SUCCESSFUL } from '../constants/userConst';
+import { ADD_FRIEND_FAILED, ADD_FRIEND_REQUEST, ADD_FRIEND_SUCCESSFUL, MESSAGE_STAT_FAILED, MESSAGE_STAT_REQUEST, MESSAGE_STAT_SUCCESSFUL, USER_CONVERSATION_HISTORY_FAILED, USER_CONVERSATION_HISTORY_REQUEST, USER_CONVERSATION_HISTORY_SUCCESSFUL, USER_DETAIL_FAILED, USER_DETAIL_REQUEST, USER_DETAIL_SUCCESSFUL, USER_LIST_FAILED, USER_LIST_REQUEST, USER_LIST_SUCCESSFUL, USER_SIGNIN_FAILED, USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESSFUL, USER_SIGNOUT, USER_SIGN_UP_FAILED, USER_SIGN_UP_REQUEST, USER_SIGN_UP_SUCCESSFUL, USER_UPDATE_PROFILE_FAILED, USER_UPDATE_PROFILE_REQUEST, USER_UPDATE_PROFILE_SUCCESSFUL } from '../constants/userConst';
 
 
 export const signout = () => (dispatch) =>{
@@ -121,6 +121,21 @@ export const getMessageStat = (id) => async(dispatch) =>{
         dispatch({type: MESSAGE_STAT_SUCCESSFUL, payload: data});
     } catch (error) {
         dispatch({type: MESSAGE_STAT_FAILED, 
+            payload: error.response 
+            && error.response.data.message 
+            ? error.response.data.message
+            : error.message,
+        });
+    }
+};
+
+export const addFriend = (senderId, receiverId) => async(dispatch, getState) =>{
+    dispatch({type: ADD_FRIEND_REQUEST, payload: {senderId, receiverId}});
+    try {
+        const {data} = await axios.put(`/api/user/${receiverId}/addFriend/${senderId}`);
+        dispatch({type: ADD_FRIEND_SUCCESSFUL, payload: data});
+    } catch (error) {
+        dispatch({type: ADD_FRIEND_FAILED, 
             payload: error.response 
             && error.response.data.message 
             ? error.response.data.message
