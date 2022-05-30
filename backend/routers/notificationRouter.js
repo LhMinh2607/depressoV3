@@ -17,7 +17,6 @@ notificationRouter.post('/add', expressAsyncHandler(async (req, res)=>{
     });
 
     const newNotification = await notification.save();
-
     res.send(newNotification);
 }));
 

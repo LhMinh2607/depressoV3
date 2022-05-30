@@ -22,8 +22,8 @@ const imageSearchRouter =  require('./routers/imageSearchRouter.js');
 const callRouter =  require('./routers/callRouter.js');
 const contactRouter =  require('./routers/contactRouter.js');
 const notificationRouter =  require('./routers/notificationRouter.js');
-
-
+const http = require("http");
+const socketIo = require("socket.io");
 
 dotenv.config();
 const app = express();
@@ -71,11 +71,38 @@ app.use((err, req, res, next)=>{
 });
 
 const port = process.env.PORT || 5000;
-app.listen(port, () => {
-    console.log(`Server at http://localhost:${port}`);
+// app.listen(port, () => {
+//     console.log(`Server at http://localhost:${port}`);
+// });
+
+const server = http.createServer(app);
+
+const io = socketIo(server, {cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"]
+  }}); // < Interesting!
+let interval;
+
+io.on("connection", (socket) => {
+  console.log("New client connected");
+  if (interval) {
+    clearInterval(interval);
+  }
+  interval = setInterval(() => getApiAndEmit(socket), 1000);
+  socket.on("disconnect", () => {
+    console.log("Client disconnected");
+    clearInterval(interval);
+  });
 });
 
+const getApiAndEmit = socket => {
+    const response = new Date();
+    // Emitting a new message. Will be consumed by the client
+    socket.emit("FromAPI", response);
+    console.log(response);
+};
 
+server.listen(port, () => console.log(`Listening on port ${port}`));
 
 
 
