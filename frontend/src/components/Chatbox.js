@@ -127,7 +127,7 @@ export default function Chatbox(props) { //MessageBox that handles external func
                 m && m.events && m.events.map((e)=>
                   e && e.event === "bot" ? (
                     <div className='row right padding-text'>
-                      <div className='pfpdiv row right'><img className='pfp' src={pfp}></img></div>
+                      {/* <div className='pfpdiv row right'><img className='pfp' src={pfp}></img></div> */}
                       <div className='col-1'>
                         <div className='row right padding-text'>
                           {e.text && e.text!==null && (e.text.includes("Link hình") ? <div>
@@ -152,7 +152,7 @@ export default function Chatbox(props) { //MessageBox that handles external func
                         </div>
                       </div>
                     </div>) : e.event === "user" && (
-                    <div className='row left padding-text'>
+                    <div className='row center padding-text'>
                     {e.text===userId ? <div className='row center sessionStart'><UnixDateComponent passedDate={e.timestamp}  showTime={false}></UnixDateComponent></div> : 
                     e.text==="EXTERNAL: EXTERNAL_reminder" ? null :
                       <div className='col-1'>

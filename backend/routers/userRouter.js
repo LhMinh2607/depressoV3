@@ -5,6 +5,7 @@ import bcrypt from 'bcryptjs';
 import {generateToken, isAuth} from '../utils.js'
 import mongoose from 'mongoose';
 import UserImageLog from '../models/UserImageLog.js';
+import Notification from '../models/Notification.js';
 // import ConversationStore from '../models/ConversationStore.js';
 // import conversationStore from '../models/ConversationStore.js';
 
@@ -70,6 +71,7 @@ expressAsyncHandler(async (req, res)=>{
                 backgroundImage: user.backgroundImage,
                 backgroundMusic: user.backgroundMusic,
                 globalBackground: user.globalBackground,
+                friends: user.friends,
                 token: generateToken(user),
             });
             return;
@@ -197,7 +199,60 @@ userRouter.put('/profile/update', isAuth, expressAsyncHandler(async(req, res)=>{
             phoneNumber: updatedUser.phoneNumber,
             desc: updatedUser.desc,
             backgroundImage: updatedUser.backgroundImage,
+            avatar: updatedUser.avatar,
+            globalBackground: updatedUser.globalBackground,
         });
+    }
+}));
+
+userRouter.put('/:receiverId/addFriend/:senderId', expressAsyncHandler(async(req, res)=>{
+    const notification = await Notification.findOne({senderId: req.params.senderId, receiverId: req.params.receiverId, type: "friendRequest"});
+    const user = await User.findById(mongoose.Types.ObjectId(req.params.receiverId));
+    const user2 = await User.findById(mongoose.Types.ObjectId(req.params.senderId));
+
+    if(notification){
+        notification.status="checked";
+        const updatedNotification = await notification.save();
+    }
+    if(user && notification && user2){
+        user.friends.push({friendId: req.params.senderId, createdAt: new Date()});
+        const updatedUser = await user.save();
+        user2.friends.push({friendId: req.params.receiverId, createdAt: new Date()});
+        const updatedUser2 = await user2.save();
+        res.send({user1: {
+            _id: updatedUser._id,
+            name: updatedUser.name,
+            username: updatedUser.username,
+            email: updatedUser.email,
+            role: updatedUser.role,
+            token: generateToken(updatedUser),
+            gender: updatedUser.gender,
+            dob: updatedUser.dob,
+            phoneNumber: updatedUser.phoneNumber,
+            desc: updatedUser.desc,
+            backgroundImage: updatedUser.backgroundImage,
+            avatar: updatedUser.avatar,
+            globalBackground: updatedUser.globalBackground,
+            friends: updatedUser.friends,
+        }, notif: {
+            status: notification.status,
+        },
+        user2: {
+            _id: updatedUser2._id,
+            name: updatedUser2.name,
+            username: updatedUser2.username,
+            email: updatedUser2.email,
+            role: updatedUser2.role,
+            gender: updatedUser2.gender,
+            dob: updatedUser2.dob,
+            phoneNumber: updatedUser2.phoneNumber,
+            desc: updatedUser2.desc,
+            backgroundImage: updatedUser2.backgroundImage,
+            avatar: updatedUser2.avatar,
+            globalBackground: updatedUser2.globalBackground,
+            friends: updatedUser2.friends,
+        },
+    });
     }
 }));
 

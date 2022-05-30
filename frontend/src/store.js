@@ -1,12 +1,13 @@
 import {createStore, compose, applyMiddleware, combineReducers} from 'redux';
 import thunk from 'redux-thunk';
-import { botMessageCountReducer, messageStatReducers, userConversationHistoryReducer, userDetailReducer, userListReducer, userMessageCountReducer, userSigninReducer, userSignupReducer, userUpdateProfileReducer } from './reducers/userReducer';
-import { homePostListReducers, nestedPostListReducer, postByCatListReducer, postCommentDeletingReducers, postCommentEditingReducers, postCommentPostingReducers, postCreatingReducers, postDeletingReducers, postDetailsReducers, postEditingReducers, postFilteringReducers, postKeywordsAddingReducer, postKeywordsRemovingReducer, postListReducers, postPinningReducers, postPinningToHomeReducers, postSearchingReducers, postSortingReducers, relatedPostListReducer, userPostStatReducers } from './reducers/postReducer';
+import { botMessageCountReducer, messageStatReducers, userConversationHistoryReducer, userDetailReducer, userFriendAddingReducer, userListReducer, userMessageCountReducer, userSigninReducer, userSignupReducer, userUpdateProfileReducer } from './reducers/userReducer';
+import { homePostListReducers, nestedPostListReducer, postByCatListReducer, postCommentDeletingReducers, postCommentEditingReducers, postCommentPostingReducers, postCreatingReducers, postDeletingReducers, postDetailsReducers, postEditingReducers, postFilteringReducers, postKeywordsAddingReducer, postKeywordsRemovingReducer, postListReducers, postPinningReducers, postPinningToHomeReducers, postSearchingReducers, postSortingReducers, postStatReducers, relatedPostListReducer, userPostStatReducers } from './reducers/postReducer';
 import { categoryListReducer } from './reducers/categoryReducer';
 import { feedbackListReducer, userFeedbackListReducer } from './reducers/feedbackReducer';
 import { imageSearchListReducer, userImageSearchListReducer } from './reducers/imageSearchReducer';
 import { cancelCallReducer, historyListReducer, loggingACallReducer, makingACallReducer, updatingACallReducer } from './reducers/callingReducers';
 import { contactDetailReducer, contactEditingReducer, contactListReducer, contactRemovingReducer, contactSavingReducer, contactSearchingReducer } from './reducers/contactReducers';
+import { notificationAddingReducers, notificationListReducers } from './reducers/notificationReducer';
 
 const initialState = {
     userSignin: {
@@ -14,11 +15,11 @@ const initialState = {
         ? JSON.parse(localStorage.getItem('userInfo'))
         : null,
     },
-    cart:{
-        cartItems: localStorage.getItem('cartItems')? JSON.parse(localStorage.getItem('cartItems')) : [],    
-        paymentMethod: 'Cash',
-        shippingAddress: localStorage.getItem('shippingAddress'),
-    }
+    // cart:{
+    //     cartItems: localStorage.getItem('cartItems')? JSON.parse(localStorage.getItem('cartItems')) : [],    
+    //     paymentMethod: 'Cash',
+    //     shippingAddress: localStorage.getItem('shippingAddress'),
+    // }
 };
 
 const reducer = combineReducers({
@@ -80,6 +81,14 @@ const reducer = combineReducers({
     contactEditing: contactEditingReducer,
     contactRemoving: contactRemovingReducer,
     contactSearching: contactSearchingReducer,
+
+    //
+    postStat: postStatReducers,
+
+    //
+    notificationAdding: notificationAddingReducers,
+    notificationList: notificationListReducers,
+    userFriendAdding: userFriendAddingReducer,
 })
 
 
