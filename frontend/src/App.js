@@ -25,11 +25,14 @@ import Draggable from 'react-draggable';
 import Widget from 'rasa-webchat';
 import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect';
 import { listOfNotifications } from './actions/notificationAction';
+import socketIOClient from "socket.io-client";
+const ENDPOINT = "http://localhost:5000";
+
 
 
 function App() {
 
-
+  const [response, setResponse] = useState("");
   const userSignin = useSelector((state)=> state.userSignin);
   const {userInfo, loading, error} = userSignin;
 
@@ -63,6 +66,10 @@ function App() {
   
   useEffect(()=>{
     dispatch(listOfNotifications(userInfo._id));
+    const socket = socketIOClient(ENDPOINT);
+    socket.on("FromAPI", data => {
+      setResponse(data);
+    });
   }, []);
 
   return (
@@ -187,7 +194,9 @@ function App() {
                       } */}
               </header>
               <main>
-              
+              <div>
+                It's <time dateTime={response}>{response}</time>
+              </div>
               {userInfo && userInfo.backgroundImage && userInfo.globalBackground==true && (<div className='globalBackground' style={{backgroundImage: `url("${userInfo.backgroundImage}")`, backgroundPosition: "center center", backgroundSize:"contain", position: "fixed", width: "100%", height: "100vh", zIndex: "-100", filter: "brightness(40%)"}}></div>)}
                 <Routes>
                   {/* React Router Dom v6 syntax */}
