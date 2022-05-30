@@ -1,8 +1,13 @@
-import express from 'express';
-import expressAsyncHandler from 'express-async-handler';
-import JsSIP from "jssip";
-import CallLog from '../models/CallLog.js';
-import mongoose from 'mongoose';
+// import express from 'express';
+// import expressAsyncHandler from 'express-async-handler';
+// import JsSIP from "jssip";
+// import CallLog from '../models/CallLog.js';
+// import mongoose from 'mongoose';
+const express =  require('express');
+const expressAsyncHandler =  require('express-async-handler');
+const JsSIP =  require("jssip");
+const CallLog =  require('../models/CallLog.js');
+const mongoose =  require('mongoose');
 
 
 const callRouter = express.Router();
@@ -65,4 +70,4 @@ callRouter.put('/updateLog/:id', expressAsyncHandler(async (req, res)=>{
     }
 }));
 
-export default callRouter;
+module.exports = callRouter;

@@ -1,13 +1,20 @@
-import express from 'express';
-import expressAsyncHandler from 'express-async-handler'
-import User from '../models/User.js'
-import bcrypt from 'bcryptjs';
-import {generateToken, isAuth} from '../utils.js'
-import mongoose from 'mongoose';
-import UserImageLog from '../models/UserImageLog.js';
-import Notification from '../models/Notification.js';
-// import ConversationStore from '../models/ConversationStore.js';
-// import conversationStore from '../models/ConversationStore.js';
+// import express from 'express';
+// import expressAsyncHandler from 'express-async-handler'
+// import User from '../models/User.js'
+// import bcrypt from 'bcryptjs';
+// import {generateToken, isAuth} from '../utils.js'
+// import mongoose from 'mongoose';
+// import UserImageLog from '../models/UserImageLog.js';
+// import Notification from '../models/Notification.js';
+const express =  require('express');
+const expressAsyncHandler =  require('express-async-handler');
+const User =  require('../models/User.js');
+const bcrypt =  require('bcryptjs');
+const generateToken=  require('../utils.js');
+const isAuth =  require('../utils.js');
+const mongoose =  require('mongoose');
+const UserImageLog =  require('../models/UserImageLog.js');
+const Notification =  require('../models/Notification.js');
 
 const userRouter = express.Router();
 userRouter.get('/list', expressAsyncHandler(async (req, res)=>{
@@ -45,7 +52,7 @@ userRouter.post('/signup', expressAsyncHandler(async(req, res)=>
     // });
 }));
 
-userRouter.post('/signin', 
+userRouter.post('/signin',
 expressAsyncHandler(async (req, res)=>{
     const user = await User.findOne({email: req.body.email});
     if(user){
@@ -256,4 +263,4 @@ userRouter.put('/:receiverId/addFriend/:senderId', expressAsyncHandler(async(req
     }
 }));
 
-export default userRouter;
+module.exports = userRouter;

@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
+const mongoose =  require('mongoose');
 const {Schema} = mongoose;
 
 const feedbackSchema = new mongoose.Schema({
@@ -16,4 +17,4 @@ feedbackSchema.index({ title: 'text', keywords: 'text' });
 
 const Feedback = mongoose.model('Feedback', feedbackSchema);
 
-export default Feedback;
+module.exports = Feedback;

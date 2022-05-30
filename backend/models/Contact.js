@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
+const mongoose =  require('mongoose');
 
 const contactSchema = new mongoose.Schema({
     name: {type: String},
@@ -13,4 +14,4 @@ contactSchema.index({ name: 'text', phoneNum: 'text' });
 
 const Contact = mongoose.model('Contact', contactSchema);
 
-export default Contact;
+module.exports = Contact;
