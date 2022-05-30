@@ -260,6 +260,7 @@ userRouter.put('/:receiverId/addFriend/:senderId', expressAsyncHandler(async(req
             friends: updatedUser2.friends,
         },
     });
+    // socketIo.emit('accepted_friend_request', {updatedUser, updatedUser2});
     }
 }));
 
