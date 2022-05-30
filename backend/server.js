@@ -9,6 +9,7 @@ import feedbackRouter from './routers/feedbackRouter.js';
 import imageSearchRouter from './routers/imageSearchRouter.js';
 import callRouter from './routers/callRouter.js';
 import contactRouter from './routers/contactRouter.js';
+import notificationRouter from './routers/notificationRouter.js';
 
 
 dotenv.config();
@@ -43,6 +44,7 @@ app.use('/api/feedback', feedbackRouter);
 app.use('/api/imageSearch', imageSearchRouter);
 app.use('/api/call', callRouter);
 app.use('/api/contact', contactRouter);
+app.use('/api/notification', notificationRouter);
 
 app.get('/', (req, res) => {
     res.send('Server is ready!');

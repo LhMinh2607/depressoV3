@@ -20,11 +20,18 @@ const userSchema = new mongoose.Schema({
     backgroundMusic: {type: String, required: false},
     avatar: {type: String, required: false},
     globalBackground: {type: Boolean, default: false},
+    friends: [{
+        _id: false,
+        friendId: {type: String, required: false, unique: true},
+        createdAt: {type: Date, required: true},
+    },],
 },
     {
         timestamps: true,
     },
 );
+userSchema.index({"friends.friendId": 1});
+
 
 const User = mongoose.model('User', userSchema);
 

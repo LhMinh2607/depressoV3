@@ -307,44 +307,48 @@ export default function PostDetailPage() {
                         <div className="card card-body postDetail">
                             <div><CategoryIcon topicName = {post.topic}></CategoryIcon></div>
                             {users.map(u=>(u._id===post.user && ( u.role==='admin' ? (
-                            <div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)} title={u.name}>
+                            <div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)} title={u.name} style={{padding: "1rem"}}>
                                 {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
-                                {u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></div>
-                                <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
-                                <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                <div className='row center userHoverInfoContent'>
-                                    <div className=''>
-                                        <div className='row left'>{u.name}</div>
-                                    </div>
-                                    <div className='col-2'>
-                                        {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
-                                            u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
-                                            u.gender==="Khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
-                                        }
-                                        <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
-                                        <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
+                                {u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i>
+                                    <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
+                                        <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
+                                        <div className='row center userHoverInfoContent'>
+                                            <div className=''>
+                                                <div className='row left'>{u.name}</div>
+                                            </div>
+                                            <div className='col-2'>
+                                                {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
+                                                    u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
+                                                    u.gender==="Khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
+                                                }
+                                                <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
+                                                <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
                             </div>) : (<div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)}>
                             {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
-                                {u.name}</div>
-                            <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
-                                <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                <div className='row center userHoverInfoContent'>
-                                    <div className=''>
-                                        <div className='row left'>{u.name}</div>
-                                    </div>
-                                    <div className='col-2'>
-                                        {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
-                                            u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
-                                            u.gender==="Khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
-                                        }
-                                        <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
-                                        <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
+                                {u.name}
+                                <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
+                                    <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
+                                    <div className='row center userHoverInfoContent'>
+                                        <div className=''>
+                                            <div className='row left'>{u.name}</div>
+                                        </div>
+                                        <div className='col-2'>
+                                            {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
+                                                u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
+                                                u.gender==="Khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
+                                            }
+                                            <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
+                                            <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
+                                        </div>
                                     </div>
                                 </div>
+                                
                             </div>
+                            
                             </div>))))}
                             
                         <div className="row left">
@@ -510,23 +514,27 @@ export default function PostDetailPage() {
                                     <div className="col full">
                                         <div className='interactiveUsername' onClick={()=>navigateToProfile(userInfo._id)}>
                                         {userInfo.avatar ? <span className='avatarSquare' style={{background: `url("${userInfo.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{userInfo.username[0]}</span>}
-                                            {userInfo.name}</div>
+                                            {userInfo.name}
                                             <div className="userHoverInfo" style={userInfo ? userInfo.backgroundImage ? {background: `url("${userInfo.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
-                                            <h1>{userInfo.role==="user"&&<i className='fa fa-user'></i>}{userInfo.username}{userInfo.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                            <div className='row center userHoverInfoContent'>
-                                                <div className=''>
-                                                    <div className='row left'>{userInfo.name}</div>
-                                                </div>
-                                                <div className='col-2'>
-                                                    {userInfo.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{userInfo.gender}</div> : 
-                                                        userInfo.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{userInfo.gender}</div> :
-                                                        userInfo.gender==="Khác" && <div className='row left'><i className='fa fa-intersex'/>{userInfo.gender}</div>
-                                                    }
-                                                    <div className='row left'><i className='fas fa-brain'></i>{userInfo.mood ? userInfo.mood : "Tâm trạng không rõ"}</div>
-                                                    <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={userInfo.dob} isbirthDate={true}></DateComponent>} </div>
+                                                <h1>{userInfo.role==="user"&&<i className='fa fa-user'></i>}{userInfo.username}{userInfo.role==="admin"&&<i className='fa fa-check'></i>}</h1>
+                                                <div className='row center userHoverInfoContent'>
+                                                    <div className=''>
+                                                        <div className='row left'>{userInfo.name}</div>
+                                                    </div>
+                                                    <div className='col-2'>
+                                                        {userInfo.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{userInfo.gender}</div> : 
+                                                            userInfo.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{userInfo.gender}</div> :
+                                                            userInfo.gender==="Khác" && <div className='row left'><i className='fa fa-intersex'/>{userInfo.gender}</div>
+                                                        }
+                                                        <div className='row left'><i className='fas fa-brain'></i>{userInfo.mood ? userInfo.mood : "Tâm trạng không rõ"}</div>
+                                                        <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={userInfo.dob} isbirthDate={true}></DateComponent>} </div>
+                                                    </div>
                                                 </div>
                                             </div>
+                                        
+                                        
                                         </div>
+                                        
                                         <div className="content">
                                             {/* <p><Linkify>{pc.content}</Linkify></p> */}
                                             <Editor
@@ -560,23 +568,25 @@ export default function PostDetailPage() {
                                             <div className="col full">
                                                 <div className="interactiveUsername" onClick={()=>navigateToProfile(u._id)}>
                                                 {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
-                                                    {u.name}</div>
-                                                <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
-                                                    <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                                    <div className='row center userHoverInfoContent'>
-                                                        <div className=''>
-                                                            <div className='row left'>{u.name}</div>
-                                                        </div>
-                                                        <div className='col-2'>
-                                                            {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
-                                                                u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
-                                                                u.gender==="khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
-                                                            }
-                                                            <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
-                                                            <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
+                                                    {u.name}
+                                                    <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
+                                                        <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
+                                                        <div className='row center userHoverInfoContent'>
+                                                            <div className=''>
+                                                                <div className='row left'>{u.name}</div>
+                                                            </div>
+                                                            <div className='col-2'>
+                                                                {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
+                                                                    u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
+                                                                    u.gender==="khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
+                                                                }
+                                                                <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
+                                                                <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                
                                                 <div className="content">
                                                     {/* <p><Linkify>{pc.content}</Linkify></p> */}
                                                     <Editor
@@ -601,23 +611,25 @@ export default function PostDetailPage() {
                                             <div className="col full">
                                                 <div className="interactiveUsername" onClick={()=>navigateToProfile(u._id)}>
                                                 {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
-                                                    {u.name}</div>
-                                                <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
-                                                    <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
-                                                    <div className='row center userHoverInfoContent'>
-                                                        <div className=''>
-                                                            <div className='row left'>{u.name}</div>
-                                                        </div>
-                                                        <div className='col-2'>
-                                                            {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
-                                                                u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
-                                                                u.gender==="khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
-                                                            }
-                                                            <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
-                                                            <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
+                                                    {u.name}
+                                                    <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
+                                                        <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
+                                                        <div className='row center userHoverInfoContent'>
+                                                            <div className=''>
+                                                                <div className='row left'>{u.name}</div>
+                                                            </div>
+                                                            <div className='col-2'>
+                                                                {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
+                                                                    u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
+                                                                    u.gender==="khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
+                                                                }
+                                                                <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
+                                                                <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                
                                                 <div className="content">
                                                     {/* <p><Linkify>{pc.content}</Linkify></p> */}
                                                     <Editor

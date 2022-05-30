@@ -55,7 +55,7 @@ export default function UserListPage() {
                         }
                         <tr>
                             <td></td>
-                            <th>  </th>
+                            <th>{users.length} tài khoản</th>
                             <td></td>
                             <td></td>
                         </tr>

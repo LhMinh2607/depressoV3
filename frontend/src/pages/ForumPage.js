@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { listOfUsers } from '../actions/userAction';
-import { createPost, listOfFilteredPosts, listOfPosts, listOfSearchedPosts, listOfSortedPosts } from '../actions/postAction';
+import { createPost, listOfFilteredPosts, listOfPosts, listOfSearchedPosts, listOfSortedPosts, statOfAllPosts } from '../actions/postAction';
 import DateComponent from '../components/DateComponent';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
@@ -14,6 +14,7 @@ import { listOfCategories } from '../actions/categoryAction';
 import Editor from "rich-markdown-editor";
 import Select from "react-dropdown-select";
 import { CATEGORY_LIST_RESET } from '../constants/categoryConst';
+import Draggable from 'react-draggable';
 
 
 
@@ -33,6 +34,7 @@ export default function ForumPage() {
 
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const postCreating = useSelector(state=>state.postCreating);
     const {loading, error, success} = postCreating;
 
@@ -56,6 +58,9 @@ export default function ForumPage() {
 
     const postSearching = useSelector(state=>state.postSearching);
     const {loading: loadingSearch, error: errorSearch, searchedPosts} = postSearching;
+
+    const postStat = useSelector(state=>state.postStat);
+    const {loading: loadingPostStat, error: errorPostStat, allPostsStat} = postStat;
 
     // const mdParser = new MarkdownIt(/* Markdown-it options */);
 
@@ -152,7 +157,7 @@ export default function ForumPage() {
         dispatch(listOfPosts());  
         dispatch(listOfCategories());
         dispatch({type: CATEGORY_LIST_RESET});
-        
+        dispatch(statOfAllPosts());
     }, [dispatch])
 
 
@@ -161,6 +166,87 @@ export default function ForumPage() {
             <div className="floatingDiv">
                 <button onClick={scrollToTopHandler}><i className="fa fa-arrow-up"></i></button>
             </div>
+            <Draggable>
+                <div>
+                    <div className='memberCard'>
+                        <div className='row center'><i className='fa fa-bullhorn'></i></div>
+                        {loadingPostStat ? <LoadingBox></LoadingBox> : errorPostStat ? <MessageBox variant="error">{errorPostStat}</MessageBox> : 
+                        allPostsStat && users && allPostsStat.postStatByUserCount && allPostsStat.postStatByUserCount.map((stat)=>(
+                            <>
+                                {
+                                    users.map((u)=>(
+                                        u._id===stat.user && 
+                                        <div className='row center' style={{paddingTop: "1rem"}}>
+                                            <div className='interactiveUsername' onClick={()=>navigate(`/user/${u._id}`)}>
+                                                {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare interactiveUsername'>{u.username[0]}</span>}
+                                                <div className="userHoverInfo toRight" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
+                                                    <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
+                                                    <div className='row center userHoverInfoContent'>
+                                                        <div className=''>
+                                                            <div className='row left'>{u.name}</div>
+                                                        </div>
+                                                        <div className='col-2'>
+                                                            {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
+                                                                u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
+                                                                u.gender==="Khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
+                                                            }
+                                                            <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
+                                                            <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                            </div>
+                                            {/* {u.name} */}
+                                            <div className='row right'>{stat.count}</div>
+                                        </div>
+                                    ))
+                                }
+                            </>
+                        ))
+                        }
+                    </div>
+                    <div className='memberCard right'>
+                        <div className='row center'><i className='fa fa-commenting'></i></div>
+                        {loadingPostStat ? <LoadingBox></LoadingBox> : errorPostStat ? <MessageBox variant="error">{errorPostStat}</MessageBox> : 
+                        allPostsStat && users && allPostsStat.commentStatByUserCount && allPostsStat.commentStatByUserCount.map((stat)=>(
+                            <>
+                                {
+                                    users.map((u)=>(
+                                        u._id===stat.commenter && 
+                                        <div className='row center' style={{paddingTop: "1rem"}}>
+                                            <div className='interactiveUsername' onClick={()=>navigate(`/user/${u._id}`)}>
+                                                {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare interactiveUsername'>{u.username[0]}</span>}
+                                                <div className="userHoverInfo toRight" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
+                                                    <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
+                                                    <div className='row center userHoverInfoContent'>
+                                                        <div className=''>
+                                                            <div className='row left'>{u.name}</div>
+                                                        </div>
+                                                        <div className='col-2'>
+                                                            {u.gender==="Nam" ? <div className='row left'><i className='fa fa-mars'/>{u.gender}</div> : 
+                                                                u.gender==="Nữ" ? <div className='row left'><i className='fa fa-venus'/>{u.gender}</div> :
+                                                                u.gender==="Khác" && <div className='row left'><i className='fa fa-intersex'/>{u.gender}</div>
+                                                            }
+                                                            <div className='row left'><i className='fas fa-brain'></i>{u.mood ? u.mood : "Tâm trạng không rõ"}</div>
+                                                            <div className='row left'><i className='fa fa-birthday-cake'></i>{<DateComponent passedDate={u.dob} isbirthDate={true}></DateComponent>} </div>
+                                                        </div>
+                                                    </div>
+                                            </div>
+                                            </div>
+                                            {/* {u.name} */}
+                                            <div className='row right'>{stat.count}</div>
+
+                                        </div>
+                                    ))
+                                }
+                            </>
+                        ))
+                        }
+                    </div>
+                </div>
+                
+            </Draggable>
+            
             <div className="row center">
                 <div className="row center search-background"> 
                     {/* <div> 
