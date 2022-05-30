@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "dependencies": {
     "@types/react": "^18.0.9",
     "bcrypt": "^5.0.1",

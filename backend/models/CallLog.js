@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
+const mongoose =  require('mongoose');
 
 const callLogSchema = new mongoose.Schema({
     name: {type: String},
@@ -16,4 +17,4 @@ const callLogSchema = new mongoose.Schema({
 
 const CallLog = mongoose.model('CallLog', callLogSchema);
 
-export default CallLog;
+module.exports = CallLog;

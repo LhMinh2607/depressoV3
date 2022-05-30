@@ -1,7 +1,9 @@
-import express from 'express';
-import expressAsyncHandler from 'express-async-handler';
-import Notification from '../models/Notification.js';
-
+// import express from 'express';
+// import expressAsyncHandler from 'express-async-handler';
+// import Notification from '../models/Notification.js';
+const express =  require('express');
+const expressAsyncHandler =  require('express-async-handler');
+const Notification =  require('../models/Notification.js');
 
 const notificationRouter = express.Router();
 
@@ -26,4 +28,4 @@ notificationRouter.get('/user/:id/list', expressAsyncHandler(async (req, res)=>{
     res.send(notification);
 }));
 
-export default notificationRouter;
+module.exports = notificationRouter;

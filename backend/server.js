@@ -1,15 +1,28 @@
-import express from 'express'
-import mongoose from "mongoose"
-import forumRouter from './routers/forumRouter.js'
-import dotenv from 'dotenv';
-import userRouter from './routers/userRouter.js';
-import categoryRouter from './routers/categoryRouter.js'
-import {MongoClient} from 'mongodb';
-import feedbackRouter from './routers/feedbackRouter.js';
-import imageSearchRouter from './routers/imageSearchRouter.js';
-import callRouter from './routers/callRouter.js';
-import contactRouter from './routers/contactRouter.js';
-import notificationRouter from './routers/notificationRouter.js';
+// import express from 'express'
+// import mongoose from "mongoose"
+// import forumRouter from './routers/forumRouter.js'
+// import dotenv from 'dotenv';
+// import userRouter from './routers/userRouter.js';
+// import categoryRouter from './routers/categoryRouter.js'
+// import {MongoClient} from 'mongodb';
+// import feedbackRouter from './routers/feedbackRouter.js';
+// import imageSearchRouter from './routers/imageSearchRouter.js';
+// import callRouter from './routers/callRouter.js';
+// import contactRouter from './routers/contactRouter.js';
+// import notificationRouter from './routers/notificationRouter.js';
+var express = require('express');
+var mongoose = require('mongoose');
+var forumRouter = require('./routers/forumRouter.js');
+const dotenv =  require('dotenv');
+const userRouter =  require('./routers/userRouter.js');
+const categoryRouter =  require('./routers/categoryRouter.js');
+const {MongoClient} =  require('mongodb');
+const feedbackRouter =  require('./routers/feedbackRouter.js');
+const imageSearchRouter =  require('./routers/imageSearchRouter.js');
+const callRouter =  require('./routers/callRouter.js');
+const contactRouter =  require('./routers/contactRouter.js');
+const notificationRouter =  require('./routers/notificationRouter.js');
+
 
 
 dotenv.config();

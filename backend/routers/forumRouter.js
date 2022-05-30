@@ -1,8 +1,13 @@
-import express from 'express';
-import expressAsyncHandler from 'express-async-handler';
-import mongoose from 'mongoose';
-import Post from '../models/Post.js';
-import fullTextSearch from 'fullTextSearch';
+// import express from 'express';
+// import expressAsyncHandler from 'express-async-handler';
+// import mongoose from 'mongoose';
+// import Post from '../models/Post.js';
+// import fullTextSearch from 'fullTextSearch';
+const express =  require('express');
+const expressAsyncHandler =  require('express-async-handler');
+const mongoose =  require('mongoose');
+const Post =  require('../models/Post.js');
+const fullTextSearch =  require('fullTextSearch');
 
 
 const forumRouter = express.Router();
@@ -483,4 +488,4 @@ forumRouter.put('/keyword/remove/:id', expressAsyncHandler(async(req, res)=>{ //
     }
 }));
 
-export default forumRouter;
+module.exports = forumRouter;

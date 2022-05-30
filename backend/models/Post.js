@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
+const mongoose =  require('mongoose');
 const {Schema} = mongoose;
 
 const postSchema = new mongoose.Schema({
@@ -32,4 +33,4 @@ const Post = mongoose.model('Post', postSchema);
 
 Post.createIndexes();
 
-export default Post;
+module.exports = Post;
