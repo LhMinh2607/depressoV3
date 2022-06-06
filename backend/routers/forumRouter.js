@@ -8,7 +8,8 @@ const expressAsyncHandler =  require('express-async-handler');
 const mongoose =  require('mongoose');
 const Post =  require('../models/Post.js');
 const fullTextSearch =  require('fullTextSearch');
-
+// const io = require('../server.js');
+// let connections = [];
 
 const forumRouter = express.Router();
 
@@ -175,6 +176,28 @@ forumRouter.get('/post/:id', expressAsyncHandler(async (req, res)=>{
     const post = await Post.findById(req.params.id);
     //console.log(posts);
     if(post){
+        // var io = req.app.get('socketio');
+        // let interval;
+        // io.on("connection", (socket) => {
+        // console.log("Post client connected");
+        // if (interval) {
+        //     clearInterval(interval);
+        // }
+        // interval = setInterval(() => {
+        //     socket.emit('getLatestPostInfo', post);
+        // }, 1000);
+        //     socket.on("disconnect", () => {
+        //         console.log("Client disconnected");
+        //         clearInterval(interval);
+        //     });
+        // });
+        // var io = req.app.get('sock');
+        // io.on("connection", (socket) => {
+        //     socket.on("addComment", ()=>{
+        //         socket.emit("loadComments");
+        //         console.log("addComment")
+        //     })
+        // });
         res.send(post);
     }else{
         res.status(404).send({message: "404 NOT FOUND"});
@@ -403,11 +426,15 @@ forumRouter.post('/post/:id/reply', expressAsyncHandler(async (req, res)=>{
         createdAt: new Date(),
         updatedAt: new Date(),
     });
-
     const updatedPost = await post.save();
     res.send({
         comments: updatedPost.comments,
     });
+    // io.on("connection", (socket) => {
+    //     socket.on("addComment", ()=>{
+    //         socket.emit("loadComments");
+    //     })
+    // });
 }));
 
 forumRouter.put('/post/:id/edit_reply', expressAsyncHandler(async (req, res)=>{
