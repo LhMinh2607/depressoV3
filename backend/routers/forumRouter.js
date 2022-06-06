@@ -515,4 +515,34 @@ forumRouter.put('/keyword/remove/:id', expressAsyncHandler(async(req, res)=>{ //
     }
 }));
 
+forumRouter.put('/accumulatePost', expressAsyncHandler(async(req, res)=>{ //if keyword is a link then this is fucked lol
+    //console.log("sfweff");
+    const post = await Post.findById(req.body.postId);
+    if(post){
+        if(req.body.type && req.body.type==="upvote"){
+            if(post.upvotes.indexOf(req.body.userId)===-1){
+                const index = post.downvotes.indexOf(req.body.userId);
+                post.downvotes.splice(index, 1)
+                post.upvotes.push(req.body.userId)
+            }else{
+                res.send("Already exists");
+            }
+        }
+        if(req.body.type && req.body.type==="downvote"){
+            if(post.downvotes.indexOf(req.body.userId)===-1){
+                const index = post.upvotes.indexOf(req.body.userId);
+                post.upvotes.splice(index, 1)
+                post.downvotes.push(req.body.userId)
+            }else{
+                res.send("Already exists");
+            }
+        }
+        
+        await post.save();
+        res.send({message: "Accumulated", upvotes: post.upvotes, downvotes: post.downvotes});
+    }else{
+        res.status(404).send("404");
+    }
+}));
+
 module.exports = forumRouter;

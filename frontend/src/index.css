@@ -183,7 +183,14 @@ a:hover {
   background-color: #474242;
   padding: 1rem;
   border-radius: 0.1rem;
-  box-shadow: 5px 6px 6px 2px #020202
+  box-shadow: 5px 6px 6px 2px #020202;
+  width: 100%;
+}
+
+.searchField{
+  border-radius: 2rem;
+  background-color: #fff;
+  width: 80%;
 }
 
 .searchBtn{
@@ -389,6 +396,14 @@ a.brand:hover{
   align-items: center;
 }
 
+.col-mini{
+  flex: 0.1 0.1 0rem;
+  padding: 1rem;
+}
+.col-mini.top{
+  top: 0;
+}
+
 .col-0{
   flex: 1 1 0rem;
   padding: 1rem;
@@ -466,7 +481,7 @@ button {
 
 button.primary::after{
   background-clip: padding-box;
-  background-color: #1CB0F6;
+  background-color: #063b53;
   border: solid transparent;
   border-radius: 16px;
   border-width: 0 0 4px;
@@ -482,19 +497,21 @@ button.primary::after{
 
 
 button.primary{
-  background-color: #317cc2;
+  background-color: #0b4275;
 }
 
 .primary{
   word-wrap: break-word;
   width: 100%;
   white-space: normal;
+  max-width: 10rem;
 }
 
 .admin{
   background-color: #090c91;
   word-wrap: break-word;
   width: 100%;
+  max-width: 10rem;
   white-space: normal;
   border-radius: 0%;
 }
@@ -951,7 +968,8 @@ textarea{
   margin: auto;
   /* max-width: 20rem; */
   transition: .2s;
-  width: 60%;
+  width: 90%;
+  max-width: 60rem;
   /* border-radius: 2rem; */
   background-color: rgb(58, 56, 56);
   /* border-left-color: coral !important;
@@ -1279,7 +1297,8 @@ td {
 }
 
 .fa-bars{
-  font-size: 3rem;
+  font-size: 2rem;
+  padding-right: 1rem;
 }
 
 .online{
@@ -1669,11 +1688,14 @@ code {
   resize: none; 
   height: auto;
   /* word-wrap: break-word; */
-  max-width: 40rem !important;
+  max-width: 50rem !important;
   width: 100%;
   background-color: rgb(33, 34, 44);
   /* color: #fff; */
   word-break: break-all;
+}
+.Editor.readonly{
+  padding: 0rem;
 }
 
 .ProseMirror{
@@ -1727,11 +1749,20 @@ button > p{
   min-height: 4rem !important; 
   font-size: 1.5rem;
   max-width: 60rem;
+  border-radius: 2rem !important;
+
   
 }
 .react-dropdown-select-item{
   min-width: 20rem !important;
   background-color: #FFF;
+  border-radius: 2rem;
+  padding: 0.1rem;
+}
+
+.react-dropdown-select-dropdown{
+  background-color: transparent !important;
+  border: 0rem solid !important;
 }
 
 .textButton{
@@ -1774,13 +1805,16 @@ button > p{
 
 .postHere{
   background-color: #ffffff;
-  margin: 5rem;
+  margin: 0rem;
   padding: 5rem;
+  width: 100%;
+  max-width: 60rem;
   border-style: solid;
   border-left-color: #09efff;
   border-right-color: #09efff;
   border-top: #fff;
   border-bottom: #fff;
+  background-color: rgb(33, 34, 44);
 }
 .postHere > form{
   backdrop-filter: none;
@@ -2134,7 +2168,7 @@ button > p{
     linear-gradient(to top, rgb(0, 128, 255), transparent),
     linear-gradient(to bottom, rgb(127, 194, 248), transparent);
   border-radius: 1rem;
-  position: fixed;
+  /* position: absolute; */
   z-index: 10;
   padding: 1rem;
   box-shadow: #000 2rem;
@@ -2178,7 +2212,7 @@ button > p{
   color: rgb(191, 142, 197);
 }
 
-a[href], input[type='submit'], input[type='image'], label[for], select, button, .interactiveUsername, .interactiveText{
+a[href], input[type='submit'], input[type='image'], label[for], select, button, .interactiveUsername, .interactiveText, .accumulate, .tagSelectItem{
   cursor: pointer;
 }
 .interactiveText{
@@ -2383,24 +2417,47 @@ main {
   width: 100%;
   text-align: center;
 } */
-
-.postDetail{
-  margin: auto;
-  /* max-width: 20rem; */
-  transition: .2s;
-  width: 100%;
-  /* border-radius: 2rem; */
-  /* background-color: rgb(255, 255, 255); */
-  background-color: rgb(33, 34, 44);
-  border-top-color: coral !important;
-  border-bottom-color: coral !important;
-  /* border-top-color: rgb(255, 255, 255) !important;
-  border-bottom-color: rgb(255, 255, 255) !important; */
-  border-left-color: rgb(33, 34, 44) !important;
-  border-right-color: rgb(33, 34, 44) !important;
-  border-style: solid;
-  margin-bottom: 1rem;
+@media (max-width: 60rem) {
+  .postDetail{
+    /* margin: auto; */
+    /* max-width: 20rem; */
+    transition: .2s;
+    width: 100%;
+    /* border-radius: 2rem; */
+    /* background-color: rgb(255, 255, 255); */
+    background-color: rgb(33, 34, 44);
+    border-top-color: coral !important;
+    border-bottom-color: coral !important;
+    /* border-top-color: rgb(255, 255, 255) !important;
+    border-bottom-color: rgb(255, 255, 255) !important; */
+    border-left-color: rgb(33, 34, 44) !important;
+    border-right-color: rgb(33, 34, 44) !important;
+    border-style: solid;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
 }
+@media (min-width: 60rem){
+  .postDetail{
+    /* margin: auto; */
+    /* max-width: 20rem; */
+    transition: .2s;
+    width: 60%;
+    /* border-radius: 2rem; */
+    /* background-color: rgb(255, 255, 255); */
+    background-color: rgb(33, 34, 44);
+    border-top-color: coral !important;
+    border-bottom-color: coral !important;
+    /* border-top-color: rgb(255, 255, 255) !important;
+    border-bottom-color: rgb(255, 255, 255) !important; */
+    border-left-color: rgb(33, 34, 44) !important;
+    border-right-color: rgb(33, 34, 44) !important;
+    border-style: solid;
+    margin-bottom: 1rem;
+    color: #fff;
+  }
+}
+
 
 .quote{
   font-size: 2rem;
@@ -2491,10 +2548,11 @@ main {
 }
 
 .react-dropdown-select {
-  background-color: rgb(6, 6, 70) !important;
+  background-color: rgb(33, 34, 44) !important;
+  max-width: 10rem;
 }
 .react-dropdown-select-item{
-  background-color: rgb(5, 5, 53) !important;
+  background-color: rgb(33, 34, 44) !important;
 }
 
 .contentTitle{
@@ -3018,6 +3076,12 @@ main {
 /* [draggable=true]{
   cursor: move;
 } */
+Draggable{
+  z-index: 100 !important;
+}
+.forumPage{
+  min-height: 100vh;
+}
 
 .musicPlayer{
   position: fixed;
@@ -3100,10 +3164,59 @@ main {
   opacity: 100;
 }
 
+.accumulate{
+  background-color: transparent;
+  color: grey;
+  font-size: 2rem;
+}
 
+.accumulate.pressed{
+  color: orange;
+}
 
+.titleField{
+  width: 100%;
+  text-align: left;
+  border-radius: 2rem;
+  font-size: 1.2rem;
+  padding: 1rem;
+  color: #fff;
+}
 
+.tagSelect{
+  width: 20rem;
+  border-radius: 2rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  overflow-x: scroll;
+  border: 0.1rem solid rgb(105, 103, 103);
+}
 
+.tagSelectItem{
+  font-size: 1.2rem;
+  height: 1.2rem;
+  width: auto;
+  border-radius: 2rem;
+  white-space: nowrap;
+  padding: 1rem;
+}
+
+.autoComplete{
+  position: absolute;
+  width: 20rem;
+  height: auto;
+  background-color: #fff;
+  transform: translate(0rem, 5rem);
+  z-index: 10;
+  padding: 1rem;
+  color: #000;
+}
+.autoComplete > div {
+  padding-top: 1rem;
+  width: 100%;
+  border-bottom: 0.1rem solid #000;
+}
 
 
 

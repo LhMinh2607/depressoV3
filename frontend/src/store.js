@@ -1,7 +1,7 @@
 import {createStore, compose, applyMiddleware, combineReducers} from 'redux';
 import thunk from 'redux-thunk';
 import { botMessageCountReducer, messageStatReducers, userConversationHistoryReducer, userDetailReducer, userFriendAddingReducer, userListReducer, userMessageCountReducer, userSigninReducer, userSignupReducer, userUpdateProfileReducer } from './reducers/userReducer';
-import { homePostListReducers, nestedPostListReducer, postByCatListReducer, postCommentDeletingReducers, postCommentEditingReducers, postCommentPostingReducers, postCreatingReducers, postDeletingReducers, postDetailsReducers, postEditingReducers, postFilteringReducers, postKeywordsAddingReducer, postKeywordsRemovingReducer, postListReducers, postPinningReducers, postPinningToHomeReducers, postSearchingReducers, postSortingReducers, postStatReducers, relatedPostListReducer, userPostStatReducers } from './reducers/postReducer';
+import { homePostListReducers, nestedPostListReducer, postAccumulatingReducers, postByCatListReducer, postCommentDeletingReducers, postCommentEditingReducers, postCommentPostingReducers, postCreatingReducers, postDeletingReducers, postDetailsReducers, postEditingReducers, postFilteringReducers, postKeywordsAddingReducer, postKeywordsRemovingReducer, postListReducers, postPinningReducers, postPinningToHomeReducers, postSearchingReducers, postSortingReducers, postStatReducers, relatedPostListReducer, userPostStatReducers } from './reducers/postReducer';
 import { categoryListReducer } from './reducers/categoryReducer';
 import { feedbackListReducer, userFeedbackListReducer } from './reducers/feedbackReducer';
 import { imageSearchListReducer, userImageSearchListReducer } from './reducers/imageSearchReducer';
@@ -15,6 +15,12 @@ const initialState = {
         ? JSON.parse(localStorage.getItem('userInfo'))
         : null,
     },
+    // postDetails: {
+    //     post: localStorage.getItem('userLSP')
+    //     ? JSON.parse(localStorage.getItem('userLSP'))
+    //     : "nothing",
+    // }
+    
     // cart:{
     //     cartItems: localStorage.getItem('cartItems')? JSON.parse(localStorage.getItem('cartItems')) : [],    
     //     paymentMethod: 'Cash',
@@ -89,6 +95,9 @@ const reducer = combineReducers({
     notificationAdding: notificationAddingReducers,
     notificationList: notificationListReducers,
     userFriendAdding: userFriendAddingReducer,
+
+    //
+    postAccumulating: postAccumulatingReducers,
 })
 
 

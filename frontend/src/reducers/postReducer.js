@@ -31,6 +31,9 @@ import {  CREATE_POST_COMMENT_FAILED,
     PIN_TO_HOME_FAILED,   
     PIN_TO_HOME_REQUEST,   
     PIN_TO_HOME_SUCCESSFUL,   
+    POST_ACCUMULATE_FAILED,   
+    POST_ACCUMULATE_REQUEST,   
+    POST_ACCUMULATE_SUCCESSFUL,   
     POST_ADD_KEYWORD_FAILED,   
     POST_ADD_KEYWORD_REQUEST,   
     POST_ADD_KEYWORD_SUCCESSFUL,   
@@ -120,7 +123,7 @@ export const postDetailsReducers = (state = {}, action)=>{
         case POST_DETAILS_REQUEST:
             return {loading: true};
         case POST_DETAILS_SUCCESSFUL:
-            return {loading: false, post: action.payload};
+            return {...state, loading: false, post: action.payload};
         case POST_DETAILS_FAILED:
             return {loading: false, error: action.payload};
         default:
@@ -330,6 +333,19 @@ export const postStatReducers = (state = {}, action)=>{
         case POST_STAT_SUCCESSFUL:
             return {loading: false, allPostsStat: action.payload};
         case POST_STAT_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const postAccumulatingReducers = (state = {}, action)=>{
+    switch(action.type){
+        case POST_ACCUMULATE_REQUEST:
+            return {loading: true};
+        case POST_ACCUMULATE_SUCCESSFUL:
+            return {loading: false, success: true};
+        case POST_ACCUMULATE_FAILED:
             return {loading: false, error: action.payload};
         default:
             return state;
