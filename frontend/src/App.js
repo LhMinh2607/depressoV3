@@ -41,7 +41,7 @@ import socketIOClient from "socket.io-client";
 import RecorderComponent from './components/RecorderComponent';
 import VoiceRecorderComponent from './components/VoiceRecorderComponent';
 // import io from "socket.io-client";
-import io from 'socket.io-client';
+import {io} from 'socket.io-client';
 
 function App() {
 

@@ -123,7 +123,8 @@ export default function PostDetailPage(props) {
 
     const commentPostingHandler = () =>{
         dispatch(createPostComment(postId, userInfo._id, replyContent));
-        socket.emit("addComment");
+        const newDate = new Date();
+        socket.emit("addComment", postId);
         console.log("commentePostingHandler");
     }
 
@@ -206,18 +207,21 @@ export default function PostDetailPage(props) {
     // let socket = io(process.env.REACT_APP_WSENDPOINT)
     socket.on("loadComments", () => {
         setTimeout(()=>{
-            // dispatch(detailsOfPost(postId));
+            dispatch(detailsOfPost(postId));
             console.log("client loadComments")
             // alert("loadComments");
             // socket.disconnect();
             // socket.off('loadComments');
-        }, 1000);
+            // socket.off("loadComments");
+            // socket.emit("stop");
+        }, 10);
+        
     });
-    
     useEffect(()=>{
         if(userInfo){
             dispatch(detailsOfUser(userInfo._id))
         }
+        
         // window.scrollTo({
         //     top: 0, 
         //   });
@@ -230,11 +234,12 @@ export default function PostDetailPage(props) {
         dispatch(listOfCategories());
         dispatch(listOfNestedPosts(postId));
         dispatch(listOfRelatedPosts(postId));
-        
+        socket.emit("joinPost", postId);
+        console.log(socket.emit("joinPost", postId))
         // socket.off('loadComments');
-        return () => {
-            socket.off('loadComments');
-        }
+        // return () => {
+        //     socket.off('loadComments');
+        // }
         }, []);
 
     return (

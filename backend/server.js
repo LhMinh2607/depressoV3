@@ -92,11 +92,26 @@ io.on("connection", (socket) => {
   if (interval) {
     clearInterval(interval);
   }
-  socket.on("addComment", () => {
-    interval = setInterval(() => {
-        console.log("server addComment");
-        io.sockets.emit("loadComments");
-    }, 1000);
+  socket.on("joinPost", (id)=>{
+    console.log("joined Post");
+    socket.join(id);
+  })
+
+  socket.on("addComment", (id) => {
+    // interval = setInterval(() => {
+      
+    //   // clearInterval(interval);
+    //   // io.sockets.emit("loadComments");
+        
+    //   // clearInterval(interval);
+    // }, 1000);
+    setTimeout(()=>{
+      socket.to(id).emit("loadComments");
+      console.log(socket.to(id).emit("loadComments"));
+      console.log("server addComment");
+      const newDate = new Date();
+      console.log("date: "+newDate);
+    }, 10);
   });
   
   socket.on("disconnect", () => {
