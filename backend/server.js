@@ -63,8 +63,6 @@ app.get('/', (req, res) => {
     res.send('Server is ready!');
     
 });
-
-
 app.use((err, req, res, next)=>{
     res.status(500).send({message: err.message});
 
@@ -78,31 +76,47 @@ const port = process.env.PORT || 5000;
 const server = http.createServer(app);
 
 const io = socketIo(server, {cors: {
-    origin: "http://localhost:3000",
+    // origin: process.env.ORIGIN,
+    origin: "*",
     methods: ["GET", "POST"]
   }}); // < Interesting!
-let interval;
 
+
+
+app.set('sock', io);
+
+let interval;
 io.on("connection", (socket) => {
   console.log("New client connected");
+  console.log("sid:"+socket.id);
   if (interval) {
     clearInterval(interval);
   }
-  interval = setInterval(() => getApiAndEmit(socket), 1000);
+  socket.on("addComment", () => {
+    interval = setInterval(() => {
+        console.log("server addComment");
+        io.sockets.emit("loadComments");
+    }, 1000);
+  });
+  
   socket.on("disconnect", () => {
     console.log("Client disconnected");
     clearInterval(interval);
   });
 });
+io.eio.pingInterval = 1000;
 
-const getApiAndEmit = socket => {
-    const response = new Date();
-    // Emitting a new message. Will be consumed by the client
-    socket.emit("FromAPI", response);
-    console.log(response);
-};
+// const getApiAndEmit = socket => {
+//     const response = new Date();
+//     // Emitting a new message. Will be consumed by the client
+//     socket.emit("FromAPI", response);
+//     // console.log(response);
+// };
+
+
+
 
 server.listen(port, () => console.log(`Listening on port ${port}`));
-
+// module.exports = io;
 
 

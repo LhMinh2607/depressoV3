@@ -12,8 +12,6 @@
     "marked": "^4.0.8",
     "mongodb": "^4.5.0",
     "mongoose": "^6.0.13",
-    "react-detect-offline": "^2.4.5",
-    "react-timer-hook": "^3.0.5",
     "socket.io": "^4.5.1"
   },
   "name": "depresso",

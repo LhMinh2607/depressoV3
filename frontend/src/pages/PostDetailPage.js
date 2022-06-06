@@ -18,8 +18,9 @@ import Editor from "rich-markdown-editor";
 import Select from "react-dropdown-select";
 import { CATEGORY_LIST_RESET } from '../constants/categoryConst';
 
-export default function PostDetailPage() {
+export default function PostDetailPage(props) {
 
+    const {socket} = props;
     const params = useParams();
     const postId = params.id;
 
@@ -27,6 +28,7 @@ export default function PostDetailPage() {
     const config = {
 		readonly: false // all options from https://xdsoft.net/jodit/doc/
 	}
+
 
     const categoryList = useSelector(state=>state.categoryList);
     const {loading: loadingCategory, error: errorCategory, categories} = categoryList;
@@ -121,6 +123,8 @@ export default function PostDetailPage() {
 
     const commentPostingHandler = () =>{
         dispatch(createPostComment(postId, userInfo._id, replyContent));
+        socket.emit("addComment");
+        console.log("commentePostingHandler");
     }
 
     const deleteCommentHandler = () =>{
@@ -199,13 +203,24 @@ export default function PostDetailPage() {
         dispatch(pinPostToHome(id));
     }
     
+    // let socket = io(process.env.REACT_APP_WSENDPOINT)
+    socket.on("loadComments", () => {
+        setTimeout(()=>{
+            // dispatch(detailsOfPost(postId));
+            console.log("client loadComments")
+            // alert("loadComments");
+            // socket.disconnect();
+            // socket.off('loadComments');
+        }, 1000);
+    });
+    
     useEffect(()=>{
         if(userInfo){
             dispatch(detailsOfUser(userInfo._id))
         }
-        window.scrollTo({
-            top: 0, 
-          });
+        // window.scrollTo({
+        //     top: 0, 
+        //   });
         //alert(postId);
         //alert(editPost);
         dispatch({type: CATEGORY_LIST_RESET});
@@ -216,7 +231,11 @@ export default function PostDetailPage() {
         dispatch(listOfNestedPosts(postId));
         dispatch(listOfRelatedPosts(postId));
         
-    }, [dispatch]);
+        // socket.off('loadComments');
+        return () => {
+            socket.off('loadComments');
+        }
+        }, []);
 
     return (
         <div className='row left' style={{margin: 0}}>
@@ -464,29 +483,7 @@ export default function PostDetailPage() {
                             
                         </div>
                     
-                        <div className="col-0">
-                            {
-                                loadingCommentPosting ? <LoadingBox></LoadingBox> : errorCommentPosting ? <MessageBox variant="error"></MessageBox> :
-                                successPostingComment && <MessageBox>ĐÃ ĐĂNG BÌNH LUẬN</MessageBox>
-                            }
-                            {userInfo ? (<form className="editPostForm" onSubmit={commentPostingHandler}>
-                                <div className="row center">Phản hồi dưới tên ‎<label className="bold-text">{userInfo.name}</label></div>
-                                <div className='row center'>
-                                    {/* <textarea placeholder="Nội dung" className="basic-slide" required={true} value={replyContent} type="textarea" onChange={(e)=> setReplyContent(e.target.value)}>
-                                    </textarea> */}
-                                    <Editor
-                                        onChange={(value) => setReplyContent(value)}
-                                        className='Editor'
-                                        placeholder='Nội dung'
-                                        required={true}
-                                        defaultValue=""
-                                    />
-                                </div>
-                                <div className='row center'><button className="child">PHẢN HỒI</button></div>
-                            </form>) : (
-                                <MessageBox><Link to={`/signin?redirect=forum/post/${postId}`}>{`Đăng nhập `}</Link>để tham gia trò chuyện</MessageBox>
-                            )}
-                        </div>  
+                        
                     </div>
                     
             {post && post.postComments.length ?
@@ -648,8 +645,10 @@ export default function PostDetailPage() {
                                     </div>
                                 )
                             }
+                            
                         </div>
                     ))
+                    
                 }</div>
              :
                 <div className='row full'>
@@ -658,6 +657,29 @@ export default function PostDetailPage() {
                     </div>
                 </div>
             }
+            <div className="col-0">
+                            {
+                                loadingCommentPosting ? <LoadingBox></LoadingBox> : errorCommentPosting ? <MessageBox variant="error"></MessageBox> :
+                                successPostingComment && <MessageBox>ĐÃ ĐĂNG BÌNH LUẬN</MessageBox>
+                            }
+                            {userInfo ? (<form className="editPostForm" onSubmit={commentPostingHandler}>
+                                <div className="row center">Phản hồi dưới tên ‎<label className="bold-text">{userInfo.name}</label></div>
+                                <div className='row center'>
+                                    {/* <textarea placeholder="Nội dung" className="basic-slide" required={true} value={replyContent} type="textarea" onChange={(e)=> setReplyContent(e.target.value)}>
+                                    </textarea> */}
+                                    <Editor
+                                        onChange={(value) => setReplyContent(value)}
+                                        className='Editor'
+                                        placeholder='Nội dung'
+                                        required={true}
+                                        defaultValue=""
+                                    />
+                                </div>
+                                <div className='row center'><button type="button" className="child" onClick={commentPostingHandler}>PHẢN HỒI</button></div>
+                            </form>) : (
+                                <MessageBox><Link to={`/signin?redirect=forum/post/${postId}`}>{`Đăng nhập `}</Link>để tham gia trò chuyện</MessageBox>
+                            )}
+                        </div>  
             </div>
             
             ))}

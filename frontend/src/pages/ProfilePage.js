@@ -11,7 +11,7 @@ import Widget from 'rasa-webchat';
 import Chatbox from '../components/Chatbox';
 import Select from 'react-dropdown-select';
 import { statOfUserPosts } from '../actions/postAction';
-import { Offline, Online } from "react-detect-offline";
+// import { Offline, Online } from "react-detect-offline";
 import Gallery from '../components/Gallery';
 import { createNotification } from '../actions/notificationAction';
 

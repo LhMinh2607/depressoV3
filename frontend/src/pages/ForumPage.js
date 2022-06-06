@@ -337,6 +337,7 @@ export default function ForumPage() {
                     {/* <MdEditor style={{ height: '500px' }} renderHTML={text => mdParser.render(text)} onChange={text => setContent(text)} /> */}
                     
                     {/* PERFECT EDITOR, JUST WHAT I NEED :> */}
+                    {/* BASICALLY THIS BROKE MY PROJECT OR MY PROJECT BROKE THIS PACKAGE */}
                     <Editor
                         defaultValue=""
                         onChange={(value) => setContent(value)}
