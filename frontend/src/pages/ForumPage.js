@@ -15,7 +15,8 @@ import Editor from "rich-markdown-editor";
 import Select from "react-dropdown-select";
 import { CATEGORY_LIST_RESET } from '../constants/categoryConst';
 import Draggable from 'react-draggable';
-
+import { isBrowser, isMobile } from 'react-device-detect';
+import TagSelect from '../components/TagSelect';
 
 
 export default function ForumPage() {
@@ -23,11 +24,18 @@ export default function ForumPage() {
     const userSignin  = useSelector(state=>state.userSignin);
     const {userInfo} = userSignin;
 
+    // const postCache = useSelector(state=>state.postCache);
+    // const {userLastSeenPost} = postCache; //user last seen post
+
+    const postDetails = useSelector(state=>state.postDetails);
+    const {post} = postDetails;
+
     const [title, settitle] = useState('');
     const [content, setContent] = useState('');
     const [category, setCategory] = useState(null);
     const [keyword, setKeyword] = useState('');
     //const [isPublic, setIsPublic] = useState('');
+    const [autoComplete, setAutoComplete] = useState('');
 
     const categoryList = useSelector(state=>state.categoryList);
     const {loading: loadingCategory, error: errorCategory, categories} = categoryList;
@@ -73,6 +81,7 @@ export default function ForumPage() {
         setSorting("none");
         setKeyword(e.target.value);
         dispatch(listOfSearchedPosts(e.target.value));
+        // generateAutoComplete(e.target.value);
       }
 
     const postHandler = () =>{
@@ -122,14 +131,28 @@ export default function ForumPage() {
         }
     }
 
-    const filterThePosts = (selectValues)=>{
+    // const filterThePosts = (selectValues)=>{
+    //     // setFilter(e.target.value);
+    //     //alert(JSON.stringify(selectValues));
+    //     if(selectValues.length>=1){
+    //         setFilter(selectValues[0].value)
+    //         setSorting("none");
+    //         dispatch(listOfFilteredPosts(selectValues[0].value, sorting));
+    //     }else{
+    //         setFilter("");
+    //         setSorting("none");
+    //         dispatch(listOfPosts());
+    //     }
+            
+    // }
+    const filterThePosts = (selectedValue)=>{
         // setFilter(e.target.value);
         //alert(JSON.stringify(selectValues));
-        if(selectValues.length>=1){
-            setFilter(selectValues[0].value)
+        if(selectedValue!=="all"){
+            setFilter(selectedValue.name)
             setSorting("none");
-            dispatch(listOfFilteredPosts(selectValues[0].value, sorting));
-        }else{
+            dispatch(listOfFilteredPosts(selectedValue._id, sorting));
+        }else if(selectedValue==="all"){
             setFilter("");
             setSorting("none");
             dispatch(listOfPosts());
@@ -149,6 +172,23 @@ export default function ForumPage() {
         // alert(category);
     }
 
+    const generateAutoComplete = () =>{
+        if(post){
+            var autoCompleteArr = [];
+            // autoCompleteArr = post.content.split(/[^A-Za-z]/);
+            autoCompleteArr = post.content.split(/[\p{L}]/);
+            autoCompleteArr.push(post.title);
+            console.log(autoCompleteArr);
+            setAutoComplete(autoCompleteArr);
+        }
+    }
+
+    const upperCaseFirstLetter = (text) =>{
+        text = text[0].toUpperCase() + text.slice(1);
+        // console.log(text);
+        return text;
+    }
+
     useEffect(()=>{
         window.scrollTo({
             top: 0, 
@@ -158,15 +198,22 @@ export default function ForumPage() {
         dispatch(listOfCategories());
         dispatch({type: CATEGORY_LIST_RESET});
         dispatch(statOfAllPosts());
+        generateAutoComplete();
     }, [dispatch])
 
+    // var item = document.getElementById("tagSelect");
+
+    // window.addEventListener("wheel", function (e) {
+    //     if (e.deltaY > 0) item.scrollLeft += 100;
+    //     else item.scrollLeft -= 100;
+    // });
 
     return (
-        <div>
+        <div className='forumPage'>
             <div className="floatingDiv">
                 <button onClick={scrollToTopHandler}><i className="fa fa-arrow-up"></i></button>
             </div>
-            <Draggable>
+            {isBrowser && <Draggable>
                 <div>
                     <div className='memberCard'>
                         <div className='row center'><i className='fa fa-bullhorn'></i></div>
@@ -197,7 +244,7 @@ export default function ForumPage() {
                                             </div>
                                             </div>
                                             {/* {u.name} */}
-                                            <div className='row right'>{stat.count}</div>
+                                            <div className='row right'>{stat.count>99 ? "99+" : stat.count}</div>
                                         </div>
                                     ))
                                 }
@@ -234,7 +281,7 @@ export default function ForumPage() {
                                             </div>
                                             </div>
                                             {/* {u.name} */}
-                                            <div className='row right'>{stat.count}</div>
+                                            <div className='row right'>{stat.count>99 ? "99+" : stat.count}</div>
 
                                         </div>
                                     ))
@@ -245,7 +292,7 @@ export default function ForumPage() {
                     </div>
                 </div>
                 
-            </Draggable>
+            </Draggable>}
             
             <div className="row center">
                 <div className="row center search-background"> 
@@ -274,10 +321,20 @@ export default function ForumPage() {
                         {/* {categories && <Select options={[
                             {value: categories.map(ca=>ca.name), label: categories.map(ca=>ca.name)},
                             ]} onChange={(values) => setCategory(values)} />} */}
-                        {categories && <Select dropdownHeight="10rem" placeholder='Lọc theo chủ đề' options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={filterThePosts} clearable/>}
+                        {/* {categories && <Select dropdownHeight="10rem" placeholder='Lọc theo chủ đề' options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={filterThePosts} clearable/>} */}
+                        {categories && <TagSelect categories={categories} selectItem={filterThePosts}></TagSelect>}
                     </div>
-                    <div>
-                        <input type="text" id="searchField" className="basic-slide" value={keyword} onChange={setTheKeyword} placeholder="Tìm bài viết"></input>
+                    <div className='row center'>
+                        <input type="text" id="searchField" className="searchField" value={keyword} onChange={setTheKeyword} placeholder="Tìm bài viết" autoComplete='off'></input>
+                        {keyword && autoComplete &&
+                            <div className='row left autoComplete'>
+                                {
+                                    autoComplete.map(a=>(
+                                        (a.includes(keyword) || a.includes(upperCaseFirstLetter(keyword)) || a.includes(keyword.toUpperCase) || a.includes(keyword.toLowerCase())) && 
+                                        (a.length>30 ? <div value={a} onClick={()=>setKeyword(a)}>{a.substring(0, 30)+"..."}</div> : <div value={a} onClick={()=>setKeyword(a)}>{a}</div>)
+                                    ))
+                                }
+                            </div>}
                     </div>
                     
                     {userInfo && <div><button className="admin" onClick={enablePosting}>{createAPost ? <>ĐÓNG</> : <>TẠO BÀI VIẾT</>}</button></div>}
@@ -290,7 +347,7 @@ export default function ForumPage() {
                 success && <MessageBox>Posted</MessageBox>
             }
             {userInfo ?  (createAPost && (
-            <div className='postHere'>
+            <div className='row center'><div className='postHere'>
                 <div className="row center">Tạo 1 bài viết dưới tên ‎<label className="bold-text">{userInfo.name}</label></div>
 
                 <div className='row center'>{
@@ -320,8 +377,8 @@ export default function ForumPage() {
                     
                     </div>
                 </div> */}
-                <div>
-                    <input required={true} placeholder="Tiêu đề" value={title} className=" basic-slide" type="text" onChange={(e)=> settitle(e.target.value)}>
+                <div className='row center'>
+                    <input required={true} placeholder="Tiêu đề" value={title} className="titleField" type="text" onChange={(e)=> settitle(e.target.value)}>
                     </input>
                 </div><div>
                     {/* <textarea className="content" required={true} placeholder="Nội dung" value={content} className="basic-slide" type="textarea" onChange={(e)=> setContent(e.target.value)}>
@@ -347,8 +404,10 @@ export default function ForumPage() {
                     /> 
 
                 </div>
+                <div className='row center'>
                     <button type="submit" className="admin block">ĐĂNG</button>
-            </form></div>))
+                </div>
+            </form></div></div>))
             : (<div>
                         {/* <div className="row center">
                             <MessageBox variant="info">ĐĂNG NHẬP ĐỂ THAM GIA TRÒ CHUYỆN</MessageBox> 

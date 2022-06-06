@@ -20,13 +20,15 @@ const postSchema = new mongoose.Schema({
             updatedAt: {type: Date},
         },
     ],
+    upvotes: [{type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}],
+    downvotes: [{type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}],
 },
     {
         timestamps: true,
     },
 );
 
-postSchema.index({ title: 'text', keywords: 'text' });
+postSchema.index({ title: 'text', keywords: 'text'});
 
 
 const Post = mongoose.model('Post', postSchema);

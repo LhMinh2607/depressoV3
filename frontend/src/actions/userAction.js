@@ -4,6 +4,7 @@ import { ADD_FRIEND_FAILED, ADD_FRIEND_REQUEST, ADD_FRIEND_SUCCESSFUL, MESSAGE_S
 
 export const signout = () => (dispatch) =>{
     localStorage.removeItem('userInfo');
+    localStorage.removeItem('userLSP');
     localStorage.clear();
     localStorage.removeItem('cartItems');
     dispatch({type: USER_SIGNOUT});

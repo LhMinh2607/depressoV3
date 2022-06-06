@@ -56,7 +56,9 @@ function App() {
   const signOutHandler = () =>{
     dispatch(signout());
   };
-  let socket = io(process.env.REACT_APP_ENDPOINT);
+  // let socket = io(process.env.REACT_APP_ENDPOINT);
+  // let socket = io(process.env.REACT_APP_WSENDPOINT);
+  let socket = io("https://8527-27-2-17-107.ngrok.io");
 
   const userList = useSelector(state=>state.userList);
   const {loading: loadingUL, error: errorUL, users} = userList;
@@ -361,8 +363,8 @@ function App() {
                         </div>) : <Link to="/signin" className="">Đăng nhập</Link>}
                   </>: 
                   isMobile &&
-                      <div className='row right'>
-                        <div className='interactiveText'  onClick={()=>setMenu(!menu)}><i className='fa fa-bars'></i></div>
+                      <div className='row left'>
+                        <div className='interactiveText row left'  onClick={()=>setMenu(!menu)}><i className='fa fa-bars'></i></div>
                         {menu && (userInfo ? <ul className='navigationBar'>
                           <li>
                             <Link to={`/user/${userInfo._id}`}>Tài khoản<i className="fa fa-user"></i></Link>
@@ -382,8 +384,8 @@ function App() {
                           <li>
                             <Link to={`/forum`} className="">Diễn đàn</Link>
                           </li>
-                            {userInfo && userInfo.role==="admin" && <li onClick={()=>setOpenKeyPad(!openKeyPad)} className='interactiveText headerBar'><i className="fa fa-phone"></i></li>}
-                            {userInfo && userInfo.backgroundMusic && <li onClick={()=>setOpenMusicBox(!openMusicBox)} className='interactiveText headerBar'><i className="fa fa-music"></i></li>}
+                            {userInfo && userInfo.role==="admin" && <li><Link to={`#`} onClick={()=>setOpenKeyPad(!openKeyPad)} className='interactiveText headerBar'><i className="fa fa-phone"></i>Callcenter</Link></li>}
+                            {userInfo && userInfo.backgroundMusic && <li><Link to={`#`} onClick={()=>setOpenMusicBox(!openMusicBox)} className='interactiveText headerBar'><i className="fa fa-music"></i>Nhạc</Link></li>}
                           <li>
                               <Link to="/" onClick={signOutHandler}>
                                 Đăng xuất<i className="fa fa-hand-o-left"></i>

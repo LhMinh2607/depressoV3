@@ -91,7 +91,7 @@ expressAsyncHandler(async (req, res)=>{
 userRouter.get('/:id', expressAsyncHandler(async(req, res)=>{
     const user = await User.findById(req.params.id);
     if(user){
-        console.log(user);
+        // console.log(user);
         res.send(user);
         // const conversation = await ConversationStore.find({})
         // ConversationStore.find({"events": {$elemMatch: {"text": req.params.id}}})

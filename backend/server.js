@@ -78,7 +78,8 @@ const server = http.createServer(app);
 const io = socketIo(server, {cors: {
     // origin: process.env.ORIGIN,
     origin: "*",
-    methods: ["GET", "POST"]
+    methods: ["GET", "POST"],
+    transports: ["polling", "websocket"]
   }}); // < Interesting!
 
 
