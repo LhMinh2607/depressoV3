@@ -53,13 +53,14 @@ export default function ForumPage() {
     const userList = useSelector((state) => state.userList);
     const {loading: loadingUser, error: errorUser, users} = userList;
     
-    const [sorting, setSorting] = useState('none');
+    const [sorting, setSorting] = useState('hot');
 
     const postSorting = useSelector(state=>state.postSorting);
     const {loading: loadingSort, error: errorSort, sortedPosts} = postSorting;
 
     const [createAPost, setCreateAPost] = useState(false);
     const [filter, setFilter] = useState('');
+    const [filterId, setFilterId] = useState('');
 
     const postFiltering = useSelector(state=>state.postFiltering);
     const {loading: loadingFilter, error: errorFilter, filteredPosts} = postFiltering;
@@ -78,6 +79,7 @@ export default function ForumPage() {
 
     const setTheKeyword = (e) =>{
         setFilter("");
+        setFilterId("");
         setSorting("none");
         setKeyword(e.target.value);
         dispatch(listOfSearchedPosts(e.target.value));
@@ -103,31 +105,44 @@ export default function ForumPage() {
         //alert(JSON.stringify(selectedValues));
         // setSorting(e.target.value);
         setSorting(selectedValues[0].value);
-        setFilter('');
+        // setFilter('');
         setKeyword('');
         //alert(e.target.value);
-        if(selectedValues[0].value==="1"){
-            //alert("1");
+        // if(selectedValues[0].value==="1"){
+        //     //alert("1");
+        //     if(filter===""){
+        //         //alert("none");
+        //         dispatch(listOfSortedPosts("none", "1"));
+        //     }
+        //     else if(filter!==""){
+        //         //alert(e.target.value);
+        //         dispatch(listOfSortedPosts(filter, sorting));
+        //     }
+        // }else if(selectedValues[0].value==="-1"){
+        //     if(filter===""){
+        //         //alert("none");
+        //         dispatch(listOfSortedPosts("none", "-1"));
+        //     }
+        //     else if(filter!==""){
+        //         //alert(e.target.value);
+        //         dispatch(listOfSortedPosts(filter, sorting));
+        //     }
+        // }else if(selectedValues[0].value==="abc"){
+        //     //alert("");
+        //     dispatch(listOfPosts());
+        // }else if(selectedValues[0].value==="hot"){
+        //     dispatch(listOfSortedPosts("none", "hot"));
+        // }else if(selectedValues[0].value==="top"){
+        //     dispatch(listOfSortedPosts("none", "top"));
+        // }
+        if(selectedValues[0].value!=="abc"){
             if(filter===""){
-                //alert("none");
-                dispatch(listOfSortedPosts("none", "1"));
+                dispatch(listOfSortedPosts("none", selectedValues[0].value));
+            }else{
+                dispatch(listOfSortedPosts(filterId, selectedValues[0].value));
             }
-            else if(filter!==""){
-                //alert(e.target.value);
-                dispatch(listOfSortedPosts(sorting));
-            }
-        }else if(selectedValues[0].value==="-1"){
-            if(filter===""){
-                //alert("none");
-                dispatch(listOfSortedPosts("none", "-1"));
-            }
-            else if(filter!==""){
-                //alert(e.target.value);
-                dispatch(listOfSortedPosts(sorting));
-            }
-        }else if(selectedValues[0].value==="abc"){
-            //alert("");
-            dispatch(listOfPosts());
+        }else{
+            dispatch(listOfPosts);
         }
     }
 
@@ -150,8 +165,14 @@ export default function ForumPage() {
         //alert(JSON.stringify(selectValues));
         if(selectedValue!=="all"){
             setFilter(selectedValue.name)
-            setSorting("none");
-            dispatch(listOfFilteredPosts(selectedValue._id, sorting));
+            setFilterId(selectedValue._id);
+            // setSorting("none");
+            if(selectedValue.name===""){
+                dispatch(listOfSortedPosts("none", sorting));
+            }else{
+                dispatch(listOfSortedPosts(selectedValue._id, sorting));
+            }
+            // dispatch(listOfFilteredPosts(selectedValue._id, sorting));
         }else if(selectedValue==="all"){
             setFilter("");
             setSorting("none");
@@ -161,9 +182,11 @@ export default function ForumPage() {
     }
 
     const sortingOptions = [
-        {value: "none", label: "Theo tên (A-Z)"},
+        // {value: "none", label: "Theo tên (A-Z)"},
         {value: "-1", label: "Mới nhất"},
         {value: "1", label: "Cũ nhất"},
+        {value: "hot", label: "Phổ biến"},
+        {value: "top", label: "Top"}
     ]
 
     const setValuesForCategory = (selectedValues) => {
@@ -244,7 +267,7 @@ export default function ForumPage() {
                                             </div>
                                             </div>
                                             {/* {u.name} */}
-                                            <div className='row right'>{stat.count>99 ? "99+" : stat.count}</div>
+                                            <div className='row right' title={stat.count}>{stat.count>99 ? "99+" : stat.count}</div>
                                         </div>
                                     ))
                                 }
@@ -281,7 +304,7 @@ export default function ForumPage() {
                                             </div>
                                             </div>
                                             {/* {u.name} */}
-                                            <div className='row right'>{stat.count>99 ? "99+" : stat.count}</div>
+                                            <div className='row right' title={stat.count}>{stat.count>99 ? "99+" : stat.count}</div>
 
                                         </div>
                                     ))
@@ -324,9 +347,9 @@ export default function ForumPage() {
                         {/* {categories && <Select dropdownHeight="10rem" placeholder='Lọc theo chủ đề' options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={filterThePosts} clearable/>} */}
                         {categories && <TagSelect categories={categories} selectItem={filterThePosts}></TagSelect>}
                     </div>
-                    <div className='row center'>
-                        <input type="text" id="searchField" className="searchField" value={keyword} onChange={setTheKeyword} placeholder="Tìm bài viết" autoComplete='off'></input>
-                        {keyword && autoComplete &&
+                    <div className='row center' style={{position: "relative"}}>
+                        <input type="text" id="searchField" className="searchField" value={keyword} onChange={setTheKeyword} placeholder="Tìm bài viết" autoComplete='off' list="suggestions"></input>
+                        {/* {keyword && autoComplete &&
                             <div className='row left autoComplete'>
                                 {
                                     autoComplete.map(a=>(
@@ -334,7 +357,15 @@ export default function ForumPage() {
                                         (a.length>30 ? <div value={a} onClick={()=>setKeyword(a)}>{a.substring(0, 30)+"..."}</div> : <div value={a} onClick={()=>setKeyword(a)}>{a}</div>)
                                     ))
                                 }
-                            </div>}
+                            </div>} */}
+                            <datalist id="suggestions">
+                                {keyword && autoComplete &&
+                                    autoComplete.map(a=>(
+                                        (a.includes(keyword) || a.includes(upperCaseFirstLetter(keyword)) || a.includes(keyword.toUpperCase) || a.includes(keyword.toLowerCase())) && 
+                                        (a.length>30 ? <option value={a} onClick={()=>setKeyword(a)}>{a.substring(0, 30)+"..."}</option > : (a.length<30 || a.length===30) && <option value={a} onClick={()=>setKeyword(a)}>{a}</option>)
+                                    ))
+                                }
+                            </datalist>
                     </div>
                     
                     {userInfo && <div><button className="admin" onClick={enablePosting}>{createAPost ? <>ĐÓNG</> : <>TẠO BÀI VIẾT</>}</button></div>}
@@ -417,7 +448,8 @@ export default function ForumPage() {
                         </div>
                     
                     </div>)}
-            {sorting==="none" && filter === "" && keyword === "" &&(
+            {/* default view */}
+            {sorting==="hot" && filter === "" && keyword === "" &&(
                 loadingPost ? <LoadingBox></LoadingBox> : errorPost ? <MessageBox variant="error">{errorPost}</MessageBox> :
                 posts && (
                     posts.map(p=>(
@@ -427,6 +459,9 @@ export default function ForumPage() {
                                 users && (users.map(u=>(
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div className="" key={p._id}>
+                                        <div className='row left'>
+                                            {p.upvotes && p.downvotes && p.upvotes.length - p.downvotes.length}<i className='fa fa-thumbs-up'></i>
+                                        </div>
                                         <div className="row left">
                                             <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
@@ -445,63 +480,8 @@ export default function ForumPage() {
                     )
                 )))
             }
-            {keyword === "" && sorting==="-1" && (
-                loadingSort ? <LoadingBox></LoadingBox> : errorSort ? <MessageBox variant="error">{errorSort}</MessageBox> :
-                sortedPosts && (
-                    sortedPosts.map(p=>(
-                        <div className="card card-body postBasic">
-                            {
-                                loadingUser ? <LoadingBox></LoadingBox> : errorUser ? <MessageBox variant="error">{errorUser}</MessageBox> : 
-                                users && (users.map(u=>(
-                                    p.user === u._id && 
-                                    <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
-                                        <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
-                                        </div>
-                                        <label className="bold-text">{u.role==='admin' ? (<label title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></label>) :   u.name}</label>
-                                        <div className="row left">
-                                            <CategoryIcon categoryName = {p.category}></CategoryIcon>
-                                        </div>
-                                        <div>
-                                            <DateComponent passedDate={p.createdAt}>Đăng vào: </DateComponent>
-                                        </div>
-                                    </div></Link>
-                                )))
-                            }
-                        </div>
-                        
-                    )
-                )))
-            }
-            {keyword === "" && sorting==="1" && (
-                loadingSort ? <LoadingBox></LoadingBox> : errorSort ? <MessageBox variant="error">{errorSort}</MessageBox> :
-                sortedPosts && (
-                    sortedPosts.map(p=>(
-                        <div className="card card-body postBasic">
-                            {
-                                loadingUser ? <LoadingBox></LoadingBox> : errorUser ? <MessageBox variant="error">{errorUser}</MessageBox> : 
-                                users && (users.map(u=>(
-                                    p.user === u._id && 
-                                    <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
-                                        <div className="row left">
-                                            <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
-                                        </div>
-                                        <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
-                                        <div className="row left">
-                                            <CategoryIcon categoryName = {p.category}></CategoryIcon>
-                                        </div>
-                                        <div>
-                                            <DateComponent passedDate={p.createdAt}>Đăng vào: </DateComponent>
-                                        </div>
-                                    </div></Link>
-                                )))
-                            }
-                        </div>
-                        
-                    )
-                )))
-            }
-            {keyword === "" && sorting==="none" && filter!=="" && (
+            {/* filter only */}
+            {/* {keyword === "" && sorting==="none" && filter!=="" && (
                 loadingFilter ? <LoadingBox></LoadingBox> : errorFilter ? <MessageBox variant="error">{errorFilter}</MessageBox> :
                 filteredPosts && (
                     filteredPosts.map(p=>(
@@ -511,6 +491,42 @@ export default function ForumPage() {
                                 users && (users.map(u=>(
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
+                                        <div className='row left'>
+                                            {p.upvotes && p.downvotes && p.upvotes.length - p.downvotes.length}<i className='fa fa-thumbs-up'></i>
+                                        </div>
+                                        <div className="row left">
+                                            <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
+                                        </div>
+                                        <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
+                                        <div className="row left">
+                                            <CategoryIcon categoryName = {p.category}></CategoryIcon>
+                                        </div>
+                                        <div>
+                                            <DateComponent passedDate={p.createdAt}>Đăng vào: </DateComponent>
+                                        </div>
+                                    </div></Link>
+                                )))
+                            }
+                        </div>
+                        
+                    )
+                )))
+            } */}
+            
+            {/* sorting + filter */}
+            {keyword === "" && (
+                loadingSort ? <LoadingBox></LoadingBox> : errorSort ? <MessageBox variant="error">{errorSort}</MessageBox> :
+                sortedPosts && (
+                    sortedPosts.map(p=>(
+                        <div className="card card-body postBasic">
+                            {
+                                loadingUser ? <LoadingBox></LoadingBox> : errorUser ? <MessageBox variant="error">{errorUser}</MessageBox> : 
+                                users && (users.map(u=>(
+                                    p.user === u._id && 
+                                    <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
+                                        <div className='row left'>
+                                            {p.upvotes && p.downvotes && p.upvotes.length - p.downvotes.length}<i className='fa fa-thumbs-up'></i>
+                                        </div>
                                         <div className="row left">
                                             <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
@@ -529,6 +545,7 @@ export default function ForumPage() {
                     )
                 )))
             }
+            {/* keyword */}
             {filter==="" && sorting==="none" && keyword && (
                 loadingSearch ? <LoadingBox></LoadingBox> : errorSearch ? <MessageBox variant="error">{errorSearch}</MessageBox> :
                 searchedPosts && (
@@ -539,6 +556,9 @@ export default function ForumPage() {
                                 users && (users.map(u=>(
                                     p.user === u._id && 
                                     <Link to={`/forum/post/${p._id}`}><div  key={p._id}>
+                                        <div className='row left'>
+                                            {p.upvotes && p.downvotes && p.upvotes.length - p.downvotes.length}<i className='fa fa-thumbs-up'></i>
+                                        </div>
                                         <div className="row left">
                                             <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
@@ -557,7 +577,6 @@ export default function ForumPage() {
                     )
                 )))
             }
-            
         </div>
     )
 }

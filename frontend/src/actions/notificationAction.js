@@ -1,15 +1,31 @@
 import axios from "axios";
-import { ADD_NOTIFICATION_FAILED, ADD_NOTIFICATION_REQUEST, ADD_NOTIFICATION_SUCCESSFUL, NOTIFICATION_LIST_FAILED, NOTIFICATION_LIST_REQUEST, NOTIFICATION_LIST_SUCCESSFUL } from "../constants/NotificationConsts";
+import { ADD_NOTIFICATION_FAILED, ADD_NOTIFICATION_REQUEST, ADD_NOTIFICATION_SUCCESSFUL, EDIT_NOTIFICATION_FAILED, EDIT_NOTIFICATION_REQUEST, EDIT_NOTIFICATION_SUCCESSFUL, NOTIFICATION_LIST_FAILED, NOTIFICATION_LIST_REQUEST, NOTIFICATION_LIST_SUCCESSFUL } from "../constants/NotificationConsts";
 
-export const createNotification = (senderId, receiverId, content, type) => async (dispatch) =>{
+export const createNotification = (senderId, receiverId, content, type, postId) => async (dispatch) =>{
     dispatch({
-        type: ADD_NOTIFICATION_REQUEST, payload: {senderId, receiverId, content, type,}
+        type: ADD_NOTIFICATION_REQUEST, payload: {senderId, receiverId, content, type, postId}
     });
     try {
-        const {data} = await axios.post(`/api/notification/add`, {senderId, receiverId, content, type,});
+        const {data} = await axios.post(`/api/notification/add`, {senderId, receiverId, content, type, postId});
         dispatch({type: ADD_NOTIFICATION_SUCCESSFUL, payload: data});
     } catch (error) {
         dispatch({type: ADD_NOTIFICATION_FAILED, 
+            payload: error.response 
+            && error.response.data.message 
+            ? error.response.data.message
+            : error.message,});
+    }
+};
+
+export const editNotification = (notifId) => async (dispatch) =>{
+    dispatch({
+        type: EDIT_NOTIFICATION_REQUEST, payload: {notifId}
+    });
+    try {
+        const {data} = await axios.put(`/api/notification/edit`, {notifId});
+        dispatch({type: EDIT_NOTIFICATION_SUCCESSFUL, payload: data});
+    } catch (error) {
+        dispatch({type: EDIT_NOTIFICATION_FAILED, 
             payload: error.response 
             && error.response.data.message 
             ? error.response.data.message

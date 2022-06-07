@@ -52,14 +52,202 @@ forumRouter.get('/sort/:sorting/filter/:category', expressAsyncHandler(async (re
             }else{
                 res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
             }
+        }else if(req.params.sorting==="hot"){
+            //roughly based on reddit's hot filter algorithm
+            // var mapper = function() {
+            //     function hot(upvotes,downvotes,createdAt){
+            //         var score = upvotes - downvotes;
+            //         var order = log10(Math.max(Math.abs(score), 1));
+            //         var sign = score>0 ? 1 : score<0 ? -1 : 0;
+            //         var seconds = epochSeconds(createdAt) - 1134028003;
+            //         var product = order + sign * seconds / 45000;
+            //         return Math.round(product*10000000)/10000000;
+            //     }
+            
+            //    function log10(val){
+            //       return Math.log(val) / Math.LN10;
+            //    }
+            
+            //    function epochSeconds(d){
+            //        return (d.getTime() - new Date(1970,1,1).getTime())/1000;
+            //    }
+            
+            //    emit( hot(this.upvotes, this.downvotes, this.createdAt), this );
+            
+            // };
+            function hot(upvotes,downvotes,createdAt){
+                var score = upvotes - downvotes;
+                var order = log10(Math.max(Math.abs(score), 1));
+                var sign = score>0 ? 1 : score<0 ? -1 : 0;
+                var seconds = epochSeconds(createdAt) - 1134028003;
+                var product = order + sign * seconds / 45000;
+                return Math.round(product*10000000)/10000000;
+            }
+        
+            function log10(val){
+                return Math.log(val) / Math.LN10;
+            }
+            
+            function epochSeconds(d){
+                return (d.getTime() - new Date(1970,1,1).getTime())/1000;
+            }
+        
+            var posts = await Post.find({}).sort({upvotes: -1});
+            var hotPoints = posts.map((post)=>{
+                post["hotness"] = hot(post.upvotes.length, post.downvotes.length, post.createdAt);
+                // console.log(post.title);
+                // console.log(post.hotness);
+                return post;
+            })
+            // console.log(hotPoints);
+            // var sortedPosts = hotPoints.sort((a, b)=>a.hotness > b.hotness ? 1 : a.hotness<b.hotness ? -1 : a.hotness === b.hotness && 0);
+            // console.log(sortedPosts);
+            var sortedPosts = hotPoints.sort((a, b)=>
+                {
+                    if(a.hotness > b.hotness){
+                        return 1;
+                    }else if(a.hotness<b.hotness){
+                        return -1;
+                    }else if(a.hotness===b.hotness){
+                        return 0;
+                    }
+                }
+            ).reverse();
+
+            sortedPosts.map((post)=>
+            {
+                console.log("hotness: "+post.hotness+" score:"+(post.upvotes.length-post.downvotes.length).toString());
+                console.log(" upvotes:"+(post.upvotes.length).toString()+" downvotes: "+(post.downvotes.length).toString());
+            });
+
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
+        }else if(req.params.sorting==="top"){
+            //roughly based on reddit's hot filter algorithm
+            var posts = await Post.find({}).sort({upvotes: -1});
+            var topPoints = posts.map((post)=>{
+                post["score"] = (post.upvotes.length - post.downvotes.length);
+                // console.log(post.title);
+                // console.log(post.hotness);
+                return post;
+            })
+            // console.log(hotPoints);
+            // var sortedPosts = hotPoints.sort((a, b)=>a.hotness > b.hotness ? 1 : a.hotness<b.hotness ? -1 : a.hotness === b.hotness && 0);
+            // console.log(sortedPosts);
+            var sortedPosts = topPoints.sort((a, b)=>
+                {
+                    if(a.score > b.score){
+                        return 1;
+                    }else if(a.score<b.score){
+                        return -1;
+                    }else if(a.score===b.score){
+                        return 0;
+                    }
+                }
+            ).reverse();
+
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
         }
-    }else if(req.params.category=="none"){
-        const sortedPosts = await Post.find({category: req.params.category}).sort({createdAt: 1});
-        //console.log(posts);
-        if(sortedPosts.length>0){
-            res.send(sortedPosts);
-        }else{
-            res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+    }else if(req.params.category!=="none"){
+        if(req.params.sorting==="1"){
+            const sortedPosts = await Post.find({category: req.params.category}).sort({createdAt: 1});
+            //console.log(posts);
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
+        }else if(req.params.sorting==="-1"){
+            const sortedPosts = await Post.find({category: req.params.category}).sort({createdAt: -1});
+            //console.log(posts);
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
+        }else if(req.params.sorting===""){
+            const sortedPosts = await Post.find({category: req.params.category}).sort({name: 1});
+            //console.log(posts);
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
+        }else if(req.params.sorting==="hot"){
+            //roughly based on reddit's hot filter algorithm
+            function hot(upvotes,downvotes,createdAt){
+                var score = upvotes - downvotes;
+                var order = log10(Math.max(Math.abs(score), 1));
+                var sign = score>0 ? 1 : score<0 ? -1 : 0;
+                var seconds = epochSeconds(createdAt) - 1134028003;
+                var product = order + sign * seconds / 45000;
+                return Math.round(product*10000000)/10000000;
+            }
+            function log10(val){
+                return Math.log(val) / Math.LN10;
+            }
+            function epochSeconds(d){
+                return (d.getTime() - new Date(1970,1,1).getTime())/1000;
+            }
+            var posts = await Post.find({}).sort({upvotes: -1});
+            var hotPoints = posts.map((post)=>{
+                post["hotness"] = hot(post.upvotes.length, post.downvotes.length, post.createdAt);
+                return post;
+            })
+            var sortedPosts = hotPoints.sort((a, b)=>
+                {
+                    if(a.hotness > b.hotness){
+                        return 1;
+                    }else if(a.hotness<b.hotness){
+                        return -1;
+                    }else if(a.hotness===b.hotness){
+                        return 0;
+                    }
+                }
+            ).reverse();
+
+            sortedPosts.map((post)=>
+            {
+                console.log("hotness: "+post.hotness+" score:"+(post.upvotes.length-post.downvotes.length).toString());
+                console.log(" upvotes:"+(post.upvotes.length).toString()+" downvotes: "+(post.downvotes.length).toString());
+            });
+
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
+        }else if(req.params.sorting==="top"){
+            //roughly based on reddit's hot filter algorithm
+            var posts = await Post.find({category: req.params.category}).sort({upvotes: -1});
+            var topPoints = posts.map((post)=>{
+                post["score"] = (post.upvotes.length - post.downvotes.length);
+                return post;
+            })
+            var sortedPosts = topPoints.sort((a, b)=>
+                {
+                    if(a.score > b.score){
+                        return 1;
+                    }else if(a.score<b.score){
+                        return -1;
+                    }else if(a.score===b.score){
+                        return 0;
+                    }
+                }
+            ).reverse();
+
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
         }
     }
     

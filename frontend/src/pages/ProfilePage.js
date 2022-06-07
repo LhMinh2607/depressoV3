@@ -580,7 +580,7 @@ export default function ProfilePage(){
                 </div>}
             </form>
             : currentTab==='customization' ?
-            <form className="form" onSubmit={customizationSubmitHandler}>
+            <form className="form">
                 {
                     loadingUser? <LoadingBox></LoadingBox>
                     : errorUser ? <MessageBox variant="error">{errorUser}</MessageBox>
@@ -696,7 +696,7 @@ export default function ProfilePage(){
                                 </button>
                             </div>
                             {!editButtonName && <div className="bottom-button-div">
-                                <button className="admin" type="submit" disabled={disabled}>
+                                <button className="admin" type="button" onClick={customizationSubmitHandler} disabled={disabled}>
                                     <label>GỬI</label>
                                 </button>
                             </div>}

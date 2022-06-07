@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Route, Routes } from 'react-router';
+import { Navigate, Route, Routes, useNavigate } from 'react-router';
 import { BrowserRouter, Link, } from 'react-router-dom';
 import LoadingBox from './components/LoadingBox';
 import MessageBox from './components/MessageBox';
@@ -24,8 +24,8 @@ import NewsPage from './pages/NewsPage';
 import Draggable from 'react-draggable';
 import Widget from 'rasa-webchat';
 import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect';
-import { listOfNotifications } from './actions/notificationAction';
-import socketIOClient from "socket.io-client";
+import { editNotification, listOfNotifications } from './actions/notificationAction';
+// import socketIOClient from "socket.io-client";
 // import {Recorder} from 'react-voice-recorder'
 // import 'react-voice-recorder/dist/index.css'
 // import { ReactMediaRecorder } from "react-media-recorder";
@@ -52,13 +52,14 @@ function App() {
   const userSignin = useSelector((state)=> state.userSignin);
   const {userInfo, loading, error} = userSignin;
 
+  // const navigate = useNavigate();
   const dispatch = useDispatch();
   const signOutHandler = () =>{
     dispatch(signout());
   };
-  // let socket = io(process.env.REACT_APP_ENDPOINT);
+  let socket = io(process.env.REACT_APP_ENDPOINT);
   // let socket = io(process.env.REACT_APP_WSENDPOINT);
-  let socket = io("https://8527-27-2-17-107.ngrok.io");
+  // let socket = io("https://8527-27-2-17-107.ngrok.io");
 
   const userList = useSelector(state=>state.userList);
   const {loading: loadingUL, error: errorUL, users} = userList;
@@ -252,7 +253,25 @@ function App() {
     // audioMenuSelectionClick.play();
     
   }
-  
+
+  const updateNotificationStatus = (notifId) =>{
+    dispatch(editNotification(notifId));
+    // alert("Test"+notifId)
+    // socket.emit("addComments");
+  }
+  socket.on("loadComments", () => {
+    setTimeout(()=>{
+        if(userInfo){
+          dispatch(listOfNotifications(userInfo._id));
+          console.log("client loadComments")
+          // alert("loadComments");
+          // socket.disconnect();
+          // socket.off('loadComments');
+          // socket.off("loadComments");
+          // socket.emit("stop");
+        }
+    }, 10);
+  });
   
   useEffect(()=>{
     if(userInfo){
@@ -325,14 +344,33 @@ function App() {
                   </div>
                       {userInfo && userInfo.role==="admin" && <div onClick={()=>setOpenKeyPad(!openKeyPad)} className='interactiveText headerBar'><i className="fa fa-phone"></i></div>}
                       {userInfo && userInfo.backgroundMusic && <div onClick={()=>setOpenMusicBox(!openMusicBox)} className='interactiveText headerBar'><i className="fa fa-music"></i></div>}
-                      <div className='bell'><i className='fa fa-bell'></i>
+                      
+                      <div className='bell'>
+                        <div className='row'>
+                          <div><i className='fa fa-bell'></i></div>
+                          {/* temporary solution. This should use localStorage */}
+                          <div className='cart-items-count'>{notifications && notifications.filter(notif=>notif.status==="").length}
+                          </div>
+                        </div>
                       <ul className='notificationDropdown'>
-                        {notifications && notifications.length && notifications.map((notif)=>(
+                        {/* {notifications && notifications.length && notifications.map((notif)=>(
                           notif.type==="friendRequest" && notif.status!=="checked" && <li key={notif._id}>
                             {notif.content}
                             <div className='addFriendButton interactiveText' onClick={()=>addThisFriend(notif.senderId)}>Chấp nhận</div>
                           </li> 
+                        ))} */}
+                        {notifications && notifications.length && notifications.map((notif)=>(
+                          notif.type==="commentAlert" && (notif.status==="" ? <Link to={`/forum/post/${notif.postId}`} onClick={()=>updateNotificationStatus(notif._id)}><li className='' key={notif._id} >
+                            {notif.content}
+                          </li></Link> : notif.status === "checked" && <Link to={`/forum/post/${notif.postId}`}><li style={{color: "grey"}} className='' key={notif._id} >
+                            {notif.content}
+                          </li></Link>)
                         ))}
+                        {/* {notifications && notifications.length && notifications.map((notif)=>(
+                          notif.type==="commentAlert" && notif.status!=="checked" && <li className='' onClick={()=>updateNotificationStatus(notif._id)} key={notif._id} >
+                            {notif.content}
+                          </li>
+                        ))} */}
                       </ul>
                       </div>
                       {userInfo ? (
@@ -425,7 +463,7 @@ function App() {
                       profileAvatar={"https://cdn.discordapp.com/emojis/967412208323674243.webp?size=48&quality=lossless"}
                       // openLauncherImage={""}
                       />
-                      } */}
+                    } */}
               </header>
               <main>
               <div>

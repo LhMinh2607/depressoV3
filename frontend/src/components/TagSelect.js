@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 
 export default function TagSelect(props) {
     const {categories, selectItem} = props;
-    const [active, setActive] = useState('');
+    const [active, setActive] = useState('all');
 
     const select = (ca) =>{
         if(ca==="all"){
