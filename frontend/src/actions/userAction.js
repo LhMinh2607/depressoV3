@@ -80,14 +80,16 @@ export const detailsOfUser = (userId) => async(dispatch, getState) =>{
 
 export const updateUserProfile = (user) => async (dispatch, getState)=>{
     dispatch({type: USER_UPDATE_PROFILE_REQUEST, payload: user});
-    const {
-        userSignin: {userInfo},
-    } = getState();
-   // console.log(user);
+    // const {
+    //     userSignin: {userInfo},
+    // } = getState();
+//    console.log(user);
     try {
-        const {data} = await axios.put(`/api/user/profile/update`, user, {
-            headers: {Authorization: `Bearer ${userInfo.token}`},
-        });
+        const {data} = await axios.put(`/api/user/profile/update`, user
+        // ,{
+        //     headers: {Authorization: `Bearer ${userInfo.token}`},
+        // }
+        );
         dispatch({type: USER_UPDATE_PROFILE_SUCCESSFUL, payload: data});
         dispatch({type: USER_SIGNIN_SUCCESSFUL, payload: data});
         localStorage.setItem('userInfo', JSON.stringify(data));

@@ -7,7 +7,7 @@ import { feedbackListReducer, userFeedbackListReducer } from './reducers/feedbac
 import { imageSearchListReducer, userImageSearchListReducer } from './reducers/imageSearchReducer';
 import { cancelCallReducer, historyListReducer, loggingACallReducer, makingACallReducer, updatingACallReducer } from './reducers/callingReducers';
 import { contactDetailReducer, contactEditingReducer, contactListReducer, contactRemovingReducer, contactSavingReducer, contactSearchingReducer } from './reducers/contactReducers';
-import { notificationAddingReducers, notificationListReducers } from './reducers/notificationReducer';
+import { notificationAddingReducers, notificationEditingReducers, notificationListReducers } from './reducers/notificationReducer';
 
 const initialState = {
     userSignin: {
@@ -98,6 +98,9 @@ const reducer = combineReducers({
 
     //
     postAccumulating: postAccumulatingReducers,
+
+    //
+    notificationEditing: notificationEditingReducers,
 })
 
 

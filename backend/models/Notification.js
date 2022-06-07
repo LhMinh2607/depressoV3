@@ -8,6 +8,7 @@ const notification = new mongoose.Schema({
     receiverId: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
     senderId: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
     status: {type: String, required: false},
+    postId: {type: String, required: false},
 },
     {
         timestamps: true,

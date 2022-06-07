@@ -156,13 +156,16 @@ userRouter.get('/:id/conversation/stat', expressAsyncHandler(async(req, res)=>{
     }).catch(err => console.log(err.message));
 }));
 
-userRouter.put('/profile/update', isAuth, expressAsyncHandler(async(req, res)=>{
-    const user = await User.findById(req.user._id);
+userRouter.put('/profile/update', expressAsyncHandler(async(req, res)=>{
+    // const user = await User.findById(req.user._id);
+    const user = await User.findById(req.body.userId);
+
 
     // console.log(req.body.gender);
     // console.log(req.body.dob);
 
     if(user){
+        console.log(user);
         user.name=req.body.name || user.name;
         user.email=req.body.email.toLowerCase() || user.email.toLowerCase();
         user.username=req.body.username || user.username;
@@ -186,7 +189,8 @@ userRouter.put('/profile/update', isAuth, expressAsyncHandler(async(req, res)=>{
         }
         if(user.backgroundImage || user.backgroundMusic){
             const userImageLog = new UserImageLog({
-                user: req.user._id,
+                // user: req.user._id,
+                user: req.body.userId,
                 backgroundImage: user.backgroundImage,
                 avatar: user.avatar,
                 backgroundMusic: user.backgroundMusic,

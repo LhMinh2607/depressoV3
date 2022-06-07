@@ -84,7 +84,7 @@ const io = socketIo(server, {cors: {
 
 
 
-app.set('sock', io);
+// app.set('sock', io);
 
 let interval;
 io.on("connection", (socket) => {

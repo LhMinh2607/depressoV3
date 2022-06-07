@@ -17,6 +17,7 @@ import { listOfCategories } from '../actions/categoryAction';
 import Editor from "rich-markdown-editor";
 import Select from "react-dropdown-select";
 import { CATEGORY_LIST_RESET } from '../constants/categoryConst';
+import { createNotification } from '../actions/notificationAction';
 
 export default function PostDetailPage(props) {
 
@@ -48,6 +49,7 @@ export default function PostDetailPage(props) {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('');
+    const [commentBox, setCommentBox] = useState(false);
 
     const postDeleting = useSelector(state=>state.postDeleting);
     const {loading: loadingDeleting, error: errorDeleting, success: successDeleting} = postDeleting;
@@ -123,12 +125,35 @@ export default function PostDetailPage(props) {
             dispatch(deletePost(postId));
         };
     }
+    const postNotification = (receiverId) =>{
+        if(receiverId!==userInfo._id){
+            const content = `${userInfo.name} đã bình luận vào 1 bài viết bạn tham gia`;
+            const type = "commentAlert";
+            dispatch(createNotification(userInfo._id, receiverId, content, type, postId));
+        }
+    }
 
     const commentPostingHandler = () =>{
         dispatch(createPostComment(postId, userInfo._id, replyContent));
         // const newDate = new Date();
+        var commenters = [];
+        if(post && post.postComments){
+            // console.log(post.postComments);
+            post.postComments.map((comment)=>{
+                // console.log(comment.commenter);
+                if(commenters.indexOf(comment.commenter)===-1){
+                    commenters.push(comment.commenter);
+                }
+            });
+        }
+        commenters.map((commenter)=>{
+            postNotification(commenter);
+            console.log(commenter)
+        })
+        console.log(commenters);
         socket.emit("addComment", postId);
-        console.log("commentePostingHandler");
+        console.log("commentPostingHandler");
+        
     }
 
     const deleteCommentHandler = () =>{
@@ -212,6 +237,13 @@ export default function PostDetailPage(props) {
         socket.emit("addComment", postId);
         console.log("accumulate");
     }
+
+    const openCommentBox = (type) => {
+        if(commentBox===false){
+            scrollToBottomHandler();
+        }
+        setCommentBox(!commentBox);
+    }
     
     // let socket = io(process.env.REACT_APP_WSENDPOINT)
     socket.on("loadComments", () => {
@@ -224,7 +256,6 @@ export default function PostDetailPage(props) {
             // socket.off("loadComments");
             // socket.emit("stop");
         }, 10);
-        
     });
     useEffect(()=>{
         if(userInfo){
@@ -252,7 +283,7 @@ export default function PostDetailPage(props) {
         }, []);
 
     return (
-        <div className='row left' style={{margin: 0}}>
+        <div className='row left postDetailPage' style={{margin: 0}}>
         {/* <div className="row center cyan-background floatingDiv"> 
             <div>
                 <Link to="/forum" className="linkButton">Quay về trang chủ diễn đàn</Link>
@@ -260,11 +291,13 @@ export default function PostDetailPage(props) {
         </div> */}
             
         <div className="floatingDiv">
+            <div><button onClick={openCommentBox}>{commentBox ? <i className='fa fa-close'></i> : <i className='fa fa-commenting'></i>}</button></div>
             <button onClick={scrollToTopHandler}><i className="fa fa-arrow-up"></i></button>
         </div>
         <div className="floatingDiv down">
             <button onClick={scrollToBottomHandler}><i className="fa fa-arrow-down"></i></button>
         </div>
+
         
         {/* <ul className="mobileNavBar">
             {
@@ -337,6 +370,9 @@ export default function PostDetailPage(props) {
                             loadingDeleting ? <LoadingBox></LoadingBox> : errorDeleting ? <MessageBox variant="error">{errorDeleting}</MessageBox> : 
                             successDeleting && <MessageBox>Đã xóa bài viết</MessageBox>
                         }
+                        <div className='row center top'>
+                            <div className='postTitle'>{post && post.title}</div>
+                        </div>
                         <div className='row center top'>
                             <div className='col-mini'>
                                 <div className='row center'>
@@ -413,13 +449,13 @@ export default function PostDetailPage(props) {
                                 </div>}
                                 {
                                 userInfo && (userInfo._id === post.user && (
-                                    <div><button className="admin" onClick={editPostHandler}>{editPostStatus ? <><i className="fa fa-close"></i>ĐÓNG</> : <><i className="fa fa-edit"></i>SỬA</>}</button>
-                                    <button className="admin" onClick={deleteHandler}><i className="fa fa-trash" ></i>XÓA</button></div>))
+                                    <div className='row'><button className="clickableIcon" onClick={editPostHandler}>{editPostStatus ? <><i className="fa fa-close" title="hủy"></i></> : <><i className="fa fa-edit" title="sửa"></i></>}</button>
+                                    <button className="clickableIcon" onClick={deleteHandler}><i className="fa fa-trash" title="xóa"></i></button></div>))
                                 }
                                 {
                                 userInfo && (userInfo._id !== post.user && userInfo.role==='admin' && (
                                     <div>
-                                        <button className="admin" onClick={deleteHandler}><i className="fa fa-trash" ></i>XÓA</button>
+                                        <button className="clickableIcon" onClick={deleteHandler}><i className="fa fa-trash" title="xóa"></i></button>
                                     </div>))
                                 }
                             </div>
@@ -471,7 +507,8 @@ export default function PostDetailPage(props) {
                             {
                                 !editPostStatus && (
                                     <div className="content">
-                                        <h1 className='contentTitle'>{post.title} 
+                                        <h1 className='contentTitle'>
+                                            {/* {post.title}  */}
                                             {userInfo && userInfo.role==="admin" && 
                                             <><label className='interactiveText' title="ghim bài viết này" onClick={()=>pin(post._id)}><i className='fa fa-thumb-tack'></i></label>
                                             <label className='interactiveText' title="đăng lên trang chủ" onClick={()=>pinToHome(post._id)}><i className='fa fa-home'></i></label></>}
@@ -692,33 +729,34 @@ export default function PostDetailPage(props) {
                     </div>
                 </div>
             }
-            <div className="col-0">
-                            {
-                                loadingCommentPosting ? <LoadingBox></LoadingBox> : errorCommentPosting ? <MessageBox variant="error"></MessageBox> :
-                                successPostingComment && <MessageBox>ĐÃ ĐĂNG BÌNH LUẬN</MessageBox>
-                            }
-                            {userInfo ? (<form className="editPostForm" onSubmit={commentPostingHandler}>
-                                <div className="row center">Phản hồi dưới tên ‎<label className="bold-text">{userInfo.name}</label></div>
-                                <div className='row center'>
-                                    {/* <textarea placeholder="Nội dung" className="basic-slide" required={true} value={replyContent} type="textarea" onChange={(e)=> setReplyContent(e.target.value)}>
-                                    </textarea> */}
-                                    <Editor
-                                        onChange={(value) => setReplyContent(value)}
-                                        className='Editor'
-                                        placeholder='Nội dung'
-                                        required={true}
-                                        defaultValue=""
-                                    />
-                                </div>
-                                <div className='row center'><button type="button" className="child" onClick={commentPostingHandler}>PHẢN HỒI</button></div>
-                            </form>) : (
-                                <MessageBox><Link to={`/signin?redirect=forum/post/${postId}`}>{`Đăng nhập `}</Link>để tham gia trò chuyện</MessageBox>
-                            )}
-                        </div>  
+                <div className='emptySpace'>
+                </div>
             </div>
             
             ))}
-            
+            {commentBox && <div className="replySection">
+                {
+                    loadingCommentPosting ? <LoadingBox></LoadingBox> : errorCommentPosting ? <MessageBox variant="error"></MessageBox> :
+                    successPostingComment && <MessageBox>ĐÃ ĐĂNG BÌNH LUẬN</MessageBox>
+                }
+                {userInfo ? (<form className="editPostForm" onSubmit={commentPostingHandler}>
+                    <div className="row center">Phản hồi dưới tên ‎<label className="bold-text">{userInfo.name}</label></div>
+                    <div className='row center'>
+                        {/* <textarea placeholder="Nội dung" className="basic-slide" required={true} value={replyContent} type="textarea" onChange={(e)=> setReplyContent(e.target.value)}>
+                        </textarea> */}
+                        <Editor
+                            onChange={(value) => setReplyContent(value)}
+                            className='Editor'
+                            placeholder='Nội dung'
+                            required={true}
+                            defaultValue=""
+                        />
+                    </div>
+                    <div className='row center'><button type="button" className="child" onClick={commentPostingHandler}>PHẢN HỒI</button></div>
+                </form>) : (
+                    <MessageBox><Link to={`/signin?redirect=forum/post/${postId}`}>{`Đăng nhập `}</Link>để tham gia trò chuyện</MessageBox>
+                )}
+            </div> } 
         </div>
     )
 }
