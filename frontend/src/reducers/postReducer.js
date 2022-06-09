@@ -318,7 +318,7 @@ export const userPostStatReducers = (state = {}, action)=>{
         case POST_STAT_PER_USER_REQUEST:
             return {loading: true};
         case POST_STAT_PER_USER_SUCCESSFUL:
-            return {loading: false, posts: action.payload};
+            return {loading: false, userForumStat: action.payload};
         case POST_STAT_PER_USER_FAILED:
             return {loading: false, error: action.payload};
         default:

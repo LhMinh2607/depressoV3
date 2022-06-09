@@ -14,6 +14,7 @@ import { statOfUserPosts } from '../actions/postAction';
 // import { Offline, Online } from "react-detect-offline";
 import Gallery from '../components/Gallery';
 import { createNotification } from '../actions/notificationAction';
+import {isBrowser, isMobile} from 'react-device-detect';
 
 
 export default function ProfilePage(){
@@ -55,7 +56,7 @@ export default function ProfilePage(){
     const {loading: loadingStat, error: errorStat, msgStat} = messageStat;
 
     const userPostStat = useSelector(state=>state.userPostStat);
-    const {loading: loadingPostStat, error: errorPostStat, posts} = userPostStat;
+    const {loading: loadingPostStat, error: errorPostStat, userForumStat} = userPostStat;
 
     const notificationAdding = useSelector(state=>state.notificationAdding);
     const {loading: loadingNotificationAdding, error: errorNotificationAdding, success: successNotificationAdding} = notificationAdding;
@@ -224,16 +225,18 @@ export default function ProfilePage(){
                 <div className='avatarCircle interactiveText'>
                     {user && user.username[0]}
                 </div>}
-                {user && user.role=="admin" && <div className='avatarCheckmark'><i className='fa fa-check'></i></div>}
-                {user && user.role=="bot" && <div className='avatarCheckmark'><i className='fa fa-android'></i></div>}
+                {user && user.role!=="bot" && <div className='avatarCheckmark left'>{userForumStat && userForumStat.userScore}<i className='fa fa-thumbs-up'></i></div>}
+
+                {user && user.role==="admin" && <div className='avatarCheckmark'><i className='fa fa-check'></i></div>}
+                {user && user.role==="bot" && <div className='avatarCheckmark'><i className='fa fa-android'></i></div>}
                 {/* {user && user.role=="admin" && <div className='avatarCheckmark.offline'><i className='fa fa-check'></i></div>} */}
                 <div className='checkmarkHoverInfo'>
                     {user && (user.role==="admin" ? <div>Quản trị viên và điều phối viên</div> : user.role==="bot" && <div>Bot</div>)}    
                 </div>
-                {userInfo && user && userInfo._id!== user._id && userInfo.friends && userInfo.friends.length>=0 && userInfo.friends.map((friend)=>(
+                {/* {userInfo && user && userInfo._id!== user._id && userInfo.friends && userInfo.friends.length>=0 && userInfo.friends.map((friend)=>(
                     friend.friendId!==user._id ? <div className='addFriendButton interactiveText' onClick={()=>addFriend(user._id)}>Thêm bạn</div> : friend.friendId===user._id && <div className='addFriendButton'>Bạn bè</div>
-                )) }
-                {userInfo && user && userInfo._id!== user._id && !userInfo.friends && <div className='addFriendButton interactiveText' onClick={()=>addFriend(user._id)}>Thêm bạn</div>}
+                )) } */}
+                {/* {userInfo && user && userInfo._id!== user._id && !userInfo.friends && <div className='addFriendButton interactiveText' onClick={()=>addFriend(user._id)}>Thêm bạn</div>} */}
             </div>
             <div className="row center">
                 {/* <label className="bold-text">Tên: ‎</label>  */}
@@ -245,7 +248,7 @@ export default function ProfilePage(){
             <div className='row center'>
                 {user && <div className='quote'>"{user.desc}"</div>}
             </div>
-            {user && user.backgroundMusic && <div className='row center'>
+            {isBrowser && user && user.backgroundMusic && <div className='row center'>
                 <iframe src={`https://www.youtube.com/embed/${getYouTubeLinkId(user.backgroundMusic)}?autoplay=1&mute=0&loop=1&playlist=${getYouTubeLinkId(user.backgroundMusic)}`} type="application/x-shockwave-flash" allowscriptaccess="always" allowFullScreen={false} width="500" height="100" allow='autoplay'></iframe>
             </div>}
             <div className='row center'>
@@ -530,6 +533,9 @@ export default function ProfilePage(){
                     <div className='row center'>
                         {user && user.role!=="bot" ? <div className='col-0'>
                             <div className='row left'>
+                                <i className='fa fa-calendar'></i><label className='bold-text'>Điểm: ‎</label> {userForumStat && userForumStat.userScore}
+                            </div>
+                            <div className='row left'>
                                 <i className='fa fa-calendar'></i><label className='bold-text'>Ngày tham gia: ‎</label> {user && <DateComponent passedDate={user.createdAt} isbirthDate={false}></DateComponent>}
                             </div>
                             <div className="row left">
@@ -567,9 +573,9 @@ export default function ProfilePage(){
                         </div>  */}
                         <hr></hr>
                     </div>
-                    {posts && <div>Bài viết ({posts.length})</div>}
+                    {userForumStat && <div>Bài viết ({userForumStat.posts.length})</div>}
                     <div className='col-1'>
-                        {posts && posts.map((post)=>(
+                        {userForumStat && userForumStat.posts && userForumStat.posts.map((post)=>(
                                 <div className='row'>
                                     <div className='interactiveText' onClick={()=>navigate(`/forum/post/${post._id}`)}>
                                         <i className='fa fa-arrow-right'></i> {post.title}
@@ -639,9 +645,10 @@ export default function ProfilePage(){
                                         <div className='row top'>Nhạc nền:</div>
                                     </div>
                                     <div className='col-1'>
-                                        {user && user.backgroundMusic &&
+                                        {isBrowser && user && user.backgroundMusic &&
                                         <iframe src={`https://www.youtube.com/embed/${getYouTubeLinkId(user.backgroundMusic)}?mute=0&loop=1`} type="application/x-shockwave-flash" allowscriptaccess="always" allowFullScreen={false} width="300" height="100" allow='autoplay'></iframe>
                                         }
+                                        {isMobile && "Tính năng này chỉ được hỗ trợ trên trình duyệt máy tính"}
                                     </div>
                                 </div>
                                 

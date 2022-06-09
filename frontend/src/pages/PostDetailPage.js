@@ -280,7 +280,7 @@ export default function PostDetailPage(props) {
         // return () => {
         //     socket.off('loadComments');
         // }
-        }, []);
+        }, [postId]);
 
     return (
         <div className='row left postDetailPage' style={{margin: 0}}>
@@ -442,10 +442,10 @@ export default function PostDetailPage(props) {
                                 </div>))))}
                                 
                             <div className="row left">
-                                {post.createdAt === post.updatedAt ? <DateComponent passedDate={post.updatedAt}>Đăng vào: </DateComponent>
+                                {post.createdAt === post.updatedAt ? <DateComponent passedDate={post.updatedAt} size="small">Đăng vào: </DateComponent>
                                 : <div>
-                                    <DateComponent passedDate={post.createdAt}>Đăng vào: </DateComponent>
-                                    (Đã sửa)
+                                    <DateComponent passedDate={post.createdAt} size="small">Đăng vào: </DateComponent>
+                                    <p style={{fontSize: "1rem"}}>(Đã sửa)</p>
                                 </div>}
                                 {
                                 userInfo && (userInfo._id === post.user && (
@@ -565,7 +565,7 @@ export default function PostDetailPage(props) {
                     : successDeletingComment && <MessageBox>ĐÃ XÓA BÌNH LUẬN</MessageBox>
                 }
                 {
-                    <div className="row">
+                    <div className="row center">
                         <h1>
                             {post.postComments.length>1 && <div><i className="fa fa-comment"></i>
                                 {post.postComments.length} phản hồi

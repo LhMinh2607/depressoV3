@@ -55,6 +55,7 @@ main{
   /* padding: 1vh; */
   padding-top: 4rem;
   color: #fff;
+  /* width: 100vw; */
 }
 
 @media (max-width: 90rem) {
@@ -148,7 +149,7 @@ a:hover {
   color: inherit;
   text-decoration: inherit;
 }
-.divHoldingLinkButton{
+/* .divHoldingLinkButton{
   padding: 2rem;
 }
 .linkButton{
@@ -176,11 +177,11 @@ a:hover {
   color: #04115f;
   background-color:#ffffff; 
   transition: .2s;
-}
-.cyan-background{
+} */
+/* .cyan-background{
   background-color: #6e9fe7;
   padding: 1rem 0rem 1rem 0rem;
-}
+} */
 
 .search-background{
   background-color: #474242;
@@ -211,13 +212,13 @@ a:hover {
   opacity: 1;
   color: #fff;
 }
-.searchInput{
-  /* background-color: rgb(255, 238, 3); */
-  /* border-radius: 5rem; */
+/* .searchInput{
+  background-color: rgb(255, 238, 3);
+  border-radius: 5rem;
   padding: 1rem;
   border-radius: 1rem;
   border: solid 0.25rem #000;
-}
+} */
 
 .bold-text{
   font-weight: bold;
@@ -235,7 +236,7 @@ a:hover {
   background-color: #ffee00;
   font-size: 3rem;
 }
-.product-Title{
+/* .product-Title{
   font-size: 3rem;
   font-weight: bold;
   text-align: center;
@@ -250,7 +251,7 @@ a:hover {
   padding: 1rem;
   transition: .2s;
   font-size: 4rem;
-}
+} */
 
 ::selection {
   color: #fff;
@@ -300,7 +301,7 @@ header .navbar-button{
   }
 } */
 
-.mobileNavBar{
+/* .mobileNavBar{
   align-items: left;
   display: flex;
   top: 5rem;
@@ -325,7 +326,7 @@ header .navbar-button{
 .mobileNavBar > li{
   padding-top: 1rem;
   margin: 1rem;
-}
+} */
 
 
 .floatingDiv{
@@ -356,7 +357,7 @@ header .navbar-button{
 
 a.brand {
   color: #fff;
-  font-size: 3rem;
+  font-size: 3vw;
   font-weight: bold;
   font-family: 'Courier New', Courier, monospace;
 }
@@ -393,10 +394,23 @@ a.brand:hover{
 }
 
 .row-bottom{
+  width: 100vw;
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-direction: row;
+  justify-content: flex-start;
   align-items: center;
+  position: fixed;
+  bottom: 0;
+  background:
+    linear-gradient(#04374b, transparent),
+    linear-gradient(to top, rgb(0, 128, 255), transparent),
+    linear-gradient(to bottom, rgb(127, 194, 248), transparent);
+  overflow-x: scroll;
+  overflow-y: none;
+}
+
+a.bottomNav{
+  padding: 0rem !important;
 }
 
 .col-mini{
@@ -696,10 +710,10 @@ img.tiny{
 }
 
 
-.price{
+/* .price{
   font-size: 2rem;
   color: #000;
-}
+} */
 
 /*Rating*/
 .rating span {
@@ -767,6 +781,15 @@ form > div {
 form label{
   margin: 1rem 0;
   display: block;
+}
+
+.invisibleForm{
+  width: auto;
+  height: auto;
+  background-color: transparent;
+  display: flex;
+  flex-direction: row;
+  backdrop-filter: none;
 }
 
 .editPostForm{
@@ -972,7 +995,7 @@ input{
   transform: rotate(82deg);
 }
 
-textarea{
+/* textarea{
   padding: 2rem;
   font-size: 2rem;
   font-family: 'Times New Roman', Times, serif;
@@ -981,7 +1004,7 @@ textarea{
   resize: none; 
   height: 20rem;
   word-wrap: break-word;
-}
+} */
 
 .postText{
   padding: 2rem;
@@ -1034,6 +1057,9 @@ textarea{
   background-color: rgb(36, 154, 233);
   /* transform: scale(120%) translateX(10%); */
   color: rgb(255, 255, 255) !important;
+}
+.postBasic.small{
+  max-width: 20rem;
 }
 
 /* .postBasic:hover  .link-to-details{
@@ -1287,19 +1313,37 @@ td {
 /* Profile menu */
 .nav-menu{
   display: flex;
-  max-width: 50 rem;
+  /* max-width: 50rem; */
   justify-content: center;
+  /* position: fixed; */
+  
 }
 .nav-menu-item {
-  border: 0.1rem #c0c0c0 solid;
-  background-color: #d8d8d8;
-  border-radius: 0.5rem;
-  margin: 1rem;
-  padding: 2rem;
-  width: 100%;
-  max-width: 15rem;
-  text-align: center;
+  z-index: 200;
+  color:rgb(255, 255, 255) !important;
+  /* border: 0.1rem #c0c0c0 solid; */
+  background-color: #074681;
+  /* border-radius: 0.5rem; */
+  /* margin: 1rem; */
+  padding: 1rem;
+  width: min(15vw, 20rem);
   color:rgb(139, 110, 110);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  font-size: 1rem;
+}
+.nav-menu-item:active {
+  color:#074681 !important;
+  background-color: #fff;
+}
+.nav-menu-item.selected {
+  color:#074681 !important;
+  background-color: #fff;
+}
+.nav-menu-item > p {
+  font-size: 0rem;
 }
 
 /* icon */
@@ -1441,7 +1485,7 @@ td {
 
 
 /* React-Slideshow */
-.slide-container{
+/* .slide-container{
   width: 100%;
   max-width: 40rem;
   margin: auto;
@@ -1455,7 +1499,7 @@ td {
   width: 100%;
   max-width: 80rem;
   display: block;
-}
+} */
 
 /* HOME PAGE  */
 .homeDiv{
@@ -1658,7 +1702,7 @@ td {
 } */
 
 
-.user-name-display{
+/* .user-name-display{
   color: rgb(8, 71, 112);
   font-style: bold;
   transition: 0.1s;
@@ -1668,7 +1712,7 @@ td {
   transition: 0.1s;
   filter: brightness(120%);
   opacity: 0.5;
-}
+} */
 
 .rating-css {
   height: 5rem;
@@ -1739,10 +1783,26 @@ code {
   height: auto;
   /* word-wrap: break-word; */
   max-width: 50rem !important;
+  min-width: 10rem !important;
   width: 100%;
   background-color: rgb(33, 34, 44);
   /* color: #fff; */
+  /* word-break: break-all; */
+  /* These are technically the same, but use both */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  -ms-word-break: break-all;
+  /* This is the dangerous one in WebKit, as it breaks things wherever */
   word-break: break-all;
+  /* Instead use this non-standard one: */
+  word-break: break-word;
+
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
 }
 .Editor.readonly{
   padding: 0rem;
@@ -2405,7 +2465,6 @@ a[href], input[type='submit'], input[type='image'], label[for], select, button, 
   /* display: inline-block; */
   /* width: 100vh; */
   /* width: 20rem; */
-  text-align: center;
   /* background-color: #ffffff; */
   /* background: linear-gradient(#fff, #fff, transparent); */
   padding: 2rem;
@@ -2417,14 +2476,13 @@ a[href], input[type='submit'], input[type='image'], label[for], select, button, 
   color: #fff;
   /* word-break: keep-all; */
 
-  flex: 0 0 25rem;
+  flex: 0 0 min(40vw, 25rem);
   display: flex;
   align-items: center;
   justify-content: flex-end;
   scroll-snap-align: start;
   flex-direction: column;
 }
-
 .tabLine{
   width: 100%;
   height: 0.3rem;
@@ -2537,6 +2595,15 @@ main {
   padding: 0.5rem;
   display: flex;
   justify-content: center;
+}
+.avatarCheckmark.left{
+  border-radius: 20%;
+  transform: translate(-4rem, 0rem);
+  width: 4rem;
+  font-family: Georgia, 'Times New Roman', Times, serif;
+  background-color: rgb(223, 148, 9);
+  display: flex;
+  justify-content: space-between;
 }
 .avatarCheckmark.info{
   background-color: rgb(55, 58, 56);
@@ -3169,15 +3236,34 @@ Draggable{
   display: flex;
   flex-direction: column;
   width: 20rem;
-  height: 100vh;
+  height: auto;
   background-color: #0074D9;
-  top: 5rem;
+  top: 0rem;
   right: 0;
   padding: 1rem;
+  transform: translate(0rem, 5vh);
   border-top-left-radius: 2rem;
   border-bottom-left-radius: 2rem;
+  animation: slideToLeft 0.5s;
+}
+@keyframes slideToLeft {
+  0%{
+    right: -100rem;
+  }
+  100%{
+    right: 0;
+  }
+}
+@keyframes slideToRight {
+  0%{
+    left: -100rem;
+  }
+  100%{
+    left: 0;
+  }
 }
 .fa-bars{
+  z-index: 2000;
   color: #fff;
 }
 .addFriendButton{
@@ -3283,6 +3369,14 @@ Draggable{
   flex-direction: row;
   justify-content: center;
   align-items: center;
+}
+.clickableIcon.slimRectangle{
+  background-color: grey;
+  opacity: 50%;
+  border-radius: 10%;
+  width: 1rem;
+  height: 3rem;
+  /* height: 100%; */
 }
 
 
@@ -3396,6 +3490,7 @@ Draggable{
   opacity: 100%;
   position: fixed;
   bottom: 0;
+  animation: slideToRight 0.2s;
 }
 
 .spectrum-background {

@@ -48,6 +48,7 @@ function App() {
   const [response, setResponse] = useState("");
   const [hzAna, setHzAna] = useState([]);
   const [speaker, setSpeaker] = useState("");
+  const [currentTab, setCurrentTab]  = useState('');
 
   const userSignin = useSelector((state)=> state.userSignin);
   const {userInfo, loading, error} = userSignin;
@@ -59,7 +60,12 @@ function App() {
   };
   let socket = io(process.env.REACT_APP_ENDPOINT);
   // let socket = io(process.env.REACT_APP_WSENDPOINT);
+  // let socket = io();
   // let socket = io("https://8527-27-2-17-107.ngrok.io");
+  // let socket = io("https://b9d3-27-2-17-107.ngrok.io");
+  // let socket = io("https://67ca-27-2-17-107.ngrok.io");
+  // let socket = io("https://50ef-2a0d-5600-41-a000-00-5b77.ngrok.io")
+  // let socket = io("https://c220-27-2-17-107.ngrok.io");
 
   const userList = useSelector(state=>state.userList);
   const {loading: loadingUL, error: errorUL, users} = userList;
@@ -440,11 +446,42 @@ function App() {
                       }
                       </div>
                       
-                  
+                  // isMobile && <div className="row-bottom">
+                  //       <Link className='bottomNav' to={(`/`)}>
+                  //       <div className="nav-menu-item">
+                  //         <i className="fa fa-home"></i>
+                  //         <p>Trang chủ</p>
+                  //       </div>
+                  //   </Link>
+                  //   <Link className='bottomNav' to={(`/forum`)}>
+                  //     <div className="nav-menu-item">
+                  //       <i className="fa fa-commenting"></i>
+                  //       <p>Diễn đàn</p>
+                  //     </div>
+                  //   </Link>
+                  //   <Link className='bottomNav' to={(`/notification`)}>
+                  //     <div className="nav-menu-item">
+                  //       <i className="fa fa-bell"></i>
+                  //       <p>Thông báo</p>
+                  //     </div>
+                  //   </Link>
+                  //   <Link className='bottomNav' to={(`/chatbot`)}>
+                  //     <div className="nav-menu-item">
+                  //       <i className="fa fa-android"></i>
+                  //       <p>Chatbot</p>
+                  //     </div>
+                  //   </Link>
+                  //     <Link className='bottomNav' to={(`/user/${userInfo._id}`)}>
+                  //     <div className="nav-menu-item">
+                  //       <i className="fa fa-user"></i>
+                  //       <p>Tài khoản</p>
+                  //     </div>
+                  //   </Link>
+                  // </div>
                   }
                   
-
-                  {userInfo && userInfo.role==="admin" && openKeyPad && <Keypad></Keypad>}
+                  
+                  {userInfo && userInfo.role==="admin" && openKeyPad && <Keypad setOpenKeyPad={setOpenKeyPad}></Keypad>}
                   {userInfo && userInfo.backgroundMusic && openMusicBox &&
                     <Draggable><div className='musicPlayer' draggable={true}>
                       <div className='row right' style={{display: "flex", flexDirection:"row", justifyContent:"flex-end", color: "#fff"}}><i className='fa fa-close interactiveText' onClick={()=>setOpenMusicBox(!openMusicBox)}></i></div>
@@ -464,6 +501,7 @@ function App() {
                       // openLauncherImage={""}
                       />
                     } */}
+                    
               </header>
               <main>
               <div>
@@ -494,7 +532,7 @@ function App() {
                   )}
                 /> */}
                 <div>
-                {/* <AudioProvider>
+                {/* <LinkudioProvider>
                   
                   <MicrophoneNode
                     name="mic"
@@ -535,10 +573,10 @@ function App() {
                   {/* <button onClick={recordTest}>Record</button> */}
                   {/* <RecorderComponent source="https://webrtc.github.io/samples/src/video/chrome.webm"></RecorderComponent> */}
                   {/* <VoiceRecorderComponent source="https://webrtc.github.io/samples/src/video/chrome.webm"></VoiceRecorderComponent> */}
-                  {/* <audio controls src="/assets/dance.mp3"></audio> */}
+                  {/* <Linkudio controls src="/assets/dance.mp3"></audio> */}
                 </div>
               </div>
-              {userInfo && userInfo.backgroundImage && userInfo.globalBackground==true && (<div className='globalBackground' style={{backgroundImage: `url("${userInfo.backgroundImage}")`, backgroundPosition: "center center", backgroundSize:"contain", position: "fixed", width: "100%", height: "100vh", zIndex: "-100", filter: "brightness(40%)"}}></div>)}
+              {isBrowser && userInfo && userInfo.backgroundImage && userInfo.globalBackground==true && (<div className='globalBackground' style={{backgroundImage: `url("${userInfo.backgroundImage}")`, backgroundPosition: "center center", backgroundSize:"contain", position: "fixed", width: "100%", height: "100vh", zIndex: "-100", filter: "brightness(40%)"}}></div>)}
                 <Routes>
                   {/* React Router Dom v6 syntax */}
                   <Route exact path="/" element={<HomePage></HomePage>}></Route>
@@ -559,21 +597,92 @@ function App() {
                 
                 
               </main>
+              {/* {isMobile && <div className="row-bottom">
+                      {currentTab && currentTab === "home" ? 
+                        <div className='bottomNav'>
+                          <div className="nav-menu-item selected">
+                            <i className="fa fa-home"></i>
+                            <p>Trang chủ</p>
+                          </div>
+                        </div> :
+                        <Link className='bottomNav' href={`/`} onClick={()=> setCurrentTab('home')}>
+                        <div className="nav-menu-item">
+                          <i className="fa fa-home"></i>
+                          <p>Trang chủ</p>
+                        </div>
+                    </Link>
+                        }
+                    
+                    
+                    {currentTab && currentTab === "forum" ?
+                    <div className='bottomNav'>
+                      <div className="nav-menu-item selected">
+                        <i className="fa fa-commenting"></i>
+                        <p>Diễn đàn</p>
+                      </div>
+                    </div> :
+                    <Link className='bottomNav' href={`/forum`} onClick={()=> setCurrentTab('forum')}>
+                      <div className="nav-menu-item">
+                        <i className="fa fa-commenting"></i>
+                        <p>Diễn đàn</p>
+                      </div>
+                    </Link>
+                    }
+                    {currentTab && currentTab === "notification" ?
+                    <div className='bottomNav'>
+                      <div className="nav-menu-item selected">
+                        <i className="fa fa-bell"></i>
+                        <p>Thông báo</p>
+                      </div>
+                    </div> :
+                    <Link className='bottomNav' href={`/notification`} onClick={()=> setCurrentTab('notification')}>
+                      <div className="nav-menu-item">
+                        <i className="fa fa-bell"></i>
+                        <p>Thông báo</p>
+                      </div>
+                    </Link>}
+                    {currentTab && currentTab === "chatbot" ?
+                    <div className='bottomNav'>
+                      <div className="nav-menu-item selected">
+                        <i className="fa fa-android"></i>
+                        <p>Chatbot</p>
+                      </div>
+                    </div> :
+                    <Link className='bottomNav' href={`/chatbot`} onClick={()=> setCurrentTab('chatbot')}>
+                      <div className="nav-menu-item">
+                        <i className="fa fa-android"></i>
+                        <p>Chatbot</p>
+                      </div>
+                    </Link>}
+                    {currentTab && currentTab === "user" ?
+                    <div className='bottomNav'>
+                      <div className="nav-menu-item selected">
+                        <i className="fa fa-user"></i>
+                        <p>Tài khoản</p>
+                      </div>
+                    </div> :
+                      <Link className='bottomNav' href={`/user/${userInfo._id}`} onClick={()=> setCurrentTab('user')}>
+                      <div className="nav-menu-item">
+                        <i className="fa fa-user"></i>
+                        <p>Tài khoản</p>
+                      </div>
+                    </Link>}
+                  </div>} */}
               {/* <footer className="row-bottom">
                   <div className="nav-menu-item">
-                    <i className="fab fa-youtube bigger-icon"></i><a href="https://youtube.com/channel/UCGmokfRCnHmlz7AF3-suNvQ/about">LhMinh2607</a>
+                    <i className="fab fa-youtube bigger-icon"></i><Link href="https://youtube.com/channel/UCGmokfRCnHmlz7AF3-suNvQ/about">LhMinh2607</Link>
                   </div>
                   <div className="nav-menu-item">
-                    <i className="fab fa-discord bigger-icon"></i><a href="https://www.discordapp.com/users/LhMinh2607#7347">LhMinh2607.gg</a>
+                    <i className="fab fa-discord bigger-icon"></i><Link href="https://www.discordapp.com/users/LhMinh2607#7347">LhMinh2607.gg</Link>
                   </div>
                   <div className="nav-menu-item">
                     All Rights Reserved 
                   </div>
                   <div className="nav-menu-item">
-                    <i className="fab fa-github bigger-icon"></i><a href="https://www.github.com/LhMinh2607/TTCM_AssetStore">LhMinh2607.git</a>
+                    <i className="fab fa-github bigger-icon"></i><Link href="https://www.github.com/LhMinh2607/TTCM_AssetStore">LhMinh2607.git</Link>
                   </div>
                   <div className="nav-menu-item">
-                    <i className="fab fa-reddit bigger-icon"></i><a href="https://reddit.com/u/LhMinh2607">u/LhMinh2607</a>
+                    <i className="fab fa-reddit bigger-icon"></i><Link href="https://reddit.com/u/LhMinh2607">u/LhMinh2607</Link>
                   </div>
               </footer> */}
           </div>
