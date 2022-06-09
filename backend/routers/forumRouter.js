@@ -75,7 +75,7 @@ forumRouter.get('/sort/:sorting/filter/:category', expressAsyncHandler(async (re
             //    emit( hot(this.upvotes, this.downvotes, this.createdAt), this );
             
             // };
-            function hot(upvotes,downvotes,createdAt){
+            let hot = (upvotes,downvotes,createdAt) => {
                 var score = upvotes - downvotes;
                 var order = log10(Math.max(Math.abs(score), 1));
                 var sign = score>0 ? 1 : score<0 ? -1 : 0;
@@ -196,7 +196,7 @@ forumRouter.get('/sort/:sorting/filter/:category', expressAsyncHandler(async (re
             function epochSeconds(d){
                 return (d.getTime() - new Date(1970,1,1).getTime())/1000;
             }
-            var posts = await Post.find({}).sort({upvotes: -1});
+            var posts = await Post.find({category: req.params.category}).sort({upvotes: -1});
             var hotPoints = posts.map((post)=>{
                 post["hotness"] = hot(post.upvotes.length, post.downvotes.length, post.createdAt);
                 return post;
@@ -536,11 +536,155 @@ forumRouter.get('/homepost', expressAsyncHandler(async (req, res)=>{
     }
 }));
 
+// userPostStat
 forumRouter.get('/postby/:id', expressAsyncHandler(async (req, res)=>{
-    const posts = await Post.find({user: mongoose.Types.ObjectId(req.params.id)});
+    var posts = await Post.find({user: mongoose.Types.ObjectId(req.params.id)});
     //console.log(posts);
     if(posts){
-        res.send(posts);
+        var userScore = 0;
+        var ups = [];
+        posts.map((post)=>{
+            post.score = post.upvotes.length - post.downvotes.length;
+            userScore += post.score;
+            
+        });
+    }
+
+    var allPosts = await Post.find({});
+    allPosts.map((post)=>{
+        post.upvotes.map((up)=>{
+            if(up===req.params.id){
+                ups.push(post._id);
+            }
+        })
+    });
+    // console.log(allPosts[0]);
+    var upvotedPosts = allPosts.filter(a=>a.upvotes.includes(req.params.id)).slice(0, 10);
+    // console.log(upvotedPosts[0]);
+    // var noInteractedPosts = allPosts.filter(allPost=>a.map(a.map(!upvotedPosts.filter(post=>post.upvotes.map(up=>up===a)))));
+
+    let hot = (upvotes,downvotes,createdAt) => {
+        var score = upvotes - downvotes;
+        var order = log10(Math.max(Math.abs(score), 1));
+        var sign = score>0 ? 1 : score<0 ? -1 : 0;
+        var seconds = epochSeconds(createdAt) - 1134028003;
+        var product = order + sign * seconds / 45000;
+        return Math.round(product*10000000)/10000000;
+    }
+
+    function log10(val){
+        return Math.log(val) / Math.LN10;
+    }
+    
+    function epochSeconds(d){
+        return (d.getTime() - new Date(1970,1,1).getTime())/1000;
+    }
+
+    var posts = await Post.find({}).sort({upvotes: -1});
+    var hotPoints = posts.map((post)=>{
+        post["hotness"] = hot(post.upvotes.length, post.downvotes.length, post.createdAt);
+        return post;
+    })
+    var sortedPosts = hotPoints.sort((a, b)=>
+        {
+            if(a.hotness > b.hotness){
+                return 1;
+            }else if(a.hotness<b.hotness){
+                return -1;
+            }else if(a.hotness===b.hotness){
+                return 0;
+            }
+        }
+    ).reverse().slice(0, 10);
+    //user has no prior upvotes or downvotes to these popular posts.
+    var noInteractedPosts = sortedPosts.filter(allPost => !allPost.upvotes.includes(req.params.id) && !allPost.downvotes.includes(req.params.id));
+    // console.log(noInteractedPosts);
+
+    var noInteractedArr = [];
+    noInteractedPosts.map((post)=>{
+        noInteractedArr.push(post._id + ">>>" + post.title + ">>>" + post.content);
+    })
+
+    var suggestedPosts = [];
+    // var postPoints = [];
+    upvotedPosts.map((post)=>{
+        var string = post.title + ">>>"+post.content;
+        var point = findClosestString(noInteractedArr, string);
+        if(suggestedPosts.indexOf(point)===-1 && point.postContent){
+            suggestedPosts.push(point);
+        }
+    });
+
+
+    // console.log(suggestedPosts);
+    function findClosestString(arr, inputvalue) {
+        let postContent = "";
+        let closestText = '';
+        let floorDistance = 0.1;
+        // console.log(arr);
+        for (let i = 0; i < arr.length; i++) {
+          let dist = distance(arr[i], inputvalue);
+          if (dist > floorDistance) {
+                floorDistance = dist;
+                postContent = arr[i];
+                // console.log(arr[i]);
+          }
+        }
+        // console.log(closestOne);  
+        return {postContent};
+    }
+    
+    function distance(val1, val2) {
+        let longer, shorter, longerlth, result;
+    
+        if (val1.length > val2.length) {
+        longer = val1;
+        shorter = val2;
+        } else {
+        longer = val2;
+        shorter = val1;
+        }
+    
+        longerlth = longer.length;
+    
+        result = ((longerlth - editDistance(longer, shorter)) / parseFloat(longerlth));
+    
+        return result;
+    }
+    
+    function editDistance(val1, val2) {
+        val1 = val1.toLowerCase();
+        val2 = val2.toLowerCase();
+    
+        let costs = [];
+    
+        for(let i = 0; i <= val1.length; i++) {
+        let lastVal = i;
+        for(let j = 0; j <= val2.length; j++) {
+            if (i === 0) {
+            costs[j] = j;
+            } else if (j > 0) {
+            let newVal = costs[j - 1];
+            if (val1.charAt(i - 1) !== val2.charAt(j - 1)) {
+                newVal = Math.min(Math.min(newVal, lastVal), costs[j]) + 1;
+            }
+            costs[j - 1] = lastVal;
+            lastVal = newVal;
+            }
+        }
+        if (i > 0) { costs[val2.length] = lastVal }
+        }
+        
+        // console.log(costs[val2.length]);
+        return costs[val2.length];
+    }
+    
+
+    
+    var userForumStat = {};
+    userForumStat = {posts, userScore, upvotedPosts, noInteractedPosts, suggestedPosts}
+    if(userForumStat){
+        res.send(userForumStat);
     }else{
         res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
     }

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { listOfUsers } from '../actions/userAction';
-import { createPost, listOfFilteredPosts, listOfPosts, listOfSearchedPosts, listOfSortedPosts, statOfAllPosts } from '../actions/postAction';
+import { createPost, listOfFilteredPosts, listOfPosts, listOfSearchedPosts, listOfSortedPosts, statOfAllPosts, statOfUserPosts } from '../actions/postAction';
 import DateComponent from '../components/DateComponent';
 import LoadingBox from '../components/LoadingBox';
 import MessageBox from '../components/MessageBox';
@@ -53,7 +53,7 @@ export default function ForumPage() {
     const userList = useSelector((state) => state.userList);
     const {loading: loadingUser, error: errorUser, users} = userList;
     
-    const [sorting, setSorting] = useState('hot');
+    const [sorting, setSorting] = useState('suggestion');
 
     const postSorting = useSelector(state=>state.postSorting);
     const {loading: loadingSort, error: errorSort, sortedPosts} = postSorting;
@@ -71,6 +71,9 @@ export default function ForumPage() {
     const postStat = useSelector(state=>state.postStat);
     const {loading: loadingPostStat, error: errorPostStat, allPostsStat} = postStat;
 
+    const userPostStat = useSelector(state=>state.userPostStat);
+    const {loading: loadingPostStat2, error: errorPostStat2, userForumStat} = userPostStat;
+
     // const mdParser = new MarkdownIt(/* Markdown-it options */);
 
     const enablePosting = () =>{
@@ -82,9 +85,13 @@ export default function ForumPage() {
         setFilterId("");
         setSorting("none");
         setKeyword(e.target.value);
-        dispatch(listOfSearchedPosts(e.target.value));
+        // dispatch(listOfSearchedPosts(e.target.value));
         // generateAutoComplete(e.target.value);
-      }
+    }
+
+    const search = () =>{
+        dispatch(listOfSearchedPosts(keyword));
+    }
 
     const postHandler = () =>{
         // alert(userInfo._id);
@@ -163,6 +170,7 @@ export default function ForumPage() {
     const filterThePosts = (selectedValue)=>{
         // setFilter(e.target.value);
         //alert(JSON.stringify(selectValues));
+        setKeyword('');
         if(selectedValue!=="all"){
             setFilter(selectedValue.name)
             setFilterId(selectedValue._id);
@@ -206,11 +214,93 @@ export default function ForumPage() {
         }
     }
 
+
+    
+    const findClosestString = ()=> { 
+        let closestOne = "";
+        let floorDistance = 0.1;
+        const arr = autoComplete;
+        const inputvalue = keyword;
+      
+        for (let i = 0; i < arr.length; i++) {
+          let dist = levenshteinDistance(arr[i], inputvalue);
+          if (dist > floorDistance) {
+              floorDistance = dist;
+            closestOne = arr[i];
+          }
+        }
+        // alert(closestOne);
+        return closestOne;
+    }
+      
+    //levenshtein distance
+    const levenshteinDistance = (val1, val2) => { 
+        let longer, shorter, longerlth, result;
+        
+        if (val1.length > val2.length) {
+            longer = val1;
+            shorter = val2;
+        } else {
+            longer = val2;
+            shorter = val1;
+        }
+        
+        longerlth = longer.length;
+        
+        result = ((longerlth - editDistance(longer, shorter)) / parseFloat(longerlth));
+        
+        return result;
+    }
+    
+    const editDistance = (val1, val2) => {
+    val1 = val1.toLowerCase();
+    val2 = val2.toLowerCase();
+    
+        let costs = [];
+        
+        for(let i = 0; i <= val1.length; i++) {
+            let lastVal = i;
+            for(let j = 0; j <= val2.length; j++) {
+                if (i === 0) {
+                costs[j] = j;
+            } else if (j > 0) {
+                let newVal = costs[j - 1];
+                if (val1.charAt(i - 1) !== val2.charAt(j - 1)) {
+                newVal = Math.min(Math.min(newVal, lastVal), costs[j]) + 1;
+                }
+                costs[j - 1] = lastVal;
+                lastVal = newVal;
+            }
+            }
+            if (i > 0) { costs[val2.length] = lastVal }
+        }
+    
+        console.log(costs[val2.length]);
+        return costs[val2.length];
+    }
+    
+    // const levenshtein = () =>{
+    //     findClosestString(['Apple','Banana and Melon','Orange'], 'Mellllon');
+    // }
+
     const upperCaseFirstLetter = (text) =>{
         text = text[0].toUpperCase() + text.slice(1);
         // console.log(text);
         return text;
     }
+
+    // var input = document.getElementById("searchField");
+
+    // // Execute a function when the user presses a key on the keyboard
+    // input.addEventListener("keypress", function(event) {
+    // // If the user presses the "Enter" key on the keyboard
+    // if (event.key === "Enter") {
+    //     // Cancel the default action, if needed
+    //     event.preventDefault();
+    //     // Trigger the button element with a click
+    //     document.getElementById("searchBtn").click();
+    // }
+    // });
 
     useEffect(()=>{
         window.scrollTo({
@@ -221,6 +311,9 @@ export default function ForumPage() {
         dispatch(listOfCategories());
         dispatch({type: CATEGORY_LIST_RESET});
         dispatch(statOfAllPosts());
+        if(userInfo){
+            dispatch(statOfUserPosts(userInfo._id));
+        }
         generateAutoComplete();
     }, [dispatch])
 
@@ -358,14 +451,20 @@ export default function ForumPage() {
                                     ))
                                 }
                             </div>} */}
-                            <datalist id="suggestions">
+                            
+                            {/* <datalist id="suggestions">
                                 {keyword && autoComplete &&
                                     autoComplete.map(a=>(
                                         (a.includes(keyword) || a.includes(upperCaseFirstLetter(keyword)) || a.includes(keyword.toUpperCase) || a.includes(keyword.toLowerCase())) && 
                                         (a.length>30 ? <option value={a} onClick={()=>setKeyword(a)}>{a.substring(0, 30)+"..."}</option > : (a.length<30 || a.length===30) && <option value={a} onClick={()=>setKeyword(a)}>{a}</option>)
                                     ))
                                 }
-                            </datalist>
+                            </datalist> */}
+                            {keyword && autoComplete &&
+                            <div className='row left autoComplete'>
+                                {<div onClick={()=>setKeyword(findClosestString(autoComplete, keyword))}>{findClosestString(autoComplete, keyword).substring(0, 30)+"..."}</div>}
+                            </div>}
+                            <div id="searchBtn" type="submit" className='clickableIcon' onClick={search}><i className='fa fa-search'></i></div>
                     </div>
                     
                     {userInfo && <div><button className="admin" onClick={enablePosting}>{createAPost ? <>ĐÓNG</> : <>TẠO BÀI VIẾT</>}</button></div>}
@@ -449,6 +548,27 @@ export default function ForumPage() {
                     
                     </div>)}
             {/* default view */}
+            {sorting==="suggestion" && filter === "" && keyword === "" &&(
+                <div className=''>
+                    <div className='row center' style={{padding: "1rem"}}>BẠN CÓ THỂ QUAN TÂM</div>
+                    <div className='row'>
+                        {
+                            loadingPostStat2 ? <LoadingBox></LoadingBox> : errorPostStat2 ? <MessageBox variant="error">{errorPostStat2}</MessageBox> :
+                            userForumStat && (
+                                userForumStat.suggestedPosts.map(p=>(
+                                    <div className='card card-body postBasic small' onClick={()=>navigate(`/forum/post/${p.postContent.split(">>>")[0]}`)}>
+                                        {
+                                            <div>{p.postContent.split(">>>")[1]}</div>
+                                        }
+                                    </div>
+                                    
+                                )
+                            ))
+                        }
+                    </div>
+                </div>
+                )
+            }
             {sorting==="hot" && filter === "" && keyword === "" &&(
                 loadingPost ? <LoadingBox></LoadingBox> : errorPost ? <MessageBox variant="error">{errorPost}</MessageBox> :
                 posts && (

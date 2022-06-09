@@ -4,6 +4,7 @@ export default function DateComponent(props) {
 
     const {passedDate} = props;
     const {isbirthDate} = props;
+    const {size} = props;
 
     const date = new Date(passedDate);
     const publishedHour = date.getHours();
@@ -15,7 +16,7 @@ export default function DateComponent(props) {
 
     return (
 
-        <div>
+        <div style={size && size==="small" && {fontSize: "1rem"}}>
             {props.children}
             {!isbirthDate && (publishedHour+":")}
             {

@@ -16,7 +16,9 @@ import YesNoBox from './YesNoBox';
 import IndependentMessageBox from './IndependantMessageBox';
 
 
-export default function Keypad() {
+export default function Keypad(props) {
+
+  const {setOpenKeyPad} = props;
 
   const [num, setNum] = useState('');
   const [name, setName] = useState('');
@@ -429,6 +431,29 @@ export default function Keypad() {
     setKeyword(e.target.value);
     dispatch(searchContact(e.target.value));
   }
+
+  let touchstartX = 0
+  let touchendX = 0
+      
+  function checkDirection() {
+    if (touchendX < touchstartX) {
+      console.log('swiped left!')
+      setOpenKeyPad(false);
+    }
+    if (touchendX > touchstartX) {
+      console.log('swiped right!')
+      return false;
+    }
+  }
+
+  document.addEventListener('touchstart', e => {
+    touchstartX = e.changedTouches[0].screenX
+  })
+
+  document.addEventListener('touchend', e => {
+    touchendX = e.changedTouches[0].screenX
+    checkDirection()
+  })
 
   useEffect(()=>{
     // window.scrollTo({
