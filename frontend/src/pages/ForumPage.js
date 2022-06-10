@@ -111,45 +111,48 @@ export default function ForumPage() {
     const sortThePosts = (selectedValues) =>{
         //alert(JSON.stringify(selectedValues));
         // setSorting(e.target.value);
-        setSorting(selectedValues[0].value);
-        // setFilter('');
-        setKeyword('');
-        //alert(e.target.value);
-        // if(selectedValues[0].value==="1"){
-        //     //alert("1");
-        //     if(filter===""){
-        //         //alert("none");
-        //         dispatch(listOfSortedPosts("none", "1"));
-        //     }
-        //     else if(filter!==""){
-        //         //alert(e.target.value);
-        //         dispatch(listOfSortedPosts(filter, sorting));
-        //     }
-        // }else if(selectedValues[0].value==="-1"){
-        //     if(filter===""){
-        //         //alert("none");
-        //         dispatch(listOfSortedPosts("none", "-1"));
-        //     }
-        //     else if(filter!==""){
-        //         //alert(e.target.value);
-        //         dispatch(listOfSortedPosts(filter, sorting));
-        //     }
-        // }else if(selectedValues[0].value==="abc"){
-        //     //alert("");
-        //     dispatch(listOfPosts());
-        // }else if(selectedValues[0].value==="hot"){
-        //     dispatch(listOfSortedPosts("none", "hot"));
-        // }else if(selectedValues[0].value==="top"){
-        //     dispatch(listOfSortedPosts("none", "top"));
-        // }
-        if(selectedValues[0].value!=="abc"){
-            if(filter===""){
-                dispatch(listOfSortedPosts("none", selectedValues[0].value));
+        if(selectedValues){
+            setSorting(selectedValues[0].value);
+        
+            // setFilter('');
+            setKeyword('');
+            //alert(e.target.value);
+            // if(selectedValues[0].value==="1"){
+            //     //alert("1");
+            //     if(filter===""){
+            //         //alert("none");
+            //         dispatch(listOfSortedPosts("none", "1"));
+            //     }
+            //     else if(filter!==""){
+            //         //alert(e.target.value);
+            //         dispatch(listOfSortedPosts(filter, sorting));
+            //     }
+            // }else if(selectedValues[0].value==="-1"){
+            //     if(filter===""){
+            //         //alert("none");
+            //         dispatch(listOfSortedPosts("none", "-1"));
+            //     }
+            //     else if(filter!==""){
+            //         //alert(e.target.value);
+            //         dispatch(listOfSortedPosts(filter, sorting));
+            //     }
+            // }else if(selectedValues[0].value==="abc"){
+            //     //alert("");
+            //     dispatch(listOfPosts());
+            // }else if(selectedValues[0].value==="hot"){
+            //     dispatch(listOfSortedPosts("none", "hot"));
+            // }else if(selectedValues[0].value==="top"){
+            //     dispatch(listOfSortedPosts("none", "top"));
+            // }
+            if(selectedValues[0].value!=="abc"){
+                if(filter===""){
+                    dispatch(listOfSortedPosts("none", selectedValues[0].value));
+                }else{
+                    dispatch(listOfSortedPosts(filterId, selectedValues[0].value));
+                }
             }else{
-                dispatch(listOfSortedPosts(filterId, selectedValues[0].value));
+                dispatch(listOfPosts);
             }
-        }else{
-            dispatch(listOfPosts);
         }
     }
 

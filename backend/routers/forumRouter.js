@@ -550,7 +550,7 @@ forumRouter.get('/postby/:id', expressAsyncHandler(async (req, res)=>{
         });
     }
 
-    var allPosts = await Post.find({});
+    var allPosts = await Post.find({user: {$ne: req.params.id}});
     allPosts.map((post)=>{
         post.upvotes.map((up)=>{
             if(up===req.params.id){
@@ -580,8 +580,8 @@ forumRouter.get('/postby/:id', expressAsyncHandler(async (req, res)=>{
         return (d.getTime() - new Date(1970,1,1).getTime())/1000;
     }
 
-    var posts = await Post.find({}).sort({upvotes: -1});
-    var hotPoints = posts.map((post)=>{
+    var allPosts = await Post.find({}).sort({upvotes: -1});
+    var hotPoints = allPosts.map((post)=>{
         post["hotness"] = hot(post.upvotes.length, post.downvotes.length, post.createdAt);
         return post;
     })
@@ -595,9 +595,9 @@ forumRouter.get('/postby/:id', expressAsyncHandler(async (req, res)=>{
                 return 0;
             }
         }
-    ).reverse().slice(0, 10);
+    ).reverse()
     //user has no prior upvotes or downvotes to these popular posts.
-    var noInteractedPosts = sortedPosts.filter(allPost => !allPost.upvotes.includes(req.params.id) && !allPost.downvotes.includes(req.params.id));
+    var noInteractedPosts = sortedPosts.filter(allPost => !allPost.upvotes.includes(req.params.id) && !allPost.downvotes.includes(req.params.id)).slice(0, 10);
     // console.log(noInteractedPosts);
 
     var noInteractedArr = [];
@@ -610,7 +610,7 @@ forumRouter.get('/postby/:id', expressAsyncHandler(async (req, res)=>{
     upvotedPosts.map((post)=>{
         var string = post.title + ">>>"+post.content;
         var point = findClosestString(noInteractedArr, string);
-        if(suggestedPosts.indexOf(point)===-1 && point.postContent){
+        if(!suggestedPosts.some(p=>p.postContent===point.postContent) && point.postContent){
             suggestedPosts.push(point);
         }
     });

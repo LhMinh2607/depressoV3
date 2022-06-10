@@ -50,6 +50,7 @@ export default function PostDetailPage(props) {
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('');
     const [commentBox, setCommentBox] = useState(false);
+    const [openLoadComment, setOpenLoadComment] = useState(false);
 
     const postDeleting = useSelector(state=>state.postDeleting);
     const {loading: loadingDeleting, error: errorDeleting, success: successDeleting} = postDeleting;
@@ -90,6 +91,9 @@ export default function PostDetailPage(props) {
         showTagEditBox(!tagEditBox);
     }
     const [keywordContent, setKeywordContent] = useState('');
+    const [voteStatus, setVoteStatus] = useState('');
+    const [vote, setVote] = useState(0);
+
     const addKeyword = () =>{
         //alert(postId+" "+keywordContent);
         if(keywordContent!==""){
@@ -233,9 +237,40 @@ export default function PostDetailPage(props) {
     }
 
     const accumulate = (type) => {
-        dispatch(accumulatePost(userInfo._id, postId, type))
-        socket.emit("addComment", postId);
-        console.log("accumulate");
+        // if(type==="upvote" && voteStatus!=="upvote"){
+        //     setVoteStatus('upvote');
+        //     if(post.upvotes.indexOf(userInfo._id)===-1 && post.downvotes.indexOf(userInfo._id)===-1){
+        //         setVote(vote+1)
+        //     }else if(post.upvotes.indexOf(userInfo._id)===-1 && post.downvotes.indexOf(userInfo._id)!==-1){
+        //         setVote(vote+2)
+        //     }
+        //     dispatch(accumulatePost(userInfo._id, postId, type))
+        //     console.log("accumulate");
+        // }else if(type==="downvote" && voteStatus!=="downvote"){
+        //     setVoteStatus('downvote');
+        //     if(post.downvotes.indexOf(userInfo._id)===-1 && post.upvotes.indexOf(userInfo._id)===-1){
+        //         setVote(vote-1)
+        //     }else if(post.downvotes.indexOf(userInfo._id)===-1 && post.upvotes.indexOf(userInfo._id)!==-1){
+        //         setVote(vote-2)
+        //     }
+        //     dispatch(accumulatePost(userInfo._id, postId, type))
+        //     console.log("accumulate");
+        // }
+        if(voteStatus!=="upvote" || !voteStatus){
+            dispatch(accumulatePost(userInfo._id, postId, type))
+            console.log("accumulate");
+            socket.emit("addComment", postId);
+        }
+       
+        // socket.emit("addComment", postId);
+    }
+
+    const accumulateDown = (type) =>{
+        if(voteStatus!=="downvote" || !voteStatus){
+            dispatch(accumulatePost(userInfo._id, postId, type))
+            console.log("accumulate");
+            socket.emit("addComment", postId);
+        }
     }
 
     const openCommentBox = (type) => {
@@ -244,18 +279,49 @@ export default function PostDetailPage(props) {
         }
         setCommentBox(!commentBox);
     }
+
+    const two = 2;
+
+    const loadComment = () =>{
+        setOpenLoadComment(false);
+        dispatch(detailsOfPost(postId));
+        window.scrollTo({
+            left: 0, 
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+          });
+    }
+
+    // const plus = (number, number2) =>{
+    //     return parseInt(parseInt(number) + parseInt(number2))
+    // }
+
+    // const minus= (number, number2) =>{
+    //     return parseInt(parseInt(number) - parseInt(number2))
+    // }
+
+    // const voteHandler = (type) =>{
+    //     if(type==="upvote"){
+    //         setVoteStatus('upvote');
+    //         accumulate("upvote");
+    //     }else if(type==="downvote"){
+    //         setVoteStatus('downvote');
+    //         accumulate("downvote");
+    //     }
+    // }
     
     // let socket = io(process.env.REACT_APP_WSENDPOINT)
     socket.on("loadComments", () => {
         setTimeout(()=>{
-            dispatch(detailsOfPost(postId));
+            setOpenLoadComment(true);
+            // dispatch(detailsOfPost(postId));
             console.log("client loadComments")
             // alert("loadComments");
             // socket.disconnect();
             // socket.off('loadComments');
             // socket.off("loadComments");
             // socket.emit("stop");
-        }, 10);
+        }, 1);
     });
     useEffect(()=>{
         if(userInfo){
@@ -276,6 +342,9 @@ export default function PostDetailPage(props) {
         dispatch(listOfRelatedPosts(postId));
         socket.emit("joinPost", postId);
         console.log(socket.emit("joinPost", postId))
+        if(post){
+            setVote(post.upvotes.length - post.downvotes.length)
+        }
         // socket.off('loadComments');
         // return () => {
         //     socket.off('loadComments');
@@ -376,15 +445,33 @@ export default function PostDetailPage(props) {
                         <div className='row center top'>
                             <div className='col-mini'>
                                 <div className='row center'>
+                                    {/* {voteStatus ?
+                                    (userInfo && post && post.upvotes.indexOf(userInfo._id)!==-1 ? ( post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length + 1) : 
+                                    userInfo && post && post.upvotes.indexOf(userInfo._id)!==-1 && ( post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length - 1)) :
+                                    post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length} */}
+                                    {/* {voteStatus && voteStatus === "upvote" && userInfo && post && post.upvotes.indexOf(userInfo._id)!==-1 && post.downvotes.indexOf(userInfo._id)===-1 && post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length}
+                                    {voteStatus && voteStatus === "upvote" && userInfo && post && post.upvotes.indexOf(userInfo._id)===-1 && post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length + 1}
+                                    {voteStatus && voteStatus === "upvote" && userInfo && post && post.upvotes.indexOf(userInfo._id)===-1 && post.downvotes.indexOf(userInfo._id)!==-1 && post && post.upvotes && post.downvotes && parseInt(post.upvotes.length-post.downvotes.length+2)}
+                                    {voteStatus && voteStatus === "downvote" && userInfo && post && post.downvotes.indexOf(userInfo._id)!==-1 && post.upvotes.indexOf(userInfo._id)===-1 && post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length}
+                                    {voteStatus && voteStatus === "downvote" && userInfo && post && post.downvotes.indexOf(userInfo._id)===-1 && post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length - 1}
+                                    {voteStatus && voteStatus === "downvote" && userInfo && post && post.downvotes.indexOf(userInfo._id)===-1 && post.upvotes.indexOf(userInfo._id)!==-1 && post && post.upvotes && post.downvotes && parseInt(post.upvotes.length-post.downvotes.length-2)} */}
                                     {post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length}
+                                    {/* {voteStatus && vote} */}
                                 </div>
+                                {/* {post.upvotes.length-post.downvotes.length-2} */}
                                 <div className='col-0'>
                                     <div className='accumulate row' style={userInfo && post && post.upvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}} onClick={() => accumulate("upvote")}>
                                         <i className='fa fa-thumbs-up'></i>
                                     </div>
-                                    <div className='accumulate row' style={userInfo && post && post.downvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}} onClick={() => accumulate("downvote")}>
+                                    <div className='accumulate row' style={userInfo && post && post.downvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}} onClick={() => accumulateDown("downvote")}>
                                         <i className='fa fa-thumbs-down'></i>
                                     </div>
+                                    {/* <div className='accumulate row' style={voteStatus === "" ? (userInfo && post && post.upvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}) : voteStatus === "upvote" ? {color: "orange"} : {color: "grey"}} onClick={() => (voteStatus !== "upvote") && accumulate("upvote")}>
+                                        <i className='fa fa-thumbs-up'></i>
+                                    </div>
+                                    <div className='accumulate row' style={voteStatus === "" ? (userInfo && post && post.downvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}) : voteStatus === "downvote" ? {color: "orange"} : {color: "grey"}} onClick={() => (voteStatus !== "downvote") &&  accumulate("downvote")}>
+                                        <i className='fa fa-thumbs-down'></i>
+                                    </div> */}
                                     {/* <div className='accumulate' onClick={() => accumulate("upvote")}>
                                         <i className='fa fa-thumbs-up'></i>
                                     </div>
@@ -757,6 +844,14 @@ export default function PostDetailPage(props) {
                     <MessageBox><Link to={`/signin?redirect=forum/post/${postId}`}>{`Đăng nhập `}</Link>để tham gia trò chuyện</MessageBox>
                 )}
             </div> } 
+            <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", bottom: "0", position: "fixed", width: "100vw"}}>
+                {openLoadComment &&
+                    <div className='loadCommentButton interactiveText' onClick={()=>loadComment()}>
+                        <i className='fa fa-arrow-down clickableIcon'></i> Tải bình luận mới
+                    </div>
+                }
+            </div>
+            
         </div>
     )
 }

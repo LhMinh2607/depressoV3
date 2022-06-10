@@ -58,9 +58,9 @@ function App() {
   const signOutHandler = () =>{
     dispatch(signout());
   };
-  let socket = io(process.env.REACT_APP_ENDPOINT);
+  // let socket = io(process.env.REACT_APP_ENDPOINT);
   // let socket = io(process.env.REACT_APP_WSENDPOINT);
-  // let socket = io();
+  let socket = io();
   // let socket = io("https://8527-27-2-17-107.ngrok.io");
   // let socket = io("https://b9d3-27-2-17-107.ngrok.io");
   // let socket = io("https://67ca-27-2-17-107.ngrok.io");
@@ -411,7 +411,7 @@ function App() {
                         <div className='interactiveText row left'  onClick={()=>setMenu(!menu)}><i className='fa fa-bars'></i></div>
                         {menu && (userInfo ? <ul className='navigationBar'>
                           <li>
-                            <Link to={`/user/${userInfo._id}`}>Tài khoản<i className="fa fa-user"></i></Link>
+                            <Link to={`/user/${userInfo._id}`}>{userInfo.name}<i className="fa fa-user"></i></Link>
                           </li>
                           {userInfo.role==="admin" && 
                             <>

@@ -112,7 +112,7 @@ io.on("connection", (socket) => {
       console.log("server addComment");
       const newDate = new Date();
       console.log("date: "+newDate);
-    }, 10);
+    }, 1);
   });
   
   socket.on("disconnect", () => {
