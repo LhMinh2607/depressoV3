@@ -38,7 +38,7 @@ self.addEventListener('fetch', (event) =>{
 self.addEventListener('activate', (event) =>{
     const cacheWhitelist = [];
     cacheWhitelist.push(CACHE_NAME);
-
+    console.log("activate SW");
     event.waitUntil(
         caches.keys().then((cacheNames)=>{
             Promise.all(
@@ -51,19 +51,19 @@ self.addEventListener('activate', (event) =>{
         }))
 });
 
-self.addEventListener('sync', e => {
-    try{
-        console.log('SW: Sync');
-        if ( e.tag === 'new-form' ) {
+// self.addEventListener('sync', e => {
+//     try{
+//         console.log('SW: Sync');
+//         if ( e.tag === 'new-form' ) {
 
             
-            const resp = sendForm();
+//             const resp = sendForm();
 
-            self.registration.showNotification(' Succesfully sent');
+//             self.registration.showNotification(' Succesfully sent');
 
-            e.waitUntil( resp);
-        }
-    }catch(e){
-        console.log(e);
-    }
-}); 
+//             e.waitUntil( resp);
+//         }
+//     }catch(e){
+//         console.log(e);
+//     }
+// }); 

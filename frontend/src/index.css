@@ -2322,11 +2322,12 @@ button > p{
   color: rgb(191, 142, 197);
 }
 
-a[href], input[type='submit'], input[type='image'], label[for], select, button, .interactiveUsername, .interactiveText, .accumulate, .tagSelectItem, .clickableIcon{
+a[href], input[type='submit'], input[type='image'], label[for], select, button, .interactiveUsername, .interactiveText, .accumulate, .tagSelectItem, .clickableIcon, .postBasic {
   cursor: pointer;
 }
 .interactiveText{
-  color: #5052d3;
+  /* color: #5052d3; */
+  color: #fff;
   transition: 0.2s;
 }
 .interactiveText.headerBar{
@@ -2344,7 +2345,7 @@ a[href], input[type='submit'], input[type='image'], label[for], select, button, 
   transition: 0.2s;
 }
 .interactiveText:hover{
-  color: #01036b;
+  /* color: #01036b; */
   transition: 0.2s;
 }
 .userProfilePicture{
@@ -3379,7 +3380,18 @@ Draggable{
   /* height: 100%; */
 }
 
-
+.loadCommentButton{
+  background-color: #0d1c2b;
+  border-radius: 2rem;
+  width: 20rem;
+  height: 5rem;
+  line-height: 5rem;
+  /* position: fixed; */
+  /* bottom: 0; */
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
 
 
 
