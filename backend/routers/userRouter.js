@@ -1,13 +1,20 @@
-import express from 'express';
-import expressAsyncHandler from 'express-async-handler'
-import User from '../models/User.js'
-import bcrypt from 'bcryptjs';
-import {generateToken, isAuth} from '../utils.js'
-import mongoose from 'mongoose';
-import UserImageLog from '../models/UserImageLog.js';
-import Notification from '../models/Notification.js';
-// import ConversationStore from '../models/ConversationStore.js';
-// import conversationStore from '../models/ConversationStore.js';
+// import express from 'express';
+// import expressAsyncHandler from 'express-async-handler'
+// import User from '../models/User.js'
+// import bcrypt from 'bcryptjs';
+// import {generateToken, isAuth} from '../utils.js'
+// import mongoose from 'mongoose';
+// import UserImageLog from '../models/UserImageLog.js';
+// import Notification from '../models/Notification.js';
+const express =  require('express');
+const expressAsyncHandler =  require('express-async-handler');
+const User =  require('../models/User.js');
+const bcrypt =  require('bcryptjs');
+const generateToken=  require('../utils.js');
+const isAuth =  require('../utils.js');
+const mongoose =  require('mongoose');
+const UserImageLog =  require('../models/UserImageLog.js');
+const Notification =  require('../models/Notification.js');
 
 const userRouter = express.Router();
 userRouter.get('/list', expressAsyncHandler(async (req, res)=>{
@@ -45,7 +52,7 @@ userRouter.post('/signup', expressAsyncHandler(async(req, res)=>
     // });
 }));
 
-userRouter.post('/signin', 
+userRouter.post('/signin',
 expressAsyncHandler(async (req, res)=>{
     const user = await User.findOne({email: req.body.email});
     if(user){
@@ -84,7 +91,7 @@ expressAsyncHandler(async (req, res)=>{
 userRouter.get('/:id', expressAsyncHandler(async(req, res)=>{
     const user = await User.findById(req.params.id);
     if(user){
-        console.log(user);
+        // console.log(user);
         res.send(user);
         // const conversation = await ConversationStore.find({})
         // ConversationStore.find({"events": {$elemMatch: {"text": req.params.id}}})
@@ -149,13 +156,16 @@ userRouter.get('/:id/conversation/stat', expressAsyncHandler(async(req, res)=>{
     }).catch(err => console.log(err.message));
 }));
 
-userRouter.put('/profile/update', isAuth, expressAsyncHandler(async(req, res)=>{
-    const user = await User.findById(req.user._id);
+userRouter.put('/profile/update', expressAsyncHandler(async(req, res)=>{
+    // const user = await User.findById(req.user._id);
+    const user = await User.findById(req.body.userId);
+
 
     // console.log(req.body.gender);
     // console.log(req.body.dob);
 
     if(user){
+        console.log(user);
         user.name=req.body.name || user.name;
         user.email=req.body.email.toLowerCase() || user.email.toLowerCase();
         user.username=req.body.username || user.username;
@@ -179,7 +189,8 @@ userRouter.put('/profile/update', isAuth, expressAsyncHandler(async(req, res)=>{
         }
         if(user.backgroundImage || user.backgroundMusic){
             const userImageLog = new UserImageLog({
-                user: req.user._id,
+                // user: req.user._id,
+                user: req.body.userId,
                 backgroundImage: user.backgroundImage,
                 avatar: user.avatar,
                 backgroundMusic: user.backgroundMusic,
@@ -253,7 +264,8 @@ userRouter.put('/:receiverId/addFriend/:senderId', expressAsyncHandler(async(req
             friends: updatedUser2.friends,
         },
     });
+    // socketIo.emit('accepted_friend_request', {updatedUser, updatedUser2});
     }
 }));
 
-export default userRouter;
+module.exports = userRouter;

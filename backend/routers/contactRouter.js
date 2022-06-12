@@ -1,9 +1,13 @@
-import express from 'express';
-import expressAsyncHandler from 'express-async-handler';
-// import JsSIP from "jssip";
-import Contact from '../models/Contact.js';
-
+// import express from 'express';
+// import expressAsyncHandler from 'express-async-handler';
+// // import JsSIP from "jssip";
+// import Contact from '../models/Contact.js';
+const express =  require('express');
+const expressAsyncHandler =  require('express-async-handler');
+// const JsSIP =  require("jssip");
+const Contact =  require('../models/Contact.js');
 const contactRouter = express.Router();
+
 contactRouter.get('/', expressAsyncHandler(async (req, res)=>{
     const contacts = await Contact.find({}).sort({name: 1});
 
@@ -93,5 +97,5 @@ contactRouter.get('/search/:keyword', expressAsyncHandler(async (req, res)=>{
 
 
 
-export default contactRouter;
+module.exports = contactRouter;
 

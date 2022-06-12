@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
+const mongoose =  require('mongoose');
 const {Schema} = mongoose;
 
 //just cuz I wanted to log user's image requests. 100 queries per day for all users
@@ -18,4 +19,4 @@ imageSearchLogSchema.index({ title: 'text', keywords: 'text' });
 
 const ImageSearchLog = mongoose.model('ImageSearchLog', imageSearchLogSchema);
 
-export default ImageSearchLog;
+module.exports = ImageSearchLog;

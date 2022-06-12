@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-const {Schema} = mongoose;
+// import mongoose from 'mongoose';
+const mongoose =  require('mongoose');
 
 const userImageLogSchema = new mongoose.Schema({
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
@@ -14,4 +14,4 @@ const userImageLogSchema = new mongoose.Schema({
 
 const UserImageLog = mongoose.model('UserImageLog', userImageLogSchema);
 
-export default UserImageLog;
+module.exports = UserImageLog;

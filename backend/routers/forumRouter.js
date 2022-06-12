@@ -1,9 +1,15 @@
-import express from 'express';
-import expressAsyncHandler from 'express-async-handler';
-import mongoose from 'mongoose';
-import Post from '../models/Post.js';
-import fullTextSearch from 'fullTextSearch';
-
+// import express from 'express';
+// import expressAsyncHandler from 'express-async-handler';
+// import mongoose from 'mongoose';
+// import Post from '../models/Post.js';
+// import fullTextSearch from 'fullTextSearch';
+const express =  require('express');
+const expressAsyncHandler =  require('express-async-handler');
+const mongoose =  require('mongoose');
+const Post =  require('../models/Post.js');
+const fullTextSearch =  require('fullTextSearch');
+// const io = require('../server.js');
+// let connections = [];
 
 const forumRouter = express.Router();
 
@@ -46,14 +52,202 @@ forumRouter.get('/sort/:sorting/filter/:category', expressAsyncHandler(async (re
             }else{
                 res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
             }
+        }else if(req.params.sorting==="hot"){
+            //roughly based on reddit's hot filter algorithm
+            // var mapper = function() {
+            //     function hot(upvotes,downvotes,createdAt){
+            //         var score = upvotes - downvotes;
+            //         var order = log10(Math.max(Math.abs(score), 1));
+            //         var sign = score>0 ? 1 : score<0 ? -1 : 0;
+            //         var seconds = epochSeconds(createdAt) - 1134028003;
+            //         var product = order + sign * seconds / 45000;
+            //         return Math.round(product*10000000)/10000000;
+            //     }
+            
+            //    function log10(val){
+            //       return Math.log(val) / Math.LN10;
+            //    }
+            
+            //    function epochSeconds(d){
+            //        return (d.getTime() - new Date(1970,1,1).getTime())/1000;
+            //    }
+            
+            //    emit( hot(this.upvotes, this.downvotes, this.createdAt), this );
+            
+            // };
+            function hot(upvotes,downvotes,createdAt){
+                var score = upvotes - downvotes;
+                var order = log10(Math.max(Math.abs(score), 1));
+                var sign = score>0 ? 1 : score<0 ? -1 : 0;
+                var seconds = epochSeconds(createdAt) - 1134028003;
+                var product = order + sign * seconds / 45000;
+                return Math.round(product*10000000)/10000000;
+            }
+        
+            function log10(val){
+                return Math.log(val) / Math.LN10;
+            }
+            
+            function epochSeconds(d){
+                return (d.getTime() - new Date(1970,1,1).getTime())/1000;
+            }
+        
+            var posts = await Post.find({}).sort({upvotes: -1});
+            var hotPoints = posts.map((post)=>{
+                post["hotness"] = hot(post.upvotes.length, post.downvotes.length, post.createdAt);
+                // console.log(post.title);
+                // console.log(post.hotness);
+                return post;
+            })
+            // console.log(hotPoints);
+            // var sortedPosts = hotPoints.sort((a, b)=>a.hotness > b.hotness ? 1 : a.hotness<b.hotness ? -1 : a.hotness === b.hotness && 0);
+            // console.log(sortedPosts);
+            var sortedPosts = hotPoints.sort((a, b)=>
+                {
+                    if(a.hotness > b.hotness){
+                        return 1;
+                    }else if(a.hotness<b.hotness){
+                        return -1;
+                    }else if(a.hotness===b.hotness){
+                        return 0;
+                    }
+                }
+            ).reverse();
+
+            sortedPosts.map((post)=>
+            {
+                console.log("hotness: "+post.hotness+" score:"+(post.upvotes.length-post.downvotes.length).toString());
+                console.log(" upvotes:"+(post.upvotes.length).toString()+" downvotes: "+(post.downvotes.length).toString());
+            });
+
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
+        }else if(req.params.sorting==="top"){
+            //roughly based on reddit's hot filter algorithm
+            var posts = await Post.find({}).sort({upvotes: -1});
+            var topPoints = posts.map((post)=>{
+                post["score"] = (post.upvotes.length - post.downvotes.length);
+                // console.log(post.title);
+                // console.log(post.hotness);
+                return post;
+            })
+            // console.log(hotPoints);
+            // var sortedPosts = hotPoints.sort((a, b)=>a.hotness > b.hotness ? 1 : a.hotness<b.hotness ? -1 : a.hotness === b.hotness && 0);
+            // console.log(sortedPosts);
+            var sortedPosts = topPoints.sort((a, b)=>
+                {
+                    if(a.score > b.score){
+                        return 1;
+                    }else if(a.score<b.score){
+                        return -1;
+                    }else if(a.score===b.score){
+                        return 0;
+                    }
+                }
+            ).reverse();
+
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
         }
-    }else if(req.params.category=="none"){
-        const sortedPosts = await Post.find({category: req.params.category}).sort({createdAt: 1});
-        //console.log(posts);
-        if(sortedPosts.length>0){
-            res.send(sortedPosts);
-        }else{
-            res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+    }else if(req.params.category!=="none"){
+        if(req.params.sorting==="1"){
+            const sortedPosts = await Post.find({category: req.params.category}).sort({createdAt: 1});
+            //console.log(posts);
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
+        }else if(req.params.sorting==="-1"){
+            const sortedPosts = await Post.find({category: req.params.category}).sort({createdAt: -1});
+            //console.log(posts);
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
+        }else if(req.params.sorting===""){
+            const sortedPosts = await Post.find({category: req.params.category}).sort({name: 1});
+            //console.log(posts);
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
+        }else if(req.params.sorting==="hot"){
+            //roughly based on reddit's hot filter algorithm
+            function hot(upvotes,downvotes,createdAt){
+                var score = upvotes - downvotes;
+                var order = log10(Math.max(Math.abs(score), 1));
+                var sign = score>0 ? 1 : score<0 ? -1 : 0;
+                var seconds = epochSeconds(createdAt) - 1134028003;
+                var product = order + sign * seconds / 45000;
+                return Math.round(product*10000000)/10000000;
+            }
+            function log10(val){
+                return Math.log(val) / Math.LN10;
+            }
+            function epochSeconds(d){
+                return (d.getTime() - new Date(1970,1,1).getTime())/1000;
+            }
+            var posts = await Post.find({}).sort({upvotes: -1});
+            var hotPoints = posts.map((post)=>{
+                post["hotness"] = hot(post.upvotes.length, post.downvotes.length, post.createdAt);
+                return post;
+            })
+            var sortedPosts = hotPoints.sort((a, b)=>
+                {
+                    if(a.hotness > b.hotness){
+                        return 1;
+                    }else if(a.hotness<b.hotness){
+                        return -1;
+                    }else if(a.hotness===b.hotness){
+                        return 0;
+                    }
+                }
+            ).reverse();
+
+            sortedPosts.map((post)=>
+            {
+                console.log("hotness: "+post.hotness+" score:"+(post.upvotes.length-post.downvotes.length).toString());
+                console.log(" upvotes:"+(post.upvotes.length).toString()+" downvotes: "+(post.downvotes.length).toString());
+            });
+
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
+        }else if(req.params.sorting==="top"){
+            //roughly based on reddit's hot filter algorithm
+            var posts = await Post.find({category: req.params.category}).sort({upvotes: -1});
+            var topPoints = posts.map((post)=>{
+                post["score"] = (post.upvotes.length - post.downvotes.length);
+                return post;
+            })
+            var sortedPosts = topPoints.sort((a, b)=>
+                {
+                    if(a.score > b.score){
+                        return 1;
+                    }else if(a.score<b.score){
+                        return -1;
+                    }else if(a.score===b.score){
+                        return 0;
+                    }
+                }
+            ).reverse();
+
+            if(sortedPosts.length>0){
+                res.send(sortedPosts);
+            }else{
+                res.status(404).send({message: "KHÔNG CÓ BÀI VIẾT NÀO"});
+            }
         }
     }
     
@@ -170,6 +364,28 @@ forumRouter.get('/post/:id', expressAsyncHandler(async (req, res)=>{
     const post = await Post.findById(req.params.id);
     //console.log(posts);
     if(post){
+        // var io = req.app.get('socketio');
+        // let interval;
+        // io.on("connection", (socket) => {
+        // console.log("Post client connected");
+        // if (interval) {
+        //     clearInterval(interval);
+        // }
+        // interval = setInterval(() => {
+        //     socket.emit('getLatestPostInfo', post);
+        // }, 1000);
+        //     socket.on("disconnect", () => {
+        //         console.log("Client disconnected");
+        //         clearInterval(interval);
+        //     });
+        // });
+        // var io = req.app.get('sock');
+        // io.on("connection", (socket) => {
+        //     socket.on("addComment", ()=>{
+        //         socket.emit("loadComments");
+        //         console.log("addComment")
+        //     })
+        // });
         res.send(post);
     }else{
         res.status(404).send({message: "404 NOT FOUND"});
@@ -398,11 +614,15 @@ forumRouter.post('/post/:id/reply', expressAsyncHandler(async (req, res)=>{
         createdAt: new Date(),
         updatedAt: new Date(),
     });
-
     const updatedPost = await post.save();
     res.send({
         comments: updatedPost.comments,
     });
+    // io.on("connection", (socket) => {
+    //     socket.on("addComment", ()=>{
+    //         socket.emit("loadComments");
+    //     })
+    // });
 }));
 
 forumRouter.put('/post/:id/edit_reply', expressAsyncHandler(async (req, res)=>{
@@ -483,4 +703,34 @@ forumRouter.put('/keyword/remove/:id', expressAsyncHandler(async(req, res)=>{ //
     }
 }));
 
-export default forumRouter;
+forumRouter.put('/accumulatePost', expressAsyncHandler(async(req, res)=>{ //if keyword is a link then this is fucked lol
+    //console.log("sfweff");
+    const post = await Post.findById(req.body.postId);
+    if(post){
+        if(req.body.type && req.body.type==="upvote"){
+            if(post.upvotes.indexOf(req.body.userId)===-1){
+                const index = post.downvotes.indexOf(req.body.userId);
+                post.downvotes.splice(index, 1)
+                post.upvotes.push(req.body.userId)
+            }else{
+                res.send("Already exists");
+            }
+        }
+        if(req.body.type && req.body.type==="downvote"){
+            if(post.downvotes.indexOf(req.body.userId)===-1){
+                const index = post.upvotes.indexOf(req.body.userId);
+                post.upvotes.splice(index, 1)
+                post.downvotes.push(req.body.userId)
+            }else{
+                res.send("Already exists");
+            }
+        }
+        
+        await post.save();
+        res.send({message: "Accumulated", upvotes: post.upvotes, downvotes: post.downvotes});
+    }else{
+        res.status(404).send("404");
+    }
+}));
+
+module.exports = forumRouter;

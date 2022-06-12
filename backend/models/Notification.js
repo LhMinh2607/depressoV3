@@ -1,4 +1,5 @@
-import mongoose from 'mongoose';
+// import mongoose from 'mongoose';
+const mongoose =  require('mongoose');
 const {Schema} = mongoose;
 
 const notification = new mongoose.Schema({
@@ -7,6 +8,7 @@ const notification = new mongoose.Schema({
     receiverId: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
     senderId: {type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true},
     status: {type: String, required: false},
+    postId: {type: String, required: false},
 },
     {
         timestamps: true,
@@ -15,4 +17,4 @@ const notification = new mongoose.Schema({
 
 const Notification = mongoose.model('Notification', notification);
 
-export default Notification;
+module.exports = Notification;
