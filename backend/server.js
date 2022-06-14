@@ -24,6 +24,7 @@ const contactRouter =  require('./routers/contactRouter.js');
 const notificationRouter =  require('./routers/notificationRouter.js');
 const http = require("http");
 const socketIo = require("socket.io");
+const adminRouter = require('./routers/adminRouter.js');
 
 dotenv.config();
 const app = express();
@@ -58,6 +59,7 @@ app.use('/api/imageSearch', imageSearchRouter);
 app.use('/api/call', callRouter);
 app.use('/api/contact', contactRouter);
 app.use('/api/notification', notificationRouter);
+app.use('/api/admin', adminRouter);
 
 app.get('/', (req, res) => {
     res.send('Server is ready!');

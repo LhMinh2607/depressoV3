@@ -3392,7 +3392,16 @@ Draggable{
   flex-direction: row;
   align-items: center;
 }
-
+.statDiv{
+  max-width: 25rem;
+}
+.statDiv.bar{
+  max-width: 50rem;
+}
+/* .statDiv.bar > canvas {
+  position: absolute;
+  pointer-events:none;
+} */
 
 
 

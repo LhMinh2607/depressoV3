@@ -42,6 +42,7 @@ import RecorderComponent from './components/RecorderComponent';
 import VoiceRecorderComponent from './components/VoiceRecorderComponent';
 // import io from "socket.io-client";
 import {io} from 'socket.io-client';
+import StatisticPage from './pages/StatisticPage';
 
 function App() {
 
@@ -58,9 +59,9 @@ function App() {
   const signOutHandler = () =>{
     dispatch(signout());
   };
-  // let socket = io(process.env.REACT_APP_ENDPOINT);
+  let socket = io(process.env.REACT_APP_ENDPOINT);
   // let socket = io(process.env.REACT_APP_WSENDPOINT);
-  let socket = io();
+  // let socket = io();
   // let socket = io("https://8527-27-2-17-107.ngrok.io");
   // let socket = io("https://b9d3-27-2-17-107.ngrok.io");
   // let socket = io("https://67ca-27-2-17-107.ngrok.io");
@@ -396,6 +397,9 @@ function App() {
                               <li>
                                 <Link to={`/user/list`}>Danh sách người dùng<i className="fa fa-user"></i></Link>
                               </li>
+                              <li>
+                                <Link to={`/admin/stat`}>Thống kê</Link>
+                              </li>
                             </>
                           }
                             <li>
@@ -420,6 +424,9 @@ function App() {
                               </li>
                               <li>
                                 <Link to={`/user/list`}>Danh sách người dùng<i className="fa fa-user"></i></Link>
+                              </li>
+                              <li>
+                                <Link to={`/admin/stat`}>Thống kê</Link>
                               </li>
                             </>}
                           <li>
@@ -588,6 +595,7 @@ function App() {
                   {/* <Route exact path="/forum/post/:id" element={<PostDetailPage></PostDetailPage>}></Route> */}
                   <Route exact path="/feedback" element={<AdminRoute><FeedbackPage></FeedbackPage></AdminRoute>}></Route> 
                   <Route exact path="/user/list" element={<AdminRoute><UserListPage></UserListPage></AdminRoute>}></Route> 
+                  <Route exact path="/admin/stat" element={<AdminRoute><StatisticPage></StatisticPage></AdminRoute>}></Route> 
                   <Route exact path="/forum" element={<ForumPage></ForumPage>}></Route>
                   <Route exact path="/forum/post/:id" element={<PostDetailPage  socket={socket}></PostDetailPage>}></Route>
                   <Route exact path="/news" element={<NewsPage></NewsPage>}></Route>

@@ -8,6 +8,7 @@ import { imageSearchListReducer, userImageSearchListReducer } from './reducers/i
 import { cancelCallReducer, historyListReducer, loggingACallReducer, makingACallReducer, updatingACallReducer } from './reducers/callingReducers';
 import { contactDetailReducer, contactEditingReducer, contactListReducer, contactRemovingReducer, contactSavingReducer, contactSearchingReducer } from './reducers/contactReducers';
 import { notificationAddingReducers, notificationEditingReducers, notificationListReducers } from './reducers/notificationReducer';
+import { fullStatReducer } from './reducers/adminReducer';
 
 const initialState = {
     userSignin: {
@@ -101,6 +102,9 @@ const reducer = combineReducers({
 
     //
     notificationEditing: notificationEditingReducers,
+
+    //
+    fullStat: fullStatReducer,
 })
 
 
