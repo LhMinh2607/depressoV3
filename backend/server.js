@@ -99,6 +99,10 @@ io.on("connection", (socket) => {
     console.log("joined Post");
     socket.join(id);
   })
+  socket.on("joinUser", (id)=>{
+    console.log("joined User");
+    socket.join(id);
+  })
 
   socket.on("addComment", (id) => {
     // interval = setInterval(() => {
@@ -112,6 +116,24 @@ io.on("connection", (socket) => {
       socket.to(id).emit("loadComments");
       console.log(socket.to(id).emit("loadComments"));
       console.log("server addComment");
+      const newDate = new Date();
+      console.log("date: "+newDate);
+    }, 1);
+  });
+  socket.on("addNofitication", (id) => {
+    setTimeout(()=>{
+      socket.to(id).emit("loadNotifications");
+      console.log(socket.to(id).emit("loadNotifications"));
+      console.log("server addComment");
+      const newDate = new Date();
+      console.log("date: "+newDate);
+    }, 1);
+  });
+  socket.on("addCounselingRequest", ()=> {
+    setTimeout(()=>{
+      socket.emit("loadCounselingRequests");
+      console.log(socket.emit("loadCounselingRequests"));
+      console.log("server loadCounselingRequests");
       const newDate = new Date();
       console.log("date: "+newDate);
     }, 1);

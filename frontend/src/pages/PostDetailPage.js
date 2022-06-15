@@ -3,7 +3,7 @@ import Linkify from 'react-linkify';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { detailsOfUser, listOfUsers } from '../actions/userAction';
-import { accumulatePost, addKeywordToPost, createPostComment, deletePost, detailsOfPost, editPost, listOfNestedPosts, listOfPosts, listOfPostsByCat, listOfRelatedPosts, pinPostToHome, removeKeywordFromPost } from '../actions/postAction';
+import { accumulateComment, accumulatePost, addKeywordToPost, createPostComment, deletePost, detailsOfPost, editPost, listOfNestedPosts, listOfPosts, listOfPostsByCat, listOfRelatedPosts, pinPostToHome, removeKeywordFromPost } from '../actions/postAction';
 import DateComponent from '../components/DateComponent';
 import DeletePostCommentButton from '../components/DeletePostCommentButton';
 import LoadingBox from '../components/LoadingBox';
@@ -43,6 +43,9 @@ export default function PostDetailPage(props) {
 
     const postAccumulating = useSelector(state=>state.postAccumulating);
     const {loading: loadingAccumulating, error: errorAccumulating, success: successAccumulating} = postAccumulating;
+    
+    const commentAccumulating = useSelector(state=>state.commentAccumulating);
+    const {loading: loadingCommentAccumulating, error: errorCommentAccumulating, success: successCommentAccumulating} = commentAccumulating;
 
     const [editPostStatus, setEditPostStatus] = useState(false);
 
@@ -273,6 +276,29 @@ export default function PostDetailPage(props) {
         }
     }
 
+    const accumulateTheComment = (type, commentId) => {
+        dispatch(accumulateComment(userInfo._id, commentId, postId, type))
+        console.log("accumulate");
+        socket.emit("addComment", postId);
+    }
+
+    const accumulateDownTheComment = (type, commentId) =>{
+        dispatch(accumulateComment(userInfo._id, commentId, postId, type))
+        console.log("accumulate");
+        socket.emit("addComment", postId);
+    }
+
+    const report = () => {
+        dispatch(accumulatePost(userInfo._id, postId, "report", "Vi phạm nguyên tắc cộng đồng"))
+        socket.emit("addComment", postId);
+    }
+
+    const markAsMostHelpful = (commentId) =>{
+        const type = "bestAnswer"
+        dispatch(accumulateComment(userInfo._id, commentId, postId, type));
+        socket.emit("addComment", postId);
+    }
+
     const openCommentBox = (type) => {
         if(commentBox===false){
             scrollToBottomHandler();
@@ -442,6 +468,9 @@ export default function PostDetailPage(props) {
                         <div className='row center top'>
                             <div className='postTitle'>{post && post.title}</div>
                         </div>
+                        <div className='row center'>
+                            {post && post.reports && post.reports.length>0 && <div>{post.reports.length} người dùng đã báo cáo bài viết này</div>}
+                        </div>
                         <div className='row center top'>
                             <div className='col-mini'>
                                 <div className='row center'>
@@ -478,6 +507,9 @@ export default function PostDetailPage(props) {
                                     <div className='accumulate' onClick={() => accumulate("downvote")}>
                                         <i className='fa fa-thumbs-down'></i>
                                     </div> */}
+                                    <div className='accumulate row'>
+                                        <i className='fa fa-flag' onClick={()=>report()}></i>
+                                    </div>
                                 </div>
                                 
                             </div>
@@ -663,7 +695,25 @@ export default function PostDetailPage(props) {
                 {
                     post.postComments.map(pc=>(
                         <div className='row center'>
-                            
+                            <div className='col-mini'>
+                                {pc && pc.upvotes && pc.downvotes && pc.upvotes.length - pc.downvotes.length}
+                                <div className='accumulate row' style={userInfo && pc && pc.upvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}} onClick={() => accumulateTheComment("upvote", pc._id)}>
+                                    <i className='fa fa-thumbs-up'></i>
+                                </div>
+                                <div className='accumulate row' style={userInfo && pc && pc.downvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}} onClick={() => accumulateDownTheComment("downvote", pc._id)}>
+                                    <i className='fa fa-thumbs-down'></i>
+                                </div>
+                                {userInfo && post && userInfo._id === post.user &&
+                                    <div className='clickableIcon' onClick={()=>markAsMostHelpful(pc._id)}>
+                                        <i className='fa fa-star'></i>
+                                    </div>
+                                }
+                                {post && post.bestAnswer === pc._id &&
+                                    <div title="Người đăng bài đã đánh dấu đây là câu trả lời hữu ích nhất">
+                                        <i className='fa fa-check-circle' style={{fontSize: "2.5rem"}}></i>
+                                    </div>
+                                }
+                            </div>
                             {userInfo && userInfo._id===pc.commenter && (
                                 <div className="card card-body postDetail">
                                     {!editCommentStatus ? (

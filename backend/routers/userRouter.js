@@ -39,6 +39,7 @@ userRouter.post('/signup', expressAsyncHandler(async(req, res)=>
         issues: [],
         progress: 0,
         desc: req.body.desc,
+        counselingRequest: false,
     });
     const createdUser = await user.save();
     // res.send({
@@ -79,6 +80,7 @@ expressAsyncHandler(async (req, res)=>{
                 backgroundMusic: user.backgroundMusic,
                 globalBackground: user.globalBackground,
                 friends: user.friends,
+                counselingRequest: user.counselingRequest,
                 token: generateToken(user),
             });
             return;
@@ -88,8 +90,49 @@ expressAsyncHandler(async (req, res)=>{
     })
 );
 
+userRouter.get('/search/:keyword', expressAsyncHandler(async (req, res)=>{
+    var splitStr = req.params.keyword.toLowerCase().split(' ');
+    for (var i = 0; i < splitStr.length; i++) {
+        splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1);     
+    }
+
+    const searchedKey = req.params.keyword
+
+    const searchedContacts = await Contact.find({$or: [
+        {$text: {$search: searchedKey}},
+    ]},
+    { 
+        score: { $meta: 'textScore'} 
+    }).sort({score: { $meta: 'textScore'} }).limit(5);
+    if(searchedContacts.length>0){
+        res.send(searchedContacts);
+    }else{
+        res.status(404).send({message: "404"});
+    }
+}));
+
 userRouter.get('/:id', expressAsyncHandler(async(req, res)=>{
     const user = await User.findById(req.params.id);
+    if(user){
+        // console.log(user);
+        res.send(user);
+        // const conversation = await ConversationStore.find({})
+        // ConversationStore.find({"events": {$elemMatch: {"text": req.params.id}}})
+
+        // const conversation = await conversationStore.find({$and: [{"events": {$elemMatch: {"text": "6258e2b0ee1e676f8626d4bd"}}}, {$or: [{"events": {$elemMatch: {"event": "bot"}}}, {"events": {$elemMatch: {"event": "user"}}}]}]}).projection(
+        //     {"events": {"text": 1}}
+        // )
+
+        // const conversation = ConversationStore.find({$and: [{"events": {$elemMatch: {"text": "6258e2b0ee1e676f8626d4bd"}}}, {$or: [{"events": {$elemMatch: {"event": "bot"}}}, {"events": {$elemMatch: {"event": "user"}}}]}]}).projection(
+        //         {"events": {"text": 1}} 
+        // )
+    }else{
+        res.status(404).send({info: "Người dùng không tồn tại"});
+    }
+}));
+
+userRouter.get('/phone/:phone', expressAsyncHandler(async(req, res)=>{
+    const user = await User.findOne({phoneNumber: req.params.phone});
     if(user){
         // console.log(user);
         res.send(user);

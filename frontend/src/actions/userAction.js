@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { ADD_FRIEND_FAILED, ADD_FRIEND_REQUEST, ADD_FRIEND_SUCCESSFUL, MESSAGE_STAT_FAILED, MESSAGE_STAT_REQUEST, MESSAGE_STAT_SUCCESSFUL, USER_CONVERSATION_HISTORY_FAILED, USER_CONVERSATION_HISTORY_REQUEST, USER_CONVERSATION_HISTORY_SUCCESSFUL, USER_DETAIL_FAILED, USER_DETAIL_REQUEST, USER_DETAIL_SUCCESSFUL, USER_LIST_FAILED, USER_LIST_REQUEST, USER_LIST_SUCCESSFUL, USER_SIGNIN_FAILED, USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESSFUL, USER_SIGNOUT, USER_SIGN_UP_FAILED, USER_SIGN_UP_REQUEST, USER_SIGN_UP_SUCCESSFUL, USER_UPDATE_PROFILE_FAILED, USER_UPDATE_PROFILE_REQUEST, USER_UPDATE_PROFILE_SUCCESSFUL } from '../constants/userConst';
+import { ADD_FRIEND_FAILED, ADD_FRIEND_REQUEST, ADD_FRIEND_SUCCESSFUL, MESSAGE_STAT_FAILED, MESSAGE_STAT_REQUEST, MESSAGE_STAT_SUCCESSFUL, SEARCH_USER_FAILED, SEARCH_USER_REQUEST, SEARCH_USER_SUCCESSFUL, USER_CONVERSATION_HISTORY_FAILED, USER_CONVERSATION_HISTORY_REQUEST, USER_CONVERSATION_HISTORY_SUCCESSFUL, USER_DETAIL_BY_PHONE_FAILED, USER_DETAIL_BY_PHONE_REQUEST, USER_DETAIL_BY_PHONE_SUCCESSFUL, USER_DETAIL_FAILED, USER_DETAIL_REQUEST, USER_DETAIL_SUCCESSFUL, USER_LIST_FAILED, USER_LIST_REQUEST, USER_LIST_SUCCESSFUL, USER_SIGNIN_FAILED, USER_SIGNIN_REQUEST, USER_SIGNIN_SUCCESSFUL, USER_SIGNOUT, USER_SIGN_UP_FAILED, USER_SIGN_UP_REQUEST, USER_SIGN_UP_SUCCESSFUL, USER_UPDATE_PROFILE_FAILED, USER_UPDATE_PROFILE_REQUEST, USER_UPDATE_PROFILE_SUCCESSFUL } from '../constants/userConst';
 
 
 export const signout = () => (dispatch) =>{
@@ -77,6 +77,24 @@ export const detailsOfUser = (userId) => async(dispatch, getState) =>{
     }
 };
 
+export const detailsOfUserBasedOnPhone = (phoneNumber) => async(dispatch, getState) =>{
+    dispatch({type: USER_DETAIL_BY_PHONE_REQUEST, payload: phoneNumber});
+    const {userSignin: {userInfo}}= getState();
+    try {
+        const {data} = await axios.get(`/api/user/phone/${phoneNumber}`, {
+            headers: {Authorization: `Bearer ${userInfo.token}`},
+        });
+        
+        dispatch({type: USER_DETAIL_BY_PHONE_SUCCESSFUL, payload: data});
+    } catch (error) {
+        const message = error.response 
+            && error.response.data.message 
+            ? error.response.data.message
+            : error.message
+        dispatch({type: USER_DETAIL_BY_PHONE_FAILED, payload: message});
+    }
+};
+
 
 export const updateUserProfile = (user) => async (dispatch, getState)=>{
     dispatch({type: USER_UPDATE_PROFILE_REQUEST, payload: user});
@@ -144,5 +162,19 @@ export const addFriend = (senderId, receiverId) => async(dispatch, getState) =>{
             ? error.response.data.message
             : error.message,
         });
+    }
+};
+
+export const searchUser = (keyword) => async (dispatch) =>{
+    dispatch({type: SEARCH_USER_REQUEST, payload: {keyword}});
+    try{
+        const {data} = await axios.get(`/api/user/search/${keyword}`);
+        dispatch({type: SEARCH_USER_SUCCESSFUL, payload: data});
+    }catch(error){
+        dispatch({type: SEARCH_USER_FAILED, 
+            payload: error.response 
+            && error.response.data.message 
+            ? error.response.data.message
+            : error.message,});
     }
 };

@@ -523,7 +523,16 @@ button.primary{
   white-space: normal;
   max-width: 10rem;
 }
-
+.primary2{
+  background-color: #184269;
+  word-wrap: break-word;
+  width: 100%;
+  white-space: normal;
+  max-width: 20rem;
+}
+.primary2:hover{
+  background-color: #447eb4;
+}
 .admin{
   background-color: #090c91;
   word-wrap: break-word;
@@ -1213,6 +1222,15 @@ option{
   text-align: right;
   transition: .2s;
 }
+.dropDown-content.small{
+  width: 2rem; 
+  margin: none;
+  top:0;
+  text-align: left;
+  min-width: 2rem;
+  transform: translate(0rem, -2rem);
+  animation: fadeIn .9s;
+}
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -1231,6 +1249,11 @@ option{
 .dropDown:hover .dropDown-content{
   transform: translateY(0);
   animation: fadeIn .2s;
+  display: block;
+}
+.dropDown:hover .dropDown-content.small{
+  transform: translateY(0);
+  animation: fadeIn .9s;
   display: block;
 }
 
@@ -3274,6 +3297,20 @@ Draggable{
   padding: 1rem;
   border-radius: 2rem;
 }
+.notifButton{
+  position: absolute;
+  transform: translate(10rem, 2rem);
+  background-color: #7e9ddb;
+  padding: 1rem;
+  border-radius: 2rem;
+}
+.notifButton.right{
+  position: absolute;
+  transform: translate(15rem, 2rem);
+  background-color: #7e9ddb;
+  padding: 1rem;
+  border-radius: 2rem;
+}
 .fa-bell{
   color: rgb(207, 182, 42);
 }
@@ -3711,7 +3748,6 @@ input[type=number] {
     linear-gradient(rgb(10, 66, 139), transparent),
     linear-gradient(to top, rgb(50, 122, 218), transparent),
     linear-gradient(to bottom, rgb(127, 194, 248), transparent);
-  
   animation: zoomPopup 0.7s;
 }
 
@@ -3731,6 +3767,17 @@ input[type=number] {
 
 .popup.hangup{
   background-color: rgb(180, 35, 35);
+}
+.popupBackground{
+  backdrop-filter: brightness(50%);
+  width: 100vw;
+  height: 100vh;
+  z-index: 2500;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
 }
 
 @keyframes zoomPopup {
@@ -3837,7 +3884,7 @@ input[type=number] {
 
 .popupCoverup{
   width: 100%;
-  height: 100vh;
+  height: 100%;
   background-color: #000000;
   position: absolute;
   opacity: 50%;

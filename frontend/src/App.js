@@ -7,7 +7,7 @@ import HomePage from './pages/HomePage';
 import SigninPage from './pages/SigninPage';
 import {useDispatch, useSelector} from 'react-redux';
 import SignUpPage from './pages/SignupPage';
-import { addFriend, signout } from './actions/userAction';
+import { addFriend, detailsOfUser, listOfUsers, signout } from './actions/userAction';
 import ProfilePage from './pages/ProfilePage';
 import ForumPage from './pages/ForumPage';
 import PostDetailPage from './pages/PostDetailPage';
@@ -24,7 +24,7 @@ import NewsPage from './pages/NewsPage';
 import Draggable from 'react-draggable';
 import Widget from 'rasa-webchat';
 import { BrowserView, MobileView, isBrowser, isMobile } from 'react-device-detect';
-import { editNotification, listOfNotifications } from './actions/notificationAction';
+import { createNotification, editNotification, listOfAllNotifications, listOfNotifications } from './actions/notificationAction';
 // import socketIOClient from "socket.io-client";
 // import {Recorder} from 'react-voice-recorder'
 // import 'react-voice-recorder/dist/index.css'
@@ -43,6 +43,7 @@ import VoiceRecorderComponent from './components/VoiceRecorderComponent';
 // import io from "socket.io-client";
 import {io} from 'socket.io-client';
 import StatisticPage from './pages/StatisticPage';
+import GeneralOptionDialogBox from './components/GeneralOptionDialogBox';
 
 function App() {
 
@@ -50,6 +51,7 @@ function App() {
   const [hzAna, setHzAna] = useState([]);
   const [speaker, setSpeaker] = useState("");
   const [currentTab, setCurrentTab]  = useState('');
+  const [currentNumber, setCurrentNumber] = useState('');
 
   const userSignin = useSelector((state)=> state.userSignin);
   const {userInfo, loading, error} = userSignin;
@@ -74,6 +76,12 @@ function App() {
   const notificationList = useSelector(state=>state.notificationList);
   const {loading: loadingNotifList, error: errorNotifList, notifications} = notificationList;
 
+  const allNotificationList = useSelector(state=>state.allNotificationList);
+  const {loading: loadingAllNotifList, error: errorAllNotifList, allNotifications} = allNotificationList;
+
+  const userDetail = useSelector(state=>state.userDetail);
+  const {loading: loadingUser, error: errorUser, user} = userDetail;
+
   const [openKeyPad, setOpenKeyPad] = useState(false);
   const [openMusicBox, setOpenMusicBox] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -87,6 +95,7 @@ function App() {
       s: 0
     }
   }});
+  const [openCounselingBox, setOpenCounselingBox] = useState()
 
   const handleAudioStop = (data) =>{
     console.log(data)
@@ -264,26 +273,75 @@ function App() {
   const updateNotificationStatus = (notifId) =>{
     dispatch(editNotification(notifId));
     // alert("Test"+notifId)
-    // socket.emit("addComments");
+    socket.emit("addCounselingRequest");
+    console.log("addCounselingRequest")
+
   }
-  socket.on("loadComments", () => {
-    setTimeout(()=>{
-        if(userInfo){
-          dispatch(listOfNotifications(userInfo._id));
-          console.log("client loadComments")
-          // alert("loadComments");
-          // socket.disconnect();
-          // socket.off('loadComments');
-          // socket.off("loadComments");
-          // socket.emit("stop");
-        }
-    }, 10);
+  // socket.on("loadComments", () => {
+  //   setTimeout(()=>{
+  //       if(userInfo){
+  //         dispatch(listOfNotifications(userInfo._id));
+  //         console.log("client loadComments")
+  //         // alert("loadComments");
+  //         // socket.disconnect();
+  //         // socket.off('loadComments');
+  //         // socket.off("loadComments");
+  //         // socket.emit("stop");
+  //       }
+  //   }, 10);
+  // });
+
+  socket.on("loadCounselingRequests", () => {
+    if(userInfo.role==="contributer" || userInfo.role === "admin"){
+      dispatch(listOfAllNotifications());
+      dispatch(detailsOfUser(userInfo._id))
+      dispatch(listOfUsers())
+
+      console.log("loadCounselingRequests")
+      // socket.disconnect();
+    }
   });
+
+  const counselingRequest = () =>{
+    setOpenCounselingBox(!openCounselingBox)
+  }
+
+  const makeCounselingRequest = (content) =>{
+    const type = "counselingRequest";
+    if(user && user.counselingRequest === false){
+      dispatch(createNotification(userInfo._id, "none", content, type, "none"))
+      socket.emit("addCounselingRequest");
+      console.log("addCounselingRequest")
+    }else{
+      alert("Bạn đã đăng ký rồi")
+    }
+    
+  }
+
+  const call = (id) =>{
+    setOpenKeyPad(false)
+    if(users){
+      const thisUser = users.filter(u=>u._id===id)
+      console.log(thisUser[0].phoneNumber)
+      setTimeout(()=>{
+        setOpenKeyPad(true)
+        setCurrentNumber(thisUser[0].phoneNumber)
+      }, 1)
+    }
+  }
   
   useEffect(()=>{
     if(userInfo){
       dispatch(listOfNotifications(userInfo._id));
+      socket.emit("joinUser", userInfo._id);
+      console.log(socket.emit("joinUser", userInfo._id))
+      dispatch(detailsOfUser(userInfo._id))
+      if(userInfo.role==="contributer" || userInfo.role==="admin"){
+        dispatch(listOfAllNotifications());
+        dispatch(listOfUsers())
+      }
     }
+    
   
 
   // document.querySelector("#start-record-button").onclick = () => {
@@ -349,9 +407,38 @@ function App() {
                   <div>
                     <Link to={`/forum`} className="">Diễn đàn</Link>
                   </div>
-                      {userInfo && userInfo.role==="admin" && <div onClick={()=>setOpenKeyPad(!openKeyPad)} className='interactiveText headerBar'><i className="fa fa-phone"></i></div>}
+                      {userInfo && (userInfo.role==="admin" || userInfo.role==="contributer") && <div className='headerBar bell'>
+                        <div onClick={()=>setOpenKeyPad(!openKeyPad)} className='interactiveText'><i className="fa fa-phone"></i></div>
+                          <div className='row'>
+                            {/* temporary solution. This should use localStorage */}
+                            <div className='cart-items-count'>{allNotifications && allNotifications.filter(notif=>notif.status===""&&notif.type==="counselingRequest").length}
+                            </div>
+                          </div>
+                        <ul className='notificationDropdown'>
+                          {/* {notifications && notifications.length && notifications.map((notif)=>(
+                            notif.type==="friendRequest" && notif.status!=="checked" && <li key={notif._id}>
+                              {notif.content}
+                              <div className='addFriendButton interactiveText' onClick={()=>addThisFriend(notif.senderId)}>Chấp nhận</div>
+                            </li> 
+                          ))} */}
+                          {allNotifications && allNotifications.length && allNotifications.filter(notif=>notif.status==="" && notif.type==="counselingRequest").map((notif)=>(
+                            (notif.type==="counselingRequest") && (notif.status==="" && 
+                              <div className='row'>
+                                  <Link to={`/user/${notif.senderId}`}>{notif.content}</Link>
+                                  <div className='interactiveText notifButton' onClick={()=>call(notif.senderId)}><i className='fa fa-phone'></i></div>
+                                  <div className='interactiveText notifButton right' onClick={()=>updateNotificationStatus(notif._id)}><i className='fa fa-check'></i></div>
+                              </div>
+                            )
+                          ))}
+                          {/* {notifications && notifications.length && notifications.map((notif)=>(
+                            notif.type==="commentAlert" && notif.status!=="checked" && <li className='' onClick={()=>updateNotificationStatus(notif._id)} key={notif._id} >
+                              {notif.content}
+                            </li>
+                          ))} */}
+                        </ul>
+                      </div>}
                       {userInfo && userInfo.backgroundMusic && <div onClick={()=>setOpenMusicBox(!openMusicBox)} className='interactiveText headerBar'><i className="fa fa-music"></i></div>}
-                      
+                      {userInfo && userInfo.role==="user" && <div onClick={counselingRequest} className='interactiveText headerBar'><i className="fa fa-pencil"></i></div>}
                       <div className='bell'>
                         <div className='row'>
                           <div><i className='fa fa-bell'></i></div>
@@ -367,7 +454,7 @@ function App() {
                           </li> 
                         ))} */}
                         {notifications && notifications.length && notifications.map((notif)=>(
-                          notif.type==="commentAlert" && (notif.status==="" ? <Link to={`/forum/post/${notif.postId}`} onClick={()=>updateNotificationStatus(notif._id)}><li className='' key={notif._id} >
+                          (notif.type==="commentAlert") && (notif.status==="" ? <Link to={`/forum/post/${notif.postId}`} onClick={()=>updateNotificationStatus(notif._id)}><li className='' key={notif._id} >
                             {notif.content}
                           </li></Link> : notif.status === "checked" && <Link to={`/forum/post/${notif.postId}`}><li style={{color: "grey"}} className='' key={notif._id} >
                             {notif.content}
@@ -488,7 +575,10 @@ function App() {
                   }
                   
                   
-                  {userInfo && userInfo.role==="admin" && openKeyPad && <Keypad setOpenKeyPad={setOpenKeyPad}></Keypad>}
+                  {userInfo && (userInfo.role==="admin" || userInfo.role==="contributer") &&
+                   (openKeyPad && <Keypad currentNumber={currentNumber} setOpenKeyPad={setOpenKeyPad}></Keypad>)
+                  
+                  }
                   {userInfo && userInfo.backgroundMusic && openMusicBox &&
                     <Draggable><div className='musicPlayer' draggable={true}>
                       <div className='row right' style={{display: "flex", flexDirection:"row", justifyContent:"flex-end", color: "#fff"}}><i className='fa fa-close interactiveText' onClick={()=>setOpenMusicBox(!openMusicBox)}></i></div>
@@ -508,10 +598,11 @@ function App() {
                       // openLauncherImage={""}
                       />
                     } */}
-                    
               </header>
               <main>
               <div>
+              {openCounselingBox && <GeneralOptionDialogBox func1Name={`${userInfo.name} muốn tư vấn qua điện thoại`} func2Name={`${userInfo.name} muốn tư vấn qua tin nhắn`} handleFunc1={makeCounselingRequest} handleFunc2={makeCounselingRequest}></GeneralOptionDialogBox>}
+
                 {/* It's <time dateTime={response}>{response}</time> */}
                 {/* <Recorder
                     record={true}

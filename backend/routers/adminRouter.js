@@ -99,14 +99,14 @@ adminRouter.get('/stat', expressAsyncHandler(async (req, res)=>{
                 '$dateToString': {
                   'format': '%Y-%m-%d', 
                   'date': '$createdAt'
-                }
-              }, 
+                },
+              },
               'count': {
                 '$sum': 1
               }
             }
         },
-        {'$sort': {'date': 1}},
+        {'$sort': {'_id': 1}},
       ])
     // postByDateCount = {}
     // postByDate.forEach(function (x) { postByDateCount[x] = (postByDateCount[x] || 0) + 1; });

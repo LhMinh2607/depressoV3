@@ -1,4 +1,4 @@
-import {  CREATE_POST_COMMENT_FAILED, 
+import {  COMMENT_ACCUMULATE_FAILED, COMMENT_ACCUMULATE_REQUEST, COMMENT_ACCUMULATE_SUCCESSFUL, CREATE_POST_COMMENT_FAILED, 
     CREATE_POST_COMMENT_REQUEST, 
     CREATE_POST_COMMENT_SUCCESSFUL, 
     CREATE_POST_FAILED, 
@@ -43,6 +43,9 @@ import {  CREATE_POST_COMMENT_FAILED,
     POST_REMOVE_KEYWORD_FAILED, 
     POST_REMOVE_KEYWORD_REQUEST, 
     POST_REMOVE_KEYWORD_SUCCESSFUL, 
+    POST_REPORT_FAILED, 
+    POST_REPORT_REQUEST, 
+    POST_REPORT_SUCCESSFUL, 
     POST_STAT_FAILED, 
     POST_STAT_PER_USER_FAILED, 
     POST_STAT_PER_USER_REQUEST, 
@@ -346,6 +349,32 @@ export const postAccumulatingReducers = (state = {}, action)=>{
         case POST_ACCUMULATE_SUCCESSFUL:
             return {loading: false, success: true};
         case POST_ACCUMULATE_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const postReportingReducers = (state = {}, action)=>{
+    switch(action.type){
+        case POST_REPORT_REQUEST:
+            return {loading: true};
+        case POST_REPORT_SUCCESSFUL:
+            return {loading: false, success: true};
+        case POST_REPORT_FAILED:
+            return {loading: false, error: action.payload};
+        default:
+            return state;
+    }
+};
+
+export const commentAccumulatingReducers = (state = {}, action)=>{
+    switch(action.type){
+        case COMMENT_ACCUMULATE_REQUEST:
+            return {loading: true};
+        case COMMENT_ACCUMULATE_SUCCESSFUL:
+            return {loading: false, success: true};
+        case COMMENT_ACCUMULATE_FAILED:
             return {loading: false, error: action.payload};
         default:
             return state;

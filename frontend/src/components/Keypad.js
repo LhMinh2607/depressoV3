@@ -11,14 +11,14 @@ import { CALL_DISCONNECTED, CALL_LOG_RESET, CALL_RESET, CONTACT_SAVE_RESET } fro
 import DateComponent from '../components/DateComponent';
 import { useStopwatch  } from 'react-timer-hook'; //from react-timer-hook
 import TimeConverter from './TimeConverter';
-import { signin, signup } from '../actions/userAction';
+import { detailsOfUserBasedOnPhone, signin, signup } from '../actions/userAction';
 import YesNoBox from './YesNoBox';
 import IndependentMessageBox from './IndependantMessageBox';
 
 
 export default function Keypad(props) {
 
-  const {setOpenKeyPad} = props;
+  const {setOpenKeyPad, currentNumber, fullname} = props;
 
   const [num, setNum] = useState('');
   const [name, setName] = useState('');
@@ -61,13 +61,13 @@ export default function Keypad(props) {
   // const {pause} = useStopwatch({ autoStart: false });
   // const {reset} = useStopwatch({ autoStart: false });
   const start = () =>{
-    console.log("fuck react-timer-hook");
+    console.log("react-timer-hook");
   }
   const pause = () =>{
-    console.log("fuck react-timer-hook");
+    console.log("react-timer-hook");
   }
   const reset = () =>{
-    console.log("fuck react-timer-hook");
+    console.log("react-timer-hook");
   }
 
 
@@ -84,8 +84,14 @@ export default function Keypad(props) {
   const contactList = useSelector(state=>state.contactList);
   const {loading: loadingList, error: errorList, contacts} = contactList;
 
+  const userList = useSelector(state=>state.userList);
+  const {loading: loadingUserList, error: errorUserList, users} = userList;
+
   const contactDetail = useSelector(state=>state.contactDetail);
   const {loading: loadingDetail, error: errorDetail, contactInfo} = contactDetail;
+
+  const userDetailByPhone = useSelector(state=>state.userDetailByPhone);
+  const {loading: loadingUserDetail, error: errorUserDetail, user: userContact} = userDetailByPhone;
 
   const historyList = useSelector(state=>state.historyList);
   const {loading: loadingHistory, error: errorHistory, history} = historyList;
@@ -110,8 +116,8 @@ export default function Keypad(props) {
       sockets  : [ socket ],
       // uri      : userInfo.uri,
       // uri: "REDACTED",
-      uri: "something@something.vn:50069",
-      // password : userInfo.displayPass,
+      uri: process.env.REACT_APP_ACCOUNT,
+      password : process.env.REACT_APP_PASSWD,
       password: "test1105",
       session_timers: false,
       display_name: name,
@@ -210,7 +216,7 @@ export default function Keypad(props) {
       setOpenPopup(true);
       setNum(num);
     }else if(num.length+1===10 && re.test(num+value)){
-      dispatch(getAContact(num+value));
+      dispatch(detailsOfUserBasedOnPhone(num+value));
     }
     // alert(num+value);
   }
@@ -352,11 +358,12 @@ export default function Keypad(props) {
     // alert(e.currentTarget.value.split("|")[0]);
     setNum(e.currentTarget.value.split("|")[0]);
     setName(e.currentTarget.value.split("|")[1]);
-    dispatch(getAContact(e.currentTarget.value.split("|")[0]));
+    dispatch(detailsOfUserBasedOnPhone(e.currentTarget.value.split("|")[0]));
     setKeypadMode('keypad');
     audioBeep.play();
     audioAmbientClick.play();
   }
+
 
   const setNumFromKeyboard = (e) =>{ //Keypad
     var re = new RegExp("[0-9]");
@@ -369,7 +376,7 @@ export default function Keypad(props) {
       setOpenPopup(true);
       setNum(e.target.value.slice(0, -1));
     }else if(e.target.value.length===10 && re.test(e.target.value)){
-      dispatch(getAContact(e.target.value));
+      dispatch(detailsOfUserBasedOnPhone(e.target.value));
     }
   }
 
@@ -465,6 +472,15 @@ export default function Keypad(props) {
     }else{
       setSigninBox(false);
     }
+    // alert(currentNumber)
+
+    if(currentNumber){
+      // alert(currentNumber)
+      setNum(currentNumber);
+      // setName(fullname);
+      setKeypadMode('keypad');
+      dispatch(detailsOfUserBasedOnPhone(currentNumber));
+    }
     
     setPopupType('info');
     // handleWindowResize();
@@ -498,7 +514,7 @@ export default function Keypad(props) {
           </div>
           <div className='keyRow'>
             {/* <div className='contentRow'>{name}</div> */}
-            <div className='contentRow'>{contactInfo && contactInfo.name}</div>
+            <div className='contentRow'>{userContact && userContact.name}</div>
           </div>
           <div className='keyRow'>
             <button type="submit" value="1" onClick={() => input("1")} className='keyNum'><div className='keyContent'>1</div></button>
@@ -628,15 +644,15 @@ export default function Keypad(props) {
                   </tbody>
                 </table> */}
                 <div className='col-2'>
-                  {contacts && contacts.length>0 && contacts.map(contact=>(
+                  {users && users.length>0 && users.map(contact=>(
                     <div className='row left inline' key={contact._id}>
                       <div className='col-1 inline'>
-                        <div className='displayNameContact row left'>{contact.name}</div><div className='displayNumberContact row left'>{contact.phoneNum}</div>
+                        <div className='displayNameContact row left'>{contact.name}</div><div className='displayNumberContact row left'>{contact.phoneNumber}</div>
                       </div>
                       <div className='col-1 inline'>
-                        <div className='row right' title="Dial this number"><button className='contactMenuBtn' value={contact.phoneNum+"|"+contact.name} onClick={dialNum}><i className='fa fa-mobile'></i></button></div>
-                        <div className='row right' title="Remove this contact"><button className='contactMenuBtn remove' value={contact._id} onClick={removeContact}><i className='fa fa-trash'></i></button></div>
-                        <div className='row right' title="Edit this contact"><button className='contactMenuBtn edit' value={contact._id} onClick={editContact}><i className='fa fa-edit'></i></button></div>
+                        <div className='row right' title="Dial this number"><button className='contactMenuBtn' value={contact.phoneNumber+"|"+contact.name} onClick={dialNum}><i className='fa fa-mobile'></i></button></div>
+                        {/* <div className='row right' title="Remove this contact"><button className='contactMenuBtn remove' value={contact._id} onClick={removeContact}><i className='fa fa-trash'></i></button></div> */}
+                        {/* <div className='row right' title="Edit this contact"><button className='contactMenuBtn edit' value={contact._id} onClick={editContact}><i className='fa fa-edit'></i></button></div> */}
                       </div>
                       <div className='row right'><hr className='default'></hr></div>
                     </div>

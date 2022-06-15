@@ -869,9 +869,83 @@ forumRouter.put('/accumulatePost', expressAsyncHandler(async(req, res)=>{ //if k
                 res.send("Already exists");
             }
         }
+        if(req.body.type && req.body.type==="report"){
+            const userId = req.body.userId;
+            const content = req.body.content;
+            // console.log(req.body.userId==='6258e2b0ee1e676f8626d4bd')
+            // console.log(post.reports[0].userId===req.body.userId)
+            console.log(post.reports.filter(re=>re.userId===req.body.userId).length);
+            if(post.reports.filter(re=>re.userId===req.body.userId).length>=1){
+                const index = post.reports.map(re=>re.userId).indexOf({userId, content});
+                post.reports.splice(index, 1)
+                res.send("Removed reports");
+            }else if(post.reports.filter(re=>re.userId===req.body.userId).length===0){
+                post.reports.push({userId: userId, reason: content})
+            }
+        }
         
         await post.save();
-        res.send({message: "Accumulated", upvotes: post.upvotes, downvotes: post.downvotes});
+        res.send({message: "Accumulated", upvotes: post.upvotes, downvotes: post.downvotes, report: post.reports});
+    }else{
+        res.status(404).send("404");
+    }
+}));
+
+forumRouter.put('/accumulateComment', expressAsyncHandler(async(req, res)=>{ //if keyword is a link then this is fucked lol
+    //console.log("sfweff");
+    // console.log(req.body)
+    const post = await Post.findById(req.body.postId);
+    if(post && post.postComments && post.postComments.length){
+        let comment = post.postComments.filter(comment=>comment._id.equals(req.body.commentId));
+        comment = comment[0];
+        console.log(comment)
+        if (comment){
+            if(req.body.type && req.body.type==="upvote"){
+                if(comment.upvotes.indexOf(req.body.userId)===-1){
+                    const index = comment.downvotes.indexOf(req.body.userId);
+                    comment.downvotes.splice(index, 1)
+                    comment.upvotes.push(req.body.userId)
+                }else{
+                    res.send("Already exists");
+                }
+            }
+            else if(req.body.type && req.body.type==="downvote"){
+                if(comment.downvotes.indexOf(req.body.userId)===-1){
+                    const index = comment.upvotes.indexOf(req.body.userId);
+                    comment.upvotes.splice(index, 1)
+                    comment.downvotes.push(req.body.userId)
+                }else{
+                    res.send("Already exists");
+                }
+            }
+            else if(req.body.type && req.body.type==="report"){
+                const userId = req.body.userId;
+                const content = req.body.content;
+                // console.log(req.body.userId==='6258e2b0ee1e676f8626d4bd')
+                // console.log(post.reports[0].userId===req.body.userId)
+                console.log(comment.reports.filter(re=>re.userId===req.body.userId).length);
+                if(comment.reports.filter(re=>re.userId===req.body.userId).length>=1){
+                    const index = comment.reports.map(re=>re.userId).indexOf({userId, content});
+                    comment.reports.splice(index, 1)
+                    res.send("Removed reports");
+                }else if(comment.reports.filter(re=>re.userId===req.body.userId).length===0){
+                    comment.reports.push({userId: userId, reason: content})
+                }
+            }
+            else if(req.body.type && req.body.type==="bestAnswer"){
+                // console.log(req.body.userId==='6258e2b0ee1e676f8626d4bd')
+                // console.log(post.reports[0].userId===req.body.userId)
+                console.log("bestAnswer")
+                post.bestAnswer = req.body.commentId
+                await post.save();
+                res.send(req.body.commentId);
+            } 
+        }
+        
+        
+        
+        await post.save();
+        // res.send({message: "Accumulated"});
     }else{
         res.status(404).send("404");
     }
