@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { isBrowser } from 'react-device-detect';
 
 export default function TagSelect(props) {
     const {categories, selectItem} = props;
@@ -29,9 +30,9 @@ export default function TagSelect(props) {
     }
   return (
     <div className='row center'>
-        <div className='clickableIcon slimRectangle'  onClick={scrollToLeft}>
+        {isBrowser && <div className='clickableIcon slimRectangle'  onClick={scrollToLeft}>
             <i className='fa fa-arrow-left'></i>
-        </div>
+        </div>}
         <div id="tagSelect" className='tagSelect'>
             <div onClick={()=>select("all")} className='tagSelectItem'style={active==="all" ? {backgroundColor: "blue"} : {backgroundColor: "grey"}}>
                 Tất cả
@@ -44,9 +45,9 @@ export default function TagSelect(props) {
                 ))
             }
         </div>
-        <div className='clickableIcon slimRectangle' onClick={scrollToRight}>
+        {isBrowser && <div className='clickableIcon slimRectangle' onClick={scrollToRight}>
             <i className='fa fa-arrow-right'></i>
-        </div>
+        </div>}
     </div>
   )
 }

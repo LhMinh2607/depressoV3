@@ -142,6 +142,7 @@ export default function PostDetailPage(props) {
 
     const commentPostingHandler = () =>{
         dispatch(createPostComment(postId, userInfo._id, replyContent));
+        setTimeout(()=>socket.emit("addNotification"), 1)
         // const newDate = new Date();
         var commenters = [];
         if(post && post.postComments){
@@ -158,9 +159,10 @@ export default function PostDetailPage(props) {
             console.log(commenter)
         })
         console.log(commenters);
+        
         socket.emit("addComment", postId);
         console.log("commentPostingHandler");
-        
+        // socket.leave(room);
     }
 
     const deleteCommentHandler = () =>{
@@ -353,7 +355,6 @@ export default function PostDetailPage(props) {
         if(userInfo){
             dispatch(detailsOfUser(userInfo._id))
         }
-        
         // window.scrollTo({
         //     top: 0, 
         //   });

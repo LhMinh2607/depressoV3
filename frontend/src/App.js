@@ -69,6 +69,8 @@ function App() {
   // let socket = io("https://67ca-27-2-17-107.ngrok.io");
   // let socket = io("https://50ef-2a0d-5600-41-a000-00-5b77.ngrok.io")
   // let socket = io("https://c220-27-2-17-107.ngrok.io");
+  let bellAudio = new Audio("/assets/bellNotification.wav");
+  let phoneNotificationAudio = new Audio("/assets/phoneNotification.mp3");
 
   const userList = useSelector(state=>state.userList);
   const {loading: loadingUL, error: errorUL, users} = userList;
@@ -275,32 +277,9 @@ function App() {
     // alert("Test"+notifId)
     socket.emit("addCounselingRequest");
     console.log("addCounselingRequest")
-
+    dispatch(listOfNotifications(userInfo._id))
   }
-  // socket.on("loadComments", () => {
-  //   setTimeout(()=>{
-  //       if(userInfo){
-  //         dispatch(listOfNotifications(userInfo._id));
-  //         console.log("client loadComments")
-  //         // alert("loadComments");
-  //         // socket.disconnect();
-  //         // socket.off('loadComments');
-  //         // socket.off("loadComments");
-  //         // socket.emit("stop");
-  //       }
-  //   }, 10);
-  // });
-
-  socket.on("loadCounselingRequests", () => {
-    if(userInfo.role==="contributer" || userInfo.role === "admin"){
-      dispatch(listOfAllNotifications());
-      dispatch(detailsOfUser(userInfo._id))
-      dispatch(listOfUsers())
-
-      console.log("loadCounselingRequests")
-      // socket.disconnect();
-    }
-  });
+  
 
   const counselingRequest = () =>{
     setOpenCounselingBox(!openCounselingBox)
@@ -315,7 +294,6 @@ function App() {
     }else{
       alert("Bạn đã đăng ký rồi")
     }
-    
   }
 
   const call = (id) =>{
@@ -341,7 +319,33 @@ function App() {
         dispatch(listOfUsers())
       }
     }
-    
+    socket.on("loadNotifications", () => {
+      if(userInfo){
+        setTimeout(()=>{
+              dispatch(listOfNotifications(userInfo._id));
+              console.log("client loadNotifications")
+              bellAudio.play();
+              // alert("loadComments");
+              // socket.disconnect();
+              // socket.off('loadComments');
+              // socket.off("loadComments");
+              // socket.emit("stop");
+            
+        }, 1);
+      }
+    });
+  
+    socket.on("loadCounselingRequests", () => {
+      // phoneNotificationAudio.play();
+      if(userInfo.role==="contributer" || userInfo.role === "admin"){
+        phoneNotificationAudio.play();
+        dispatch(listOfAllNotifications());
+        dispatch(detailsOfUser(userInfo._id))
+        dispatch(listOfUsers())
+        console.log("loadCounselingRequests")
+        // socket.disconnect();
+      }
+    });
   
 
   // document.querySelector("#start-record-button").onclick = () => {
@@ -408,8 +412,9 @@ function App() {
                     <Link to={`/forum`} className="">Diễn đàn</Link>
                   </div>
                       {userInfo && (userInfo.role==="admin" || userInfo.role==="contributer") && <div className='headerBar bell'>
-                        <div onClick={()=>setOpenKeyPad(!openKeyPad)} className='interactiveText'><i className="fa fa-phone"></i></div>
-                          <div className='row'>
+                        <div className=''></div>
+                          <div className='row interactiveText' >
+                            <i className="fa fa-phone" onClick={()=>setOpenKeyPad(!openKeyPad)} ></i>
                             {/* temporary solution. This should use localStorage */}
                             <div className='cart-items-count'>{allNotifications && allNotifications.filter(notif=>notif.status===""&&notif.type==="counselingRequest").length}
                             </div>
@@ -439,14 +444,14 @@ function App() {
                       </div>}
                       {userInfo && userInfo.backgroundMusic && <div onClick={()=>setOpenMusicBox(!openMusicBox)} className='interactiveText headerBar'><i className="fa fa-music"></i></div>}
                       {userInfo && userInfo.role==="user" && <div onClick={counselingRequest} className='interactiveText headerBar'><i className="fa fa-pencil"></i></div>}
-                      <div className='bell'>
+                      {userInfo && <div className='bell'>
                         <div className='row'>
                           <div><i className='fa fa-bell'></i></div>
                           {/* temporary solution. This should use localStorage */}
                           <div className='cart-items-count'>{notifications && notifications.filter(notif=>notif.status==="").length}
                           </div>
                         </div>
-                      <ul className='notificationDropdown'>
+                      {userInfo && <ul className='notificationDropdown'>
                         {/* {notifications && notifications.length && notifications.map((notif)=>(
                           notif.type==="friendRequest" && notif.status!=="checked" && <li key={notif._id}>
                             {notif.content}
@@ -465,8 +470,8 @@ function App() {
                             {notif.content}
                           </li>
                         ))} */}
-                      </ul>
-                      </div>
+                      </ul>}
+                      </div>}
                       {userInfo ? (
                         <div className="dropDown">
                           <Link to={`#`}>{userInfo.name} <i className="fa fa-caret-down"></i></Link>

@@ -99,6 +99,10 @@ io.on("connection", (socket) => {
     console.log("joined Post");
     socket.join(id);
   })
+  socket.on("leavePost", (id)=>{
+    console.log("left Post");
+    socket.leave(id);
+  })
   socket.on("joinUser", (id)=>{
     console.log("joined User");
     socket.join(id);
@@ -120,11 +124,11 @@ io.on("connection", (socket) => {
       console.log("date: "+newDate);
     }, 1);
   });
-  socket.on("addNofitication", (id) => {
+  socket.on("addNotification", () => {
     setTimeout(()=>{
-      socket.to(id).emit("loadNotifications");
-      console.log(socket.to(id).emit("loadNotifications"));
-      console.log("server addComment");
+      socket.broadcast.emit("loadNotifications");
+      console.log(socket.broadcast.emit("loadNotifications"));
+      console.log("server loadNotifications");
       const newDate = new Date();
       console.log("date: "+newDate);
     }, 1);

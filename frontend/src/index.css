@@ -195,6 +195,7 @@ a:hover {
   border-radius: 2rem;
   background-color: #fff;
   width: 80%;
+  height:1.9rem;
 }
 
 .searchBtn{
@@ -791,6 +792,31 @@ form label{
   margin: 1rem 0;
   display: block;
 }
+.inputForm {
+  max-width: 60rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-self: flex-start;
+  align-items: center;
+  backdrop-filter: none;
+  background-color: rgb(9, 33, 70);
+  border-radius: 2rem;
+}
+
+.inputField {
+  min-width: 10rem;
+  /* max-width: 20rem; */
+  width: 40vw;
+  background-color: #fff;
+  /* width: 100rem !important; */
+}
+
+/* .inputForm > div {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem;
+} */
 
 .invisibleForm{
   width: auto;
@@ -841,12 +867,6 @@ form label{
 
 .postDetailPage{
   margin-bottom: 30rem;
-}
-
-.bottom-button-div-group{
-  display: flex;
-  justify-content: center;
-  width: 100%; 
 }
 
 .bottom-button-div{
@@ -1863,10 +1883,12 @@ button > p{
   color: #0074D9;
   padding: 1rem;
   font-size: 2rem;
-  width: 50%;
+  /* width: 50%; */
+  width: 100%;
   border-radius: 1rem;
   font-family: 'Times New Roman', Times, serif;
   border: solid #000 0.2rem;
+
 }
 
 .react-dropdown-select-parent-div{

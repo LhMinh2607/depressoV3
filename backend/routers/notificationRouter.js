@@ -58,13 +58,16 @@ notificationRouter.put('/edit', expressAsyncHandler(async (req, res)=>{
     console.log(notification);
     if(notification){
         notification.status = "checked";
-        const updatedNotification = await notification.save()
-        res.send(updatedNotification);
+        let updatedNotification = await notification.save()
         if(notification.type==="counselingRequest"){
             const user = await User.findById(notification.senderId);
-            user.counselingRequest === false;
-            const updatedUser = await user.save();
+            if(user){
+                user.counselingRequest === false;
+                const updatedUser = await user.save();
+                res.send(updatedNotification);
+            }
         }
+        res.send(updatedNotification);
     }else{
         res.status(404).send({message: "Not found"})
     }
