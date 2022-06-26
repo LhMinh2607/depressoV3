@@ -610,7 +610,7 @@ export default function Keypad(props) {
         </div> */}
         {keypadMode==='contact' && 
           <>
-          <div className='row center'><input className='searchBar' placeholder='Search here' onChange={search}></input></div>
+          <div className='row center'><input className='searchBar' placeholder='Tìm kiếm' onChange={search}></input></div>
           <div className='row center'><button onClick={openContact} className='phoneConfirmBtn back'><i className='fa fa-mail-reply'></i></button>
            <button onClick={openAddContact} className='phoneConfirmBtn info'><i className='fa fa-plus'></i></button></div>
               {keyword==="" ? (<div className='row inline scrollableDiv'>

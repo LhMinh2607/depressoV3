@@ -18,6 +18,7 @@ import Editor from "rich-markdown-editor";
 import Select from "react-dropdown-select";
 import { CATEGORY_LIST_RESET } from '../constants/categoryConst';
 import { createNotification } from '../actions/notificationAction';
+import RoleConverterComponnet from '../components/RoleConverterComponnet';
 
 export default function PostDetailPage(props) {
 
@@ -536,6 +537,7 @@ export default function PostDetailPage(props) {
                                                 </div>
                                             </div>
                                         </div>
+                                    <RoleConverterComponnet role={u.role}></RoleConverterComponnet>
                                     </div>
                                 </div>) : (<div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)}>
                                 {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
@@ -556,7 +558,8 @@ export default function PostDetailPage(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    
+                                    <RoleConverterComponnet role={u.role}></RoleConverterComponnet>
+
                                 </div>
                                 
                                 </div>))))}
@@ -738,7 +741,7 @@ export default function PostDetailPage(props) {
                                                     </div>
                                                 </div>
                                             </div>
-                                        
+                                            <RoleConverterComponnet role={userInfo.role}></RoleConverterComponnet>            
                                         
                                         </div>
                                         
@@ -792,6 +795,7 @@ export default function PostDetailPage(props) {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <RoleConverterComponnet role={u.role}></RoleConverterComponnet>
                                                 </div>
                                                 
                                                 <div className="content">
@@ -835,6 +839,7 @@ export default function PostDetailPage(props) {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <RoleConverterComponnet role={u.role}></RoleConverterComponnet>
                                                 </div>
                                                 
                                                 <div className="content">

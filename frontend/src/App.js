@@ -44,6 +44,8 @@ import VoiceRecorderComponent from './components/VoiceRecorderComponent';
 import {io} from 'socket.io-client';
 import StatisticPage from './pages/StatisticPage';
 import GeneralOptionDialogBox from './components/GeneralOptionDialogBox';
+import MobileChatBot from './pages/MobileChatBot';
+import MobileNotification from './pages/MobileNotification';
 
 function App() {
 
@@ -133,6 +135,7 @@ function App() {
 }
   // const socketUrl = "https://1d35-27-2-17-107.ngrok.io";
   const socketUrl = "http://localhost:5005";
+  // const socketUrl = "https://e2e3-27-2-16-47.ngrok.io"
   // const socketUrl = "https://b7fe-27-2-17-107.ngrok.io";
   const botId = "629199aaad2ab670dc8a2f45";
 
@@ -287,13 +290,16 @@ function App() {
 
   const makeCounselingRequest = (content) =>{
     const type = "counselingRequest";
-    if(user && user.counselingRequest === false){
-      dispatch(createNotification(userInfo._id, "none", content, type, "none"))
-      socket.emit("addCounselingRequest");
-      console.log("addCounselingRequest")
-    }else{
-      alert("Bạn đã đăng ký rồi")
-    }
+    // if(user && user.counselingRequest === false){
+    //   dispatch(createNotification(userInfo._id, "none", content, type, "none"))
+    //   socket.emit("addCounselingRequest");
+    //   console.log("addCounselingRequest")
+    // }else{
+    //   alert("Bạn đã đăng ký rồi")
+    // }
+    dispatch(createNotification(userInfo._id, "none", content, type, "none"))
+    socket.emit("addCounselingRequest");
+    console.log("addCounselingRequest")
   }
 
   const call = (id) =>{
@@ -528,7 +534,7 @@ function App() {
                             <Link to={`/forum`} className="">Diễn đàn</Link>
                           </li>
                             {userInfo && userInfo.role==="admin" && <li><Link to={`#`} onClick={()=>setOpenKeyPad(!openKeyPad)} className='interactiveText headerBar'><i className="fa fa-phone"></i>Callcenter</Link></li>}
-                            {userInfo && userInfo.backgroundMusic && <li><Link to={`#`} onClick={()=>setOpenMusicBox(!openMusicBox)} className='interactiveText headerBar'><i className="fa fa-music"></i>Nhạc</Link></li>}
+                            {/* {userInfo && userInfo.backgroundMusic && <li><Link to={`#`} onClick={()=>setOpenMusicBox(!openMusicBox)} className='interactiveText headerBar'><i className="fa fa-music"></i>Nhạc</Link></li>} */}
                           <li>
                               <Link to="/" onClick={signOutHandler}>
                                 Đăng xuất<i className="fa fa-hand-o-left"></i>
@@ -589,7 +595,7 @@ function App() {
                       <div className='row right' style={{display: "flex", flexDirection:"row", justifyContent:"flex-end", color: "#fff"}}><i className='fa fa-close interactiveText' onClick={()=>setOpenMusicBox(!openMusicBox)}></i></div>
                       <iframe  src={`https://www.youtube.com/embed/${getYouTubeLinkId(userInfo.backgroundMusic)}?autoplay=1&mute=0&loop=1&playlist=${getYouTubeLinkId(userInfo.backgroundMusic)}`} type="application/x-shockwave-flash" allowscriptaccess="always" allowFullScreen={true} width="200" height="100" allow='autoplay'></iframe >
                     </div></Draggable>}
-                    {/* {userInfo && userInfo.role!=="bot" && <Widget
+                    {isBrowser && userInfo && userInfo.role!=="bot" && <Widget
                       initPayload={userInfo._id}
                       socketUrl={socketUrl}
                       customData={{"language": "vi"}} // arbitrary custom data. Stay minimal as this will be added to the socket
@@ -602,7 +608,7 @@ function App() {
                       profileAvatar={"https://cdn.discordapp.com/emojis/967412208323674243.webp?size=48&quality=lossless"}
                       // openLauncherImage={""}
                       />
-                    } */}
+                    }
               </header>
               <main>
               <div>
@@ -695,13 +701,15 @@ function App() {
                   <Route exact path="/forum" element={<ForumPage></ForumPage>}></Route>
                   <Route exact path="/forum/post/:id" element={<PostDetailPage  socket={socket}></PostDetailPage>}></Route>
                   <Route exact path="/news" element={<NewsPage></NewsPage>}></Route>
+                  <Route exact path="/chatbot" element={<MobileChatBot></MobileChatBot>}></Route>
+                  <Route exact path="/notification" element={<MobileNotification socket={socket}></MobileNotification>}></Route>
                   <Route exact path="/voicerecorder" element={<VoiceRecorderComponent source="https://webrtc.github.io/samples/src/video/chrome.webm"></VoiceRecorderComponent>}></Route> {/*Easter Eggs*/}
                   <Route path="*" element={<NotFoundPage/>} /> 
                 </Routes>
                 
                 
               </main>
-              {/* {isMobile && <div className="row-bottom">
+              {isMobile && <div className="row-bottom">
                       {currentTab && currentTab === "home" ? 
                         <div className='bottomNav'>
                           <div className="nav-menu-item selected">
@@ -709,7 +717,7 @@ function App() {
                             <p>Trang chủ</p>
                           </div>
                         </div> :
-                        <Link className='bottomNav' href={`/`} onClick={()=> setCurrentTab('home')}>
+                        <Link className='bottomNav' to={`/`} onClick={()=> setCurrentTab('home')}>
                         <div className="nav-menu-item">
                           <i className="fa fa-home"></i>
                           <p>Trang chủ</p>
@@ -725,7 +733,7 @@ function App() {
                         <p>Diễn đàn</p>
                       </div>
                     </div> :
-                    <Link className='bottomNav' href={`/forum`} onClick={()=> setCurrentTab('forum')}>
+                    <Link className='bottomNav' to={`/forum`} onClick={()=> setCurrentTab('forum')}>
                       <div className="nav-menu-item">
                         <i className="fa fa-commenting"></i>
                         <p>Diễn đàn</p>
@@ -739,7 +747,7 @@ function App() {
                         <p>Thông báo</p>
                       </div>
                     </div> :
-                    <Link className='bottomNav' href={`/notification`} onClick={()=> setCurrentTab('notification')}>
+                    <Link className='bottomNav' to={`/notification`} onClick={()=> setCurrentTab('notification')}>
                       <div className="nav-menu-item">
                         <i className="fa fa-bell"></i>
                         <p>Thông báo</p>
@@ -752,7 +760,7 @@ function App() {
                         <p>Chatbot</p>
                       </div>
                     </div> :
-                    <Link className='bottomNav' href={`/chatbot`} onClick={()=> setCurrentTab('chatbot')}>
+                    <Link className='bottomNav' to={`/chatbot`} onClick={()=> setCurrentTab('chatbot')}>
                       <div className="nav-menu-item">
                         <i className="fa fa-android"></i>
                         <p>Chatbot</p>
@@ -765,13 +773,13 @@ function App() {
                         <p>Tài khoản</p>
                       </div>
                     </div> :
-                      <Link className='bottomNav' href={`/user/${userInfo._id}`} onClick={()=> setCurrentTab('user')}>
+                      <Link className='bottomNav' to={`/user/${userInfo._id}`} onClick={()=> setCurrentTab('user')}>
                       <div className="nav-menu-item">
                         <i className="fa fa-user"></i>
                         <p>Tài khoản</p>
                       </div>
                     </Link>}
-                  </div>} */}
+                  </div>}
               {/* <footer className="row-bottom">
                   <div className="nav-menu-item">
                     <i className="fab fa-youtube bigger-icon"></i><Link href="https://youtube.com/channel/UCGmokfRCnHmlz7AF3-suNvQ/about">LhMinh2607</Link>

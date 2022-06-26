@@ -35,8 +35,8 @@ export default function OptionDialogBox(props) {
         <div className='popup option'>
           <div className='row top right'><button className='phoneConfirmBtn xClose' onClick={closePopup}><i className='fa fa-close'></i></button></div>
           {userInfo && <div className='row center'><div className='displayNameContact' onClick={closePopup}><i className='fa fa-user'></i>{userInfo.displayName}</div></div>}
-          <div className='row center'><button className='phoneConfirmBtn' onClick={openContact}><i className='fa fa-address-book-o'>Contact</i></button></div>
-          <div className='row center'><button className='phoneConfirmBtn' onClick={openHistory}><i className='fa fa-history'>History</i></button></div>
+          <div className='row center'><button className='phoneConfirmBtn' onClick={openContact}><i className='fa fa-address-book-o'>Danh bạ</i></button></div>
+          <div className='row center'><button className='phoneConfirmBtn' onClick={openHistory}><i className='fa fa-history'>Nhật ký</i></button></div>
           {/* {userInfo && 
             <div className='row center'><button className='phoneConfirmBtn' onClick={signoutHandler}><i className='fa fa-reply'>Signout</i></button></div>
           } */}

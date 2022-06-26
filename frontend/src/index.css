@@ -64,16 +64,16 @@ main{
     /* padding: 1rem; */
     padding-top: 7rem;
   }
-  
 }
 
 footer{
   grid-area: footer;
   background-color: #6e9fe7;
   color: #FFF;
-  left:0;
+  /* left:0; */
   margin-top: 100vh;
-  right:0;
+  /* right:0; */
+  bottom: 0;
 } 
 
 /* Common classes */
@@ -3349,6 +3349,19 @@ Draggable{
   border-radius: 2rem;
   transition: 1s;
   opacity: 0;
+}
+.notificationDropdown.mobile{
+  visibility: visible;
+  background: #0055ff;
+  width: 20rem;
+  height: 20em;
+  overflow-y: scroll;
+  position: absolute;
+  padding: 1rem;
+  color: #fff;
+  border-radius: 2rem;
+  transition: 1s;
+  opacity: 0;
 
 }
 .notificationDropdown > li{
@@ -3571,7 +3584,9 @@ Draggable{
   position: fixed;
   bottom: 0;
   animation: slideToRight 0.2s;
+  font-size: 1rem !important;
 }
+
 
 .spectrum-background {
   background:
@@ -3605,7 +3620,7 @@ Draggable{
   background-color: #14ad21;
   color: #fff;
   width: 100%;
-  max-width: 30vh;
+  max-width: 10vh;
   min-width: 2rem;
   height: 6vh;
   font-size: 3vh;
@@ -3888,7 +3903,12 @@ input[type=number] {
 }
 
 .callButton.dial{
-  width: 5rem;
+  width: 4rem;
+  height: 4rem;
+}
+
+.callButton.dial > i{
+  font-size: 2rem;
 }
 
 .hangupIcon{

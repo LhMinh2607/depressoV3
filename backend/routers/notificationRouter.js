@@ -44,11 +44,11 @@ notificationRouter.post('/add', expressAsyncHandler(async (req, res)=>{
         });
         const newNotification = await notification.save();
         const user = await User.findById(req.body.senderId);
-        if(user){
-            user.counselingRequest = true;
-            const updatedUser = await user.save()
-            res.send({newNotification, user});
-        }
+        // if(user){
+        //     user.counselingRequest = true;
+        //     const updatedUser = await user.save()
+        //     res.send({newNotification, user});
+        // }
     }
     
 }));
