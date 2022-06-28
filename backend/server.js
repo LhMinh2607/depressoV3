@@ -135,8 +135,8 @@ io.on("connection", (socket) => {
   });
   socket.on("addCounselingRequest", ()=> {
     setTimeout(()=>{
-      socket.emit("loadCounselingRequests");
-      console.log(socket.emit("loadCounselingRequests"));
+      socket.broadcast.emit("loadCounselingRequests");
+      console.log(socket.broadcast.emit("loadCounselingRequests"));
       console.log("server loadCounselingRequests");
       const newDate = new Date();
       console.log("date: "+newDate);

@@ -9,12 +9,15 @@ import { Link } from 'react-router-dom';
 
 export default function MobileChatBot() {
     const socketUrl = "http://localhost:5005"
+    // const socketUrl = "https://8102-27-2-16-47.ngrok.io";
+    // const socketUrl = "https://1e2b-27-2-16-47.ngrok.io"
+
     const botId = "629199aaad2ab670dc8a2f45";
     const userSignin = useSelector((state)=> state.userSignin);
     const {userInfo, loading, error} = userSignin;
   return (
     <div>
-            {isMobile && userInfo && userInfo.role!=="bot" && <Widget
+            {userInfo && userInfo.role!=="bot" && <Widget
                 initPayload={userInfo._id}
                 socketUrl={socketUrl}
                 customData={{"language": "vi"}} // arbitrary custom data. Stay minimal as this will be added to the socket

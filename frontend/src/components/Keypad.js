@@ -42,34 +42,21 @@ export default function Keypad(props) {
   const [idToDelete, setIdToDelete] = useState('');
   const [keyword, setKeyword] = useState('');
 
-  const [seconds, setSeconds] = useState(0);
-  const [minutes, setMinutes] = useState(0);
-  const [hours, setHours] = useState(0);
-  const [days, setDays] = useState(0);
+  // const [seconds, setSeconds] = useState(0);
+  // const [minutes, setMinutes] = useState(0);
+  // const [hours, setHours] = useState(0);
+  // const [days, setDays] = useState(0);
 
-  // const {
-  //   seconds=0,
-  //   minutes=0,
-  //   hours=0,
-  //   days=0,
-  //   isRunning,
-  //   start,
-  //   pause,
-  //   reset,
-  // } = useStopwatch({ autoStart: false });
-  // const {start} = useStopwatch({ autoStart: false });
-  // const {pause} = useStopwatch({ autoStart: false });
-  // const {reset} = useStopwatch({ autoStart: false });
-  const start = () =>{
-    console.log("react-timer-hook");
-  }
-  const pause = () =>{
-    console.log("react-timer-hook");
-  }
-  const reset = () =>{
-    console.log("react-timer-hook");
-  }
-
+  const {
+    seconds,
+    minutes,
+    hours,
+    days,
+    isRunning,
+    start,
+    pause,
+    reset,
+  } = useStopwatch({ autoStart: false });
 
   const stop = () =>{
     pause();
@@ -111,14 +98,18 @@ export default function Keypad(props) {
 
   if(userInfo){
 
-    var socket = new JsSIP.WebSocketInterface('wss://sbc03.tel4vn.com:7444');
+    //wss://sbc03.tel4vn.com:7444
+    const websocket = process.env.REACT_APP_WEBSOCKET;
+    const account = process.env.REACT_APP_ACCOUNT;
+    const pwd = process.env.REACT_APP_PASSWD;
+    var socket = new JsSIP.WebSocketInterface(websocket);
     var configuration = {
       sockets  : [ socket ],
       // uri      : userInfo.uri,
-      // uri: "REDACTED",
-      uri: process.env.REACT_APP_ACCOUNT,
-      password : process.env.REACT_APP_PASSWD,
-      password: "test1105",
+      uri: account,
+      // uri: process.env.REACT_APP_ACCOUNT,
+      // password : process.env.REACT_APP_PASSWD,
+      password: pwd,
       session_timers: false,
       display_name: name,
     };
@@ -549,7 +540,7 @@ export default function Keypad(props) {
         {loadingCall && !connected ?
         <div>
           <div className='keyRow'>
-            <div className='contentRow'>Calling {num}</div>
+            <div className='contentRow'>ĐANG GỌI {num}</div>
           </div>
           <div className='keyRow'>
             <div className='contentRow'>{name}</div>
@@ -571,7 +562,7 @@ export default function Keypad(props) {
               <div className='contentRow displayNumber'>{num}</div>
             </div>
             <div className='keyRow'>
-              <div className='contentRow'>CONNECTED</div>
+              <div className='contentRow'>ĐÃ KẾT NỐI</div>
             </div>
             <div className='keyRow'>
               {/* <Timer connectivity={connected}></Timer> */}
@@ -809,10 +800,10 @@ export default function Keypad(props) {
                 <input type="text" className='inputBox' placeholder='Display Name' id="uri" autoComplete="off" onChange={e=>setDisplayName(e.target.value)}/>
               </div> */}
               <div className='row center'>
-                <button type="submit" className='submitBtn'>Submit</button>
+                <button type="submit" className='submitBtn'>Gửi</button>
               </div>
               <div className='row center'>
-                New here? <button className='phoneConfirmBtn' onClick={openSignupBox}>Sign up</button>
+                Chưa có tài khoản? <button className='phoneConfirmBtn' onClick={openSignupBox}>Đăng ký</button>
               </div>
             </form>
           </div>
@@ -839,7 +830,7 @@ export default function Keypad(props) {
                 <button type="submit" className='submitBtn'>Submit</button>
               </div>
               <div className='row center'>
-                Already here? <button className='phoneConfirmBtn' onClick={openSigninBox}>Sign in</button>
+                Có tài khoản? <button className='phoneConfirmBtn' onClick={openSigninBox}>Đăng nhập</button>
               </div>
             </form>
           </div>

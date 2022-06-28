@@ -137,6 +137,8 @@ function App() {
   const socketUrl = "http://localhost:5005";
   // const socketUrl = "https://e2e3-27-2-16-47.ngrok.io"
   // const socketUrl = "https://b7fe-27-2-17-107.ngrok.io";
+  // const socketUrl = "https://8102-27-2-16-47.ngrok.io";
+  // const socketUrl = "https://1e2b-27-2-16-47.ngrok.io"
   const botId = "629199aaad2ab670dc8a2f45";
 
   const addThisFriend = (senderId) => {
@@ -288,6 +290,10 @@ function App() {
     setOpenCounselingBox(!openCounselingBox)
   }
 
+  const handleClosePopup = () =>{
+    setOpenCounselingBox(false)
+  }
+
   const makeCounselingRequest = (content) =>{
     const type = "counselingRequest";
     // if(user && user.counselingRequest === false){
@@ -410,7 +416,8 @@ function App() {
                   {/* <div>
                     {userInfo && <Link to={`/user/${userInfo._id}`} className="">Mental Bot</Link>}
                   </div> */}
-                {isBrowser ? <>
+                {
+                isBrowser ? <>
                   <div>
                     <Link to={`/news`} className="">Tin tức</Link>
                   </div>
@@ -528,6 +535,9 @@ function App() {
                               </li>
                             </>}
                           <li>
+                            {userInfo && userInfo.role==="user" && <div onClick={counselingRequest} className='interactiveText headerBar'><i className="fa fa-pencil"></i></div>}
+                          </li>
+                          <li>
                             <Link to={`/news`} className="">Tin tức</Link>
                           </li>
                           <li>
@@ -535,6 +545,12 @@ function App() {
                           </li>
                             {userInfo && userInfo.role==="admin" && <li><Link to={`#`} onClick={()=>setOpenKeyPad(!openKeyPad)} className='interactiveText headerBar'><i className="fa fa-phone"></i>Callcenter</Link></li>}
                             {/* {userInfo && userInfo.backgroundMusic && <li><Link to={`#`} onClick={()=>setOpenMusicBox(!openMusicBox)} className='interactiveText headerBar'><i className="fa fa-music"></i>Nhạc</Link></li>} */}
+                            {userInfo && <li><Link to={`/notification`}>
+                                <i className="fa fa-bell"></i>Thông báo
+                            </Link></li>}
+                            {userInfo && <li><Link to={`/chatbot`}>
+                                <i className="fa fa-android"></i>ChatBot
+                            </Link></li>}
                           <li>
                               <Link to="/" onClick={signOutHandler}>
                                 Đăng xuất<i className="fa fa-hand-o-left"></i>
@@ -612,7 +628,7 @@ function App() {
               </header>
               <main>
               <div>
-              {openCounselingBox && <GeneralOptionDialogBox func1Name={`${userInfo.name} muốn tư vấn qua điện thoại`} func2Name={`${userInfo.name} muốn tư vấn qua tin nhắn`} handleFunc1={makeCounselingRequest} handleFunc2={makeCounselingRequest}></GeneralOptionDialogBox>}
+              {openCounselingBox && <GeneralOptionDialogBox func1Name={`${userInfo.name} muốn tư vấn qua điện thoại`} func2Name={`${userInfo.name} muốn tư vấn qua tin nhắn`} handleFunc1={makeCounselingRequest} handleFunc2={makeCounselingRequest} handleClosePopup={handleClosePopup}></GeneralOptionDialogBox>}
 
                 {/* It's <time dateTime={response}>{response}</time> */}
                 {/* <Recorder
@@ -704,12 +720,13 @@ function App() {
                   <Route exact path="/chatbot" element={<MobileChatBot></MobileChatBot>}></Route>
                   <Route exact path="/notification" element={<MobileNotification socket={socket}></MobileNotification>}></Route>
                   <Route exact path="/voicerecorder" element={<VoiceRecorderComponent source="https://webrtc.github.io/samples/src/video/chrome.webm"></VoiceRecorderComponent>}></Route> {/*Easter Eggs*/}
+                  <Route path="/mobilePhone" element={<div className='row center top'><Keypad/></div>} /> 
                   <Route path="*" element={<NotFoundPage/>} /> 
                 </Routes>
                 
                 
               </main>
-              {isMobile && <div className="row-bottom">
+              {/* {isMobile && <div className="row-bottom">
                       {currentTab && currentTab === "home" ? 
                         <div className='bottomNav'>
                           <div className="nav-menu-item selected">
@@ -779,7 +796,7 @@ function App() {
                         <p>Tài khoản</p>
                       </div>
                     </Link>}
-                  </div>}
+                  </div>} */}
               {/* <footer className="row-bottom">
                   <div className="nav-menu-item">
                     <i className="fab fa-youtube bigger-icon"></i><Link href="https://youtube.com/channel/UCGmokfRCnHmlz7AF3-suNvQ/about">LhMinh2607</Link>

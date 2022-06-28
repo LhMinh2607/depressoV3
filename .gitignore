@@ -26,3 +26,4 @@ yarn-error.log*
 #others
 jstest
 desktop.ini
+frontend/notedep.txt
