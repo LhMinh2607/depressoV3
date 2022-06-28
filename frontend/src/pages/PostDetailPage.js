@@ -3,7 +3,7 @@ import Linkify from 'react-linkify';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { detailsOfUser, listOfUsers } from '../actions/userAction';
-import { accumulatePost, addKeywordToPost, createPostComment, deletePost, detailsOfPost, editPost, listOfNestedPosts, listOfPosts, listOfPostsByCat, listOfRelatedPosts, pinPostToHome, removeKeywordFromPost } from '../actions/postAction';
+import { accumulateComment, accumulatePost, addKeywordToPost, createPostComment, deletePost, detailsOfPost, editPost, listOfNestedPosts, listOfPosts, listOfPostsByCat, listOfRelatedPosts, pinPostToHome, removeKeywordFromPost } from '../actions/postAction';
 import DateComponent from '../components/DateComponent';
 import DeletePostCommentButton from '../components/DeletePostCommentButton';
 import LoadingBox from '../components/LoadingBox';
@@ -18,6 +18,7 @@ import Editor from "rich-markdown-editor";
 import Select from "react-dropdown-select";
 import { CATEGORY_LIST_RESET } from '../constants/categoryConst';
 import { createNotification } from '../actions/notificationAction';
+import RoleConverterComponnet from '../components/RoleConverterComponnet';
 
 export default function PostDetailPage(props) {
 
@@ -43,6 +44,9 @@ export default function PostDetailPage(props) {
 
     const postAccumulating = useSelector(state=>state.postAccumulating);
     const {loading: loadingAccumulating, error: errorAccumulating, success: successAccumulating} = postAccumulating;
+    
+    const commentAccumulating = useSelector(state=>state.commentAccumulating);
+    const {loading: loadingCommentAccumulating, error: errorCommentAccumulating, success: successCommentAccumulating} = commentAccumulating;
 
     const [editPostStatus, setEditPostStatus] = useState(false);
 
@@ -50,6 +54,7 @@ export default function PostDetailPage(props) {
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('');
     const [commentBox, setCommentBox] = useState(false);
+    const [openLoadComment, setOpenLoadComment] = useState(false);
 
     const postDeleting = useSelector(state=>state.postDeleting);
     const {loading: loadingDeleting, error: errorDeleting, success: successDeleting} = postDeleting;
@@ -90,6 +95,9 @@ export default function PostDetailPage(props) {
         showTagEditBox(!tagEditBox);
     }
     const [keywordContent, setKeywordContent] = useState('');
+    const [voteStatus, setVoteStatus] = useState('');
+    const [vote, setVote] = useState(0);
+
     const addKeyword = () =>{
         //alert(postId+" "+keywordContent);
         if(keywordContent!==""){
@@ -135,6 +143,7 @@ export default function PostDetailPage(props) {
 
     const commentPostingHandler = () =>{
         dispatch(createPostComment(postId, userInfo._id, replyContent));
+        setTimeout(()=>socket.emit("addNotification"), 1)
         // const newDate = new Date();
         var commenters = [];
         if(post && post.postComments){
@@ -151,9 +160,10 @@ export default function PostDetailPage(props) {
             console.log(commenter)
         })
         console.log(commenters);
+        
         socket.emit("addComment", postId);
         console.log("commentPostingHandler");
-        
+        // socket.leave(room);
     }
 
     const deleteCommentHandler = () =>{
@@ -233,9 +243,63 @@ export default function PostDetailPage(props) {
     }
 
     const accumulate = (type) => {
-        dispatch(accumulatePost(userInfo._id, postId, type))
-        socket.emit("addComment", postId);
+        // if(type==="upvote" && voteStatus!=="upvote"){
+        //     setVoteStatus('upvote');
+        //     if(post.upvotes.indexOf(userInfo._id)===-1 && post.downvotes.indexOf(userInfo._id)===-1){
+        //         setVote(vote+1)
+        //     }else if(post.upvotes.indexOf(userInfo._id)===-1 && post.downvotes.indexOf(userInfo._id)!==-1){
+        //         setVote(vote+2)
+        //     }
+        //     dispatch(accumulatePost(userInfo._id, postId, type))
+        //     console.log("accumulate");
+        // }else if(type==="downvote" && voteStatus!=="downvote"){
+        //     setVoteStatus('downvote');
+        //     if(post.downvotes.indexOf(userInfo._id)===-1 && post.upvotes.indexOf(userInfo._id)===-1){
+        //         setVote(vote-1)
+        //     }else if(post.downvotes.indexOf(userInfo._id)===-1 && post.upvotes.indexOf(userInfo._id)!==-1){
+        //         setVote(vote-2)
+        //     }
+        //     dispatch(accumulatePost(userInfo._id, postId, type))
+        //     console.log("accumulate");
+        // }
+        if(voteStatus!=="upvote" || !voteStatus){
+            dispatch(accumulatePost(userInfo._id, postId, type))
+            console.log("accumulate");
+            socket.emit("addComment", postId);
+        }
+       
+        // socket.emit("addComment", postId);
+    }
+
+    const accumulateDown = (type) =>{
+        if(voteStatus!=="downvote" || !voteStatus){
+            dispatch(accumulatePost(userInfo._id, postId, type))
+            console.log("accumulate");
+            socket.emit("addComment", postId);
+        }
+    }
+
+    const accumulateTheComment = (type, commentId) => {
+        dispatch(accumulateComment(userInfo._id, commentId, postId, type))
         console.log("accumulate");
+        socket.emit("addComment", postId);
+    }
+
+    const accumulateDownTheComment = (type, commentId) =>{
+        dispatch(accumulateComment(userInfo._id, commentId, postId, type))
+        console.log("accumulate");
+        socket.emit("addComment", postId);
+    }
+
+    const report = () => {
+        dispatch(accumulatePost(userInfo._id, postId, "report", "Vi phạm nguyên tắc cộng đồng"))
+        socket.emit("addComment", postId);
+    }
+
+    const markAsMostHelpful = (commentId) =>{
+        const type = "bestAnswer"
+        dispatch(accumulateComment(userInfo._id, commentId, postId, type));
+        socket.emit("addComment", postId);
     }
 
     const openCommentBox = (type) => {
@@ -244,24 +308,54 @@ export default function PostDetailPage(props) {
         }
         setCommentBox(!commentBox);
     }
+
+    const two = 2;
+
+    const loadComment = () =>{
+        setOpenLoadComment(false);
+        dispatch(detailsOfPost(postId));
+        window.scrollTo({
+            left: 0, 
+            top: document.body.scrollHeight,
+            behavior: 'smooth'
+          });
+    }
+
+    // const plus = (number, number2) =>{
+    //     return parseInt(parseInt(number) + parseInt(number2))
+    // }
+
+    // const minus= (number, number2) =>{
+    //     return parseInt(parseInt(number) - parseInt(number2))
+    // }
+
+    // const voteHandler = (type) =>{
+    //     if(type==="upvote"){
+    //         setVoteStatus('upvote');
+    //         accumulate("upvote");
+    //     }else if(type==="downvote"){
+    //         setVoteStatus('downvote');
+    //         accumulate("downvote");
+    //     }
+    // }
     
     // let socket = io(process.env.REACT_APP_WSENDPOINT)
     socket.on("loadComments", () => {
         setTimeout(()=>{
-            dispatch(detailsOfPost(postId));
+            setOpenLoadComment(true);
+            // dispatch(detailsOfPost(postId));
             console.log("client loadComments")
             // alert("loadComments");
             // socket.disconnect();
             // socket.off('loadComments');
             // socket.off("loadComments");
             // socket.emit("stop");
-        }, 10);
+        }, 1);
     });
     useEffect(()=>{
         if(userInfo){
             dispatch(detailsOfUser(userInfo._id))
         }
-        
         // window.scrollTo({
         //     top: 0, 
         //   });
@@ -276,11 +370,14 @@ export default function PostDetailPage(props) {
         dispatch(listOfRelatedPosts(postId));
         socket.emit("joinPost", postId);
         console.log(socket.emit("joinPost", postId))
+        if(post){
+            setVote(post.upvotes.length - post.downvotes.length)
+        }
         // socket.off('loadComments');
         // return () => {
         //     socket.off('loadComments');
         // }
-        }, []);
+        }, [postId]);
 
     return (
         <div className='row left postDetailPage' style={{margin: 0}}>
@@ -373,24 +470,48 @@ export default function PostDetailPage(props) {
                         <div className='row center top'>
                             <div className='postTitle'>{post && post.title}</div>
                         </div>
+                        <div className='row center'>
+                            {post && post.reports && post.reports.length>0 && <div>{post.reports.length} người dùng đã báo cáo bài viết này</div>}
+                        </div>
                         <div className='row center top'>
                             <div className='col-mini'>
                                 <div className='row center'>
+                                    {/* {voteStatus ?
+                                    (userInfo && post && post.upvotes.indexOf(userInfo._id)!==-1 ? ( post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length + 1) : 
+                                    userInfo && post && post.upvotes.indexOf(userInfo._id)!==-1 && ( post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length - 1)) :
+                                    post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length} */}
+                                    {/* {voteStatus && voteStatus === "upvote" && userInfo && post && post.upvotes.indexOf(userInfo._id)!==-1 && post.downvotes.indexOf(userInfo._id)===-1 && post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length}
+                                    {voteStatus && voteStatus === "upvote" && userInfo && post && post.upvotes.indexOf(userInfo._id)===-1 && post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length + 1}
+                                    {voteStatus && voteStatus === "upvote" && userInfo && post && post.upvotes.indexOf(userInfo._id)===-1 && post.downvotes.indexOf(userInfo._id)!==-1 && post && post.upvotes && post.downvotes && parseInt(post.upvotes.length-post.downvotes.length+2)}
+                                    {voteStatus && voteStatus === "downvote" && userInfo && post && post.downvotes.indexOf(userInfo._id)!==-1 && post.upvotes.indexOf(userInfo._id)===-1 && post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length}
+                                    {voteStatus && voteStatus === "downvote" && userInfo && post && post.downvotes.indexOf(userInfo._id)===-1 && post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length - 1}
+                                    {voteStatus && voteStatus === "downvote" && userInfo && post && post.downvotes.indexOf(userInfo._id)===-1 && post.upvotes.indexOf(userInfo._id)!==-1 && post && post.upvotes && post.downvotes && parseInt(post.upvotes.length-post.downvotes.length-2)} */}
                                     {post && post.upvotes && post.downvotes && post.upvotes.length - post.downvotes.length}
+                                    {/* {voteStatus && vote} */}
                                 </div>
+                                {/* {post.upvotes.length-post.downvotes.length-2} */}
                                 <div className='col-0'>
                                     <div className='accumulate row' style={userInfo && post && post.upvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}} onClick={() => accumulate("upvote")}>
                                         <i className='fa fa-thumbs-up'></i>
                                     </div>
-                                    <div className='accumulate row' style={userInfo && post && post.downvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}} onClick={() => accumulate("downvote")}>
+                                    <div className='accumulate row' style={userInfo && post && post.downvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}} onClick={() => accumulateDown("downvote")}>
                                         <i className='fa fa-thumbs-down'></i>
                                     </div>
+                                    {/* <div className='accumulate row' style={voteStatus === "" ? (userInfo && post && post.upvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}) : voteStatus === "upvote" ? {color: "orange"} : {color: "grey"}} onClick={() => (voteStatus !== "upvote") && accumulate("upvote")}>
+                                        <i className='fa fa-thumbs-up'></i>
+                                    </div>
+                                    <div className='accumulate row' style={voteStatus === "" ? (userInfo && post && post.downvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}) : voteStatus === "downvote" ? {color: "orange"} : {color: "grey"}} onClick={() => (voteStatus !== "downvote") &&  accumulate("downvote")}>
+                                        <i className='fa fa-thumbs-down'></i>
+                                    </div> */}
                                     {/* <div className='accumulate' onClick={() => accumulate("upvote")}>
                                         <i className='fa fa-thumbs-up'></i>
                                     </div>
                                     <div className='accumulate' onClick={() => accumulate("downvote")}>
                                         <i className='fa fa-thumbs-down'></i>
                                     </div> */}
+                                    <div className='accumulate row'>
+                                        <i className='fa fa-flag' onClick={()=>report()}></i>
+                                    </div>
                                 </div>
                                 
                             </div>
@@ -416,6 +537,7 @@ export default function PostDetailPage(props) {
                                                 </div>
                                             </div>
                                         </div>
+                                    <RoleConverterComponnet role={u.role}></RoleConverterComponnet>
                                     </div>
                                 </div>) : (<div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)}>
                                 {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
@@ -436,16 +558,17 @@ export default function PostDetailPage(props) {
                                             </div>
                                         </div>
                                     </div>
-                                    
+                                    <RoleConverterComponnet role={u.role}></RoleConverterComponnet>
+
                                 </div>
                                 
                                 </div>))))}
                                 
                             <div className="row left">
-                                {post.createdAt === post.updatedAt ? <DateComponent passedDate={post.updatedAt}>Đăng vào: </DateComponent>
+                                {post.createdAt === post.updatedAt ? <DateComponent passedDate={post.updatedAt} size="small">Đăng vào: </DateComponent>
                                 : <div>
-                                    <DateComponent passedDate={post.createdAt}>Đăng vào: </DateComponent>
-                                    (Đã sửa)
+                                    <DateComponent passedDate={post.createdAt} size="small">Đăng vào: </DateComponent>
+                                    <p style={{fontSize: "1rem"}}>(Đã sửa)</p>
                                 </div>}
                                 {
                                 userInfo && (userInfo._id === post.user && (
@@ -565,7 +688,7 @@ export default function PostDetailPage(props) {
                     : successDeletingComment && <MessageBox>ĐÃ XÓA BÌNH LUẬN</MessageBox>
                 }
                 {
-                    <div className="row">
+                    <div className="row center">
                         <h1>
                             {post.postComments.length>1 && <div><i className="fa fa-comment"></i>
                                 {post.postComments.length} phản hồi
@@ -576,7 +699,25 @@ export default function PostDetailPage(props) {
                 {
                     post.postComments.map(pc=>(
                         <div className='row center'>
-                            
+                            <div className='col-mini'>
+                                {pc && pc.upvotes && pc.downvotes && pc.upvotes.length - pc.downvotes.length}
+                                <div className='accumulate row' style={userInfo && pc && pc.upvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}} onClick={() => accumulateTheComment("upvote", pc._id)}>
+                                    <i className='fa fa-thumbs-up'></i>
+                                </div>
+                                <div className='accumulate row' style={userInfo && pc && pc.downvotes.indexOf(userInfo._id)!==-1 ? {color: "orange"} : {color: "grey"}} onClick={() => accumulateDownTheComment("downvote", pc._id)}>
+                                    <i className='fa fa-thumbs-down'></i>
+                                </div>
+                                {userInfo && post && userInfo._id === post.user &&
+                                    <div className='clickableIcon' onClick={()=>markAsMostHelpful(pc._id)}>
+                                        <i className='fa fa-star'></i>
+                                    </div>
+                                }
+                                {post && post.bestAnswer === pc._id &&
+                                    <div title="Người đăng bài đã đánh dấu đây là câu trả lời hữu ích nhất">
+                                        <i className='fa fa-check-circle' style={{fontSize: "2.5rem"}}></i>
+                                    </div>
+                                }
+                            </div>
                             {userInfo && userInfo._id===pc.commenter && (
                                 <div className="card card-body postDetail">
                                     {!editCommentStatus ? (
@@ -600,7 +741,7 @@ export default function PostDetailPage(props) {
                                                     </div>
                                                 </div>
                                             </div>
-                                        
+                                            <RoleConverterComponnet role={userInfo.role}></RoleConverterComponnet>            
                                         
                                         </div>
                                         
@@ -654,6 +795,7 @@ export default function PostDetailPage(props) {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <RoleConverterComponnet role={u.role}></RoleConverterComponnet>
                                                 </div>
                                                 
                                                 <div className="content">
@@ -697,6 +839,7 @@ export default function PostDetailPage(props) {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    <RoleConverterComponnet role={u.role}></RoleConverterComponnet>
                                                 </div>
                                                 
                                                 <div className="content">
@@ -757,6 +900,14 @@ export default function PostDetailPage(props) {
                     <MessageBox><Link to={`/signin?redirect=forum/post/${postId}`}>{`Đăng nhập `}</Link>để tham gia trò chuyện</MessageBox>
                 )}
             </div> } 
+            <div style={{display: "flex", flexDirection: "row", justifyContent: "center", alignItems: "center", bottom: "0", position: "fixed", width: "100vw"}}>
+                {openLoadComment &&
+                    <div className='loadCommentButton interactiveText' onClick={()=>loadComment()}>
+                        <i className='fa fa-arrow-down clickableIcon'></i> Tải bình luận mới
+                    </div>
+                }
+            </div>
+            
         </div>
     )
 }

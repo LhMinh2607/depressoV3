@@ -24,6 +24,7 @@ const contactRouter =  require('./routers/contactRouter.js');
 const notificationRouter =  require('./routers/notificationRouter.js');
 const http = require("http");
 const socketIo = require("socket.io");
+const adminRouter = require('./routers/adminRouter.js');
 
 dotenv.config();
 const app = express();
@@ -58,6 +59,7 @@ app.use('/api/imageSearch', imageSearchRouter);
 app.use('/api/call', callRouter);
 app.use('/api/contact', contactRouter);
 app.use('/api/notification', notificationRouter);
+app.use('/api/admin', adminRouter);
 
 app.get('/', (req, res) => {
     res.send('Server is ready!');
@@ -97,6 +99,14 @@ io.on("connection", (socket) => {
     console.log("joined Post");
     socket.join(id);
   })
+  socket.on("leavePost", (id)=>{
+    console.log("left Post");
+    socket.leave(id);
+  })
+  socket.on("joinUser", (id)=>{
+    console.log("joined User");
+    socket.join(id);
+  })
 
   socket.on("addComment", (id) => {
     // interval = setInterval(() => {
@@ -112,7 +122,25 @@ io.on("connection", (socket) => {
       console.log("server addComment");
       const newDate = new Date();
       console.log("date: "+newDate);
-    }, 10);
+    }, 1);
+  });
+  socket.on("addNotification", () => {
+    setTimeout(()=>{
+      socket.broadcast.emit("loadNotifications");
+      console.log(socket.broadcast.emit("loadNotifications"));
+      console.log("server loadNotifications");
+      const newDate = new Date();
+      console.log("date: "+newDate);
+    }, 1);
+  });
+  socket.on("addCounselingRequest", ()=> {
+    setTimeout(()=>{
+      socket.broadcast.emit("loadCounselingRequests");
+      console.log(socket.broadcast.emit("loadCounselingRequests"));
+      console.log("server loadCounselingRequests");
+      const newDate = new Date();
+      console.log("date: "+newDate);
+    }, 1);
   });
   
   socket.on("disconnect", () => {

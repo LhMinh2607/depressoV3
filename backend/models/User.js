@@ -10,7 +10,7 @@ const userSchema = new mongoose.Schema({
     role: {type: String, default: 'user'},
     gender: {type: String, required: true},
     dob: {type: Date, required: true},
-    phoneNumber: {type: String, required: false},
+    phoneNumber: {type: String, required: false, unique: true},
     address: {type: String, required: true},
     occupation: {type: String, required: true},
     issues: [{type: String, required: false}],
@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
         friendId: {type: String, required: false, unique: true},
         createdAt: {type: Date, required: true},
     },],
+    counselingRequest: {type: Boolean, required: true, default: false},
 },
     {
         timestamps: true,

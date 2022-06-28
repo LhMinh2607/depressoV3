@@ -1,13 +1,14 @@
 import {createStore, compose, applyMiddleware, combineReducers} from 'redux';
 import thunk from 'redux-thunk';
-import { botMessageCountReducer, messageStatReducers, userConversationHistoryReducer, userDetailReducer, userFriendAddingReducer, userListReducer, userMessageCountReducer, userSigninReducer, userSignupReducer, userUpdateProfileReducer } from './reducers/userReducer';
-import { homePostListReducers, nestedPostListReducer, postAccumulatingReducers, postByCatListReducer, postCommentDeletingReducers, postCommentEditingReducers, postCommentPostingReducers, postCreatingReducers, postDeletingReducers, postDetailsReducers, postEditingReducers, postFilteringReducers, postKeywordsAddingReducer, postKeywordsRemovingReducer, postListReducers, postPinningReducers, postPinningToHomeReducers, postSearchingReducers, postSortingReducers, postStatReducers, relatedPostListReducer, userPostStatReducers } from './reducers/postReducer';
+import { botMessageCountReducer, messageStatReducers, userConversationHistoryReducer, userDetailByPhoneReducer, userDetailReducer, userFriendAddingReducer, userListReducer, userMessageCountReducer, userSearchReducer, userSigninReducer, userSignupReducer, userUpdateProfileReducer } from './reducers/userReducer';
+import { commentAccumulatingReducers, homePostListReducers, nestedPostListReducer, postAccumulatingReducers, postByCatListReducer, postCommentDeletingReducers, postCommentEditingReducers, postCommentPostingReducers, postCreatingReducers, postDeletingReducers, postDetailsReducers, postEditingReducers, postFilteringReducers, postKeywordsAddingReducer, postKeywordsRemovingReducer, postListReducers, postPinningReducers, postPinningToHomeReducers, postReportingReducers, postSearchingReducers, postSortingReducers, postStatReducers, relatedPostListReducer, userPostStatReducers } from './reducers/postReducer';
 import { categoryListReducer } from './reducers/categoryReducer';
 import { feedbackListReducer, userFeedbackListReducer } from './reducers/feedbackReducer';
 import { imageSearchListReducer, userImageSearchListReducer } from './reducers/imageSearchReducer';
 import { cancelCallReducer, historyListReducer, loggingACallReducer, makingACallReducer, updatingACallReducer } from './reducers/callingReducers';
 import { contactDetailReducer, contactEditingReducer, contactListReducer, contactRemovingReducer, contactSavingReducer, contactSearchingReducer } from './reducers/contactReducers';
-import { notificationAddingReducers, notificationEditingReducers, notificationListReducers } from './reducers/notificationReducer';
+import { allNotificationListReducers, notificationAddingReducers, notificationEditingReducers, notificationListReducers } from './reducers/notificationReducer';
+import { fullStatReducer } from './reducers/adminReducer';
 
 const initialState = {
     userSignin: {
@@ -101,6 +102,16 @@ const reducer = combineReducers({
 
     //
     notificationEditing: notificationEditingReducers,
+
+    //
+    fullStat: fullStatReducer,
+
+    //
+    allNotificationList: allNotificationListReducers,
+    userSearch: userSearchReducer,
+    userDetailByPhone: userDetailByPhoneReducer,
+    postReporting: postReportingReducers,
+    commentAccumulating: commentAccumulatingReducers,
 })
 
 

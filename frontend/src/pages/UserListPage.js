@@ -30,26 +30,31 @@ export default function UserListPage() {
             {users && <table className="table">
                     <thead>
                         <tr>
-                            <th>TIN NHẮN GẦN ĐÂY</th>
+                            <th>TƯ VẤN</th>
                             <th>USERNAME</th>
                             <th>TÊN</th>
                             <th>NGÀY THAM GIA</th>
-                            <th>TRANG CÁ NHÂN</th>
+                            <th>THAO TÁC</th>
                         </tr>
                     </thead>
                     <tbody>
                         {
                             users.map((u)=>(
                             <tr key={u._id}>
-                                <td>{u._id}</td>
+                                <td>{u.counselingRequest ? <i className='fa fa-check'>"Đã đăng ký"</i> : <i className='fa fa-close'>"Chưa đăng ký"</i>}</td>
                                 <td>{u.username}</td>
                                 <td>{u.name}</td>
                                 <td><DateComponent passedDate = {u.createdAt}></DateComponent></td>
-                                <td>
-                                    <div className="interactiveText" onClick={() => {navigate(`/user/${u._id}`);}}>
-                                        <i className='fa fa-arrow-right'></i>
+                                <div className='none'>
+                                    <div className="dropDown">
+                                        Thao tác<i class="fa fa-caret-down"></i>
+                                        <ul className='dropDown-content small'>
+                                            <li onClick={() => {navigate(`/user/${u._id}`);}}><i className='fa fa-arrow-right'></i></li>
+                                            {u.counselingRequest && <li><i className='fa fa-phone'>{u.phoneNumber}</i></li>}
+                                            {u.counselingRequest && <li><i className='fa fa-commenting'></i></li>}
+                                        </ul>
                                     </div>
-                                </td>
+                                </div>
                             </tr>
                         ))
                         }

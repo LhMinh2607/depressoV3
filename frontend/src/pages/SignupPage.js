@@ -66,37 +66,37 @@ export default function SignUpPage(props) {
     return (
         <div>
             {userInfo && <MessageBox variant="info">Đăng ký thành công</MessageBox>}
-            <form className="form" onSubmit={submitHandler}>
+            <form className="inputForm" onSubmit={submitHandler}>
                 <div>
                     <h1>Đăng ký</h1>
                 </div>
                 <div>
                     <label htmlFor="name">Tên</label>
-                    <input type="text" id="name" placeholder="Nhập tên" required className='basic-slide'
+                    <input type="text" id="name" placeholder="Nhập tên" required className='inputField'
                         onChange={e => setName(e.target.value)}>
                         </input>
                 </div>
                 <div>
                     <label htmlFor="name">Username</label>
-                    <input type="text" id="username" placeholder="Nhập Username" required className='basic-slide'
+                    <input type="text" id="username" placeholder="Nhập Username" required className='inputField'
                         onChange={e => setUsername(e.target.value)}>
                         </input>
                 </div>
                 <div>
                     <label htmlFor="email">Địa chỉ Email</label>
-                    <input type="email" id="email" placeholder="Nhập email" required className='basic-slide'
+                    <input type="email" id="email" placeholder="Nhập email" required className='inputField'
                         onChange={e => setEmail(e.target.value)}>
                         </input>
                 </div>
                 <div>
                     <label htmlFor="password">Mật khẩu</label>
-                    <input type="password" id="password" placeholder="Nhập mật khẩu" required className='basic-slide'
+                    <input type="password" id="password" placeholder="Nhập mật khẩu" required className='inputField'
                         onChange={e => setPassword(e.target.value)}>
                         </input>
                 </div>
                 <div>
                     <label htmlFor="password">Mật khẩu</label>
-                    <input type="password" id="confirmPassword" placeholder="Xác nhận mật khẩu" required className='basic-slide'
+                    <input type="password" id="confirmPassword" placeholder="Xác nhận mật khẩu" required className='inputField'
                         onChange={e => setConfirmPassword(e.target.value)}>
                         </input>
                 </div>
@@ -117,7 +117,7 @@ export default function SignUpPage(props) {
                     Ngày sinh: 
                 </label>
                 <DatePicker
-                    className='basic-slide'
+                    className='inputField'
                     dateFormat="dd/MM/yyyy"
                     selected={dob}
                     minDate={new Date("01-01-1950")}
@@ -126,13 +126,13 @@ export default function SignUpPage(props) {
                     />
                 <div>
                     <label htmlFor="name">Địa chỉ</label>
-                    <input type="text" id="address" placeholder="Nhập địa chỉ" required className='basic-slide'
+                    <input type="text" id="address" placeholder="Nhập địa chỉ" required className='inputField'
                         onChange={e => setAddress(e.target.value)}>
                         </input>
                 </div>
                 <div>
                     <label htmlFor="name">Nghề nghiệp</label>
-                    <input type="text" id="occupation" placeholder="Nhập nghề nghiệp" required className='basic-slide'
+                    <input type="text" id="occupation" placeholder="Nhập nghề nghiệp" required className='inputField'
                         onChange={e => setOccupation(e.target.value)}>
                         </input>
                 </div>
@@ -145,13 +145,13 @@ export default function SignUpPage(props) {
                 </div>
                 <div>
                     <label htmlFor="name">Số điện thoại</label>
-                    <input type="text" id="phoneNumber" placeholder="Nhập số đt" className='basic-slide'
+                    <input type="text" id="phoneNumber" placeholder="Nhập số đt" className='inputField'
                         onChange={e => setPhoneNumber(e.target.value)}>
                         </input>
                 </div>
                 <div>
                     <label htmlFor="desc">Mô tả ngắn gọn về bản thân (không bắt buộc)</label>
-                    <input type="text" id="desc" placeholder="Nhập mô tả" className='basic-slide'
+                    <input type="text" id="desc" placeholder="Nhập mô tả" className='inputField'
                         onChange={e => setDesc(e.target.value)}>
                         </input>
                 </div>

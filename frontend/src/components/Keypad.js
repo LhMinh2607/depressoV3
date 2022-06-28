@@ -11,12 +11,14 @@ import { CALL_DISCONNECTED, CALL_LOG_RESET, CALL_RESET, CONTACT_SAVE_RESET } fro
 import DateComponent from '../components/DateComponent';
 import { useStopwatch  } from 'react-timer-hook'; //from react-timer-hook
 import TimeConverter from './TimeConverter';
-import { signin, signup } from '../actions/userAction';
+import { detailsOfUserBasedOnPhone, signin, signup } from '../actions/userAction';
 import YesNoBox from './YesNoBox';
 import IndependentMessageBox from './IndependantMessageBox';
 
 
-export default function Keypad() {
+export default function Keypad(props) {
+
+  const {setOpenKeyPad, currentNumber, fullname} = props;
 
   const [num, setNum] = useState('');
   const [name, setName] = useState('');
@@ -40,34 +42,21 @@ export default function Keypad() {
   const [idToDelete, setIdToDelete] = useState('');
   const [keyword, setKeyword] = useState('');
 
-  const [seconds, setSeconds] = useState(0);
-  const [minutes, setMinutes] = useState(0);
-  const [hours, setHours] = useState(0);
-  const [days, setDays] = useState(0);
+  // const [seconds, setSeconds] = useState(0);
+  // const [minutes, setMinutes] = useState(0);
+  // const [hours, setHours] = useState(0);
+  // const [days, setDays] = useState(0);
 
-  // const {
-  //   seconds=0,
-  //   minutes=0,
-  //   hours=0,
-  //   days=0,
-  //   isRunning,
-  //   start,
-  //   pause,
-  //   reset,
-  // } = useStopwatch({ autoStart: false });
-  // const {start} = useStopwatch({ autoStart: false });
-  // const {pause} = useStopwatch({ autoStart: false });
-  // const {reset} = useStopwatch({ autoStart: false });
-  const start = () =>{
-    console.log("fuck react-timer-hook");
-  }
-  const pause = () =>{
-    console.log("fuck react-timer-hook");
-  }
-  const reset = () =>{
-    console.log("fuck react-timer-hook");
-  }
-
+  const {
+    seconds,
+    minutes,
+    hours,
+    days,
+    isRunning,
+    start,
+    pause,
+    reset,
+  } = useStopwatch({ autoStart: false });
 
   const stop = () =>{
     pause();
@@ -82,8 +71,14 @@ export default function Keypad() {
   const contactList = useSelector(state=>state.contactList);
   const {loading: loadingList, error: errorList, contacts} = contactList;
 
+  const userList = useSelector(state=>state.userList);
+  const {loading: loadingUserList, error: errorUserList, users} = userList;
+
   const contactDetail = useSelector(state=>state.contactDetail);
   const {loading: loadingDetail, error: errorDetail, contactInfo} = contactDetail;
+
+  const userDetailByPhone = useSelector(state=>state.userDetailByPhone);
+  const {loading: loadingUserDetail, error: errorUserDetail, user: userContact} = userDetailByPhone;
 
   const historyList = useSelector(state=>state.historyList);
   const {loading: loadingHistory, error: errorHistory, history} = historyList;
@@ -103,14 +98,18 @@ export default function Keypad() {
 
   if(userInfo){
 
-    var socket = new JsSIP.WebSocketInterface('wss://sbc03.tel4vn.com:7444');
+    //wss://sbc03.tel4vn.com:7444
+    const websocket = process.env.REACT_APP_WEBSOCKET;
+    const account = process.env.REACT_APP_ACCOUNT;
+    const pwd = process.env.REACT_APP_PASSWD;
+    var socket = new JsSIP.WebSocketInterface(websocket);
     var configuration = {
       sockets  : [ socket ],
       // uri      : userInfo.uri,
-      // uri: "REDACTED",
-      uri: "something@something.vn:50069",
-      // password : userInfo.displayPass,
-      password: "test1105",
+      uri: account,
+      // uri: process.env.REACT_APP_ACCOUNT,
+      // password : process.env.REACT_APP_PASSWD,
+      password: pwd,
       session_timers: false,
       display_name: name,
     };
@@ -208,7 +207,7 @@ export default function Keypad() {
       setOpenPopup(true);
       setNum(num);
     }else if(num.length+1===10 && re.test(num+value)){
-      dispatch(getAContact(num+value));
+      dispatch(detailsOfUserBasedOnPhone(num+value));
     }
     // alert(num+value);
   }
@@ -350,11 +349,12 @@ export default function Keypad() {
     // alert(e.currentTarget.value.split("|")[0]);
     setNum(e.currentTarget.value.split("|")[0]);
     setName(e.currentTarget.value.split("|")[1]);
-    dispatch(getAContact(e.currentTarget.value.split("|")[0]));
+    dispatch(detailsOfUserBasedOnPhone(e.currentTarget.value.split("|")[0]));
     setKeypadMode('keypad');
     audioBeep.play();
     audioAmbientClick.play();
   }
+
 
   const setNumFromKeyboard = (e) =>{ //Keypad
     var re = new RegExp("[0-9]");
@@ -367,7 +367,7 @@ export default function Keypad() {
       setOpenPopup(true);
       setNum(e.target.value.slice(0, -1));
     }else if(e.target.value.length===10 && re.test(e.target.value)){
-      dispatch(getAContact(e.target.value));
+      dispatch(detailsOfUserBasedOnPhone(e.target.value));
     }
   }
 
@@ -430,6 +430,29 @@ export default function Keypad() {
     dispatch(searchContact(e.target.value));
   }
 
+  let touchstartX = 0
+  let touchendX = 0
+      
+  function checkDirection() {
+    if (touchendX < touchstartX) {
+      console.log('swiped left!')
+      setOpenKeyPad(false);
+    }
+    if (touchendX > touchstartX) {
+      console.log('swiped right!')
+      return false;
+    }
+  }
+
+  document.addEventListener('touchstart', e => {
+    touchstartX = e.changedTouches[0].screenX
+  })
+
+  document.addEventListener('touchend', e => {
+    touchendX = e.changedTouches[0].screenX
+    checkDirection()
+  })
+
   useEffect(()=>{
     // window.scrollTo({
     //   top: 0, 
@@ -439,6 +462,15 @@ export default function Keypad() {
       setSigninBox(true);
     }else{
       setSigninBox(false);
+    }
+    // alert(currentNumber)
+
+    if(currentNumber){
+      // alert(currentNumber)
+      setNum(currentNumber);
+      // setName(fullname);
+      setKeypadMode('keypad');
+      dispatch(detailsOfUserBasedOnPhone(currentNumber));
     }
     
     setPopupType('info');
@@ -473,7 +505,7 @@ export default function Keypad() {
           </div>
           <div className='keyRow'>
             {/* <div className='contentRow'>{name}</div> */}
-            <div className='contentRow'>{contactInfo && contactInfo.name}</div>
+            <div className='contentRow'>{userContact && userContact.name}</div>
           </div>
           <div className='keyRow'>
             <button type="submit" value="1" onClick={() => input("1")} className='keyNum'><div className='keyContent'>1</div></button>
@@ -508,7 +540,7 @@ export default function Keypad() {
         {loadingCall && !connected ?
         <div>
           <div className='keyRow'>
-            <div className='contentRow'>Calling {num}</div>
+            <div className='contentRow'>ĐANG GỌI {num}</div>
           </div>
           <div className='keyRow'>
             <div className='contentRow'>{name}</div>
@@ -530,7 +562,7 @@ export default function Keypad() {
               <div className='contentRow displayNumber'>{num}</div>
             </div>
             <div className='keyRow'>
-              <div className='contentRow'>CONNECTED</div>
+              <div className='contentRow'>ĐÃ KẾT NỐI</div>
             </div>
             <div className='keyRow'>
               {/* <Timer connectivity={connected}></Timer> */}
@@ -569,7 +601,7 @@ export default function Keypad() {
         </div> */}
         {keypadMode==='contact' && 
           <>
-          <div className='row center'><input className='searchBar' placeholder='Search here' onChange={search}></input></div>
+          <div className='row center'><input className='searchBar' placeholder='Tìm kiếm' onChange={search}></input></div>
           <div className='row center'><button onClick={openContact} className='phoneConfirmBtn back'><i className='fa fa-mail-reply'></i></button>
            <button onClick={openAddContact} className='phoneConfirmBtn info'><i className='fa fa-plus'></i></button></div>
               {keyword==="" ? (<div className='row inline scrollableDiv'>
@@ -603,15 +635,15 @@ export default function Keypad() {
                   </tbody>
                 </table> */}
                 <div className='col-2'>
-                  {contacts && contacts.length>0 && contacts.map(contact=>(
+                  {users && users.length>0 && users.map(contact=>(
                     <div className='row left inline' key={contact._id}>
                       <div className='col-1 inline'>
-                        <div className='displayNameContact row left'>{contact.name}</div><div className='displayNumberContact row left'>{contact.phoneNum}</div>
+                        <div className='displayNameContact row left'>{contact.name}</div><div className='displayNumberContact row left'>{contact.phoneNumber}</div>
                       </div>
                       <div className='col-1 inline'>
-                        <div className='row right' title="Dial this number"><button className='contactMenuBtn' value={contact.phoneNum+"|"+contact.name} onClick={dialNum}><i className='fa fa-mobile'></i></button></div>
-                        <div className='row right' title="Remove this contact"><button className='contactMenuBtn remove' value={contact._id} onClick={removeContact}><i className='fa fa-trash'></i></button></div>
-                        <div className='row right' title="Edit this contact"><button className='contactMenuBtn edit' value={contact._id} onClick={editContact}><i className='fa fa-edit'></i></button></div>
+                        <div className='row right' title="Dial this number"><button className='contactMenuBtn' value={contact.phoneNumber+"|"+contact.name} onClick={dialNum}><i className='fa fa-mobile'></i></button></div>
+                        {/* <div className='row right' title="Remove this contact"><button className='contactMenuBtn remove' value={contact._id} onClick={removeContact}><i className='fa fa-trash'></i></button></div> */}
+                        {/* <div className='row right' title="Edit this contact"><button className='contactMenuBtn edit' value={contact._id} onClick={editContact}><i className='fa fa-edit'></i></button></div> */}
                       </div>
                       <div className='row right'><hr className='default'></hr></div>
                     </div>
@@ -768,10 +800,10 @@ export default function Keypad() {
                 <input type="text" className='inputBox' placeholder='Display Name' id="uri" autoComplete="off" onChange={e=>setDisplayName(e.target.value)}/>
               </div> */}
               <div className='row center'>
-                <button type="submit" className='submitBtn'>Submit</button>
+                <button type="submit" className='submitBtn'>Gửi</button>
               </div>
               <div className='row center'>
-                New here? <button className='phoneConfirmBtn' onClick={openSignupBox}>Sign up</button>
+                Chưa có tài khoản? <button className='phoneConfirmBtn' onClick={openSignupBox}>Đăng ký</button>
               </div>
             </form>
           </div>
@@ -798,7 +830,7 @@ export default function Keypad() {
                 <button type="submit" className='submitBtn'>Submit</button>
               </div>
               <div className='row center'>
-                Already here? <button className='phoneConfirmBtn' onClick={openSigninBox}>Sign in</button>
+                Có tài khoản? <button className='phoneConfirmBtn' onClick={openSigninBox}>Đăng nhập</button>
               </div>
             </form>
           </div>

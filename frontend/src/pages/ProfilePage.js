@@ -14,6 +14,7 @@ import { statOfUserPosts } from '../actions/postAction';
 // import { Offline, Online } from "react-detect-offline";
 import Gallery from '../components/Gallery';
 import { createNotification } from '../actions/notificationAction';
+import {isBrowser, isMobile} from 'react-device-detect';
 
 
 export default function ProfilePage(){
@@ -55,7 +56,7 @@ export default function ProfilePage(){
     const {loading: loadingStat, error: errorStat, msgStat} = messageStat;
 
     const userPostStat = useSelector(state=>state.userPostStat);
-    const {loading: loadingPostStat, error: errorPostStat, posts} = userPostStat;
+    const {loading: loadingPostStat, error: errorPostStat, userForumStat} = userPostStat;
 
     const notificationAdding = useSelector(state=>state.notificationAdding);
     const {loading: loadingNotificationAdding, error: errorNotificationAdding, success: successNotificationAdding} = notificationAdding;
@@ -224,16 +225,18 @@ export default function ProfilePage(){
                 <div className='avatarCircle interactiveText'>
                     {user && user.username[0]}
                 </div>}
-                {user && user.role=="admin" && <div className='avatarCheckmark'><i className='fa fa-check'></i></div>}
-                {user && user.role=="bot" && <div className='avatarCheckmark'><i className='fa fa-android'></i></div>}
+                {user && user.role!=="bot" && <div className='avatarCheckmark left'>{userForumStat && userForumStat.userScore}<i className='fa fa-thumbs-up'></i></div>}
+
+                {user && user.role==="admin" && <div className='avatarCheckmark'><i className='fa fa-check'></i></div>}
+                {user && user.role==="bot" && <div className='avatarCheckmark'><i className='fa fa-android'></i></div>}
                 {/* {user && user.role=="admin" && <div className='avatarCheckmark.offline'><i className='fa fa-check'></i></div>} */}
                 <div className='checkmarkHoverInfo'>
                     {user && (user.role==="admin" ? <div>Quản trị viên và điều phối viên</div> : user.role==="bot" && <div>Bot</div>)}    
                 </div>
-                {userInfo && user && userInfo._id!== user._id && userInfo.friends && userInfo.friends.length>=0 && userInfo.friends.map((friend)=>(
+                {/* {userInfo && user && userInfo._id!== user._id && userInfo.friends && userInfo.friends.length>=0 && userInfo.friends.map((friend)=>(
                     friend.friendId!==user._id ? <div className='addFriendButton interactiveText' onClick={()=>addFriend(user._id)}>Thêm bạn</div> : friend.friendId===user._id && <div className='addFriendButton'>Bạn bè</div>
-                )) }
-                {userInfo && user && userInfo._id!== user._id && !userInfo.friends && <div className='addFriendButton interactiveText' onClick={()=>addFriend(user._id)}>Thêm bạn</div>}
+                )) } */}
+                {/* {userInfo && user && userInfo._id!== user._id && !userInfo.friends && <div className='addFriendButton interactiveText' onClick={()=>addFriend(user._id)}>Thêm bạn</div>} */}
             </div>
             <div className="row center">
                 {/* <label className="bold-text">Tên: ‎</label>  */}
@@ -245,7 +248,7 @@ export default function ProfilePage(){
             <div className='row center'>
                 {user && <div className='quote'>"{user.desc}"</div>}
             </div>
-            {user && user.backgroundMusic && <div className='row center'>
+            {isBrowser && user && user.backgroundMusic && <div className='row center'>
                 <iframe src={`https://www.youtube.com/embed/${getYouTubeLinkId(user.backgroundMusic)}?autoplay=1&mute=0&loop=1&playlist=${getYouTubeLinkId(user.backgroundMusic)}`} type="application/x-shockwave-flash" allowscriptaccess="always" allowFullScreen={false} width="500" height="100" allow='autoplay'></iframe>
             </div>}
             <div className='row center'>
@@ -315,7 +318,7 @@ export default function ProfilePage(){
                         </div>)
                 }
             </div>*/}
-            { currentTab==="info" ? <form className="form" onSubmit={submitHandler}>
+            { currentTab==="info" ? <form className={disabled ? "form" : "inputForm"} onSubmit={submitHandler}>
                 {/* <div>
                     <h1>{userInfo.name}'s Info {userInfo.role === 'admin' ? (<i className="fa fa-check" title="Signature of Superiority">Admin</i>) : ("(User)")}</h1>
                     
@@ -434,27 +437,27 @@ export default function ProfilePage(){
                         (<><label htmlFor="name">
                             Tên: 
                         </label>
-                        <input className='basic-slide' id="name" type="text" placeholder="Nhập tên" value={user.name} value={name} onChange={(e)=> setName(e.target.value)} disabled={disabled} required={true}>
+                        <input className='inputField' id="name" type="text" placeholder="Nhập tên" value={user.name} value={name} onChange={(e)=> setName(e.target.value)} disabled={disabled} required={true}>
                         </input>
                         <label htmlFor="username">
                             Username: 
                         </label>
-                        <input className='basic-slide' id="username" type="text" placeholder="Nhập username" value={user.username} value={username} onChange={(e)=> setUsername(e.target.value)} disabled={disabled} required={true}>
+                        <input className='inputField' id="username" type="text" placeholder="Nhập username" value={user.username} value={username} onChange={(e)=> setUsername(e.target.value)} disabled={disabled} required={true}>
                         </input>
                         <label htmlFor="email">
                             Email: 
                         </label>
-                        <input className='basic-slide' id="email" type="email" placeholder="Nhập email" value={user.email} value={email} onChange={(e)=> setEmail(e.target.value)} disabled={disabled} required={true}>
+                        <input className='inputField' id="email" type="email" placeholder="Nhập email" value={user.email} value={email} onChange={(e)=> setEmail(e.target.value)} disabled={disabled} required={true}>
                         </input>
                         <label htmlFor="password">
                             Mật khẩu: 
                         </label>
-                        <input className='basic-slide' id="password" type="password" placeholder="hidden" onChange={(e)=> setPassword(e.target.value)} disabled={disabled} required={true}>
+                        <input className='inputField' id="password" type="password" placeholder="hidden" onChange={(e)=> setPassword(e.target.value)} disabled={disabled} required={true}>
                         </input>
                         <label htmlFor="confirmPassword">
                             Xác nhận mật khẩu: 
                         </label>
-                        <input className='basic-slide' id="confirmPassword" type="password" placeholder="hidden" onChange={(e)=> setConfirmPassword(e.target.value)} disabled={disabled} required={true}>
+                        <input className='inputField' id="confirmPassword" type="password" placeholder="hidden" onChange={(e)=> setConfirmPassword(e.target.value)} disabled={disabled} required={true}>
                         </input>
                         <label htmlFor="gender">
                             Giới tính: 
@@ -477,7 +480,7 @@ export default function ProfilePage(){
                          */}
                         
                         <DatePicker
-                            className='basic-slide'
+                            className='inputField'
                             dateFormat="dd/MM/yyyy"
                             selected={birthDate}
                             minDate={new Date("01-01-1950")}
@@ -487,34 +490,33 @@ export default function ProfilePage(){
                         <label htmlFor="phoneNumber">
                             Số điện thoại:
                         </label>
-                        <input className='basic-slide' id="phoneNumber" type="text" placeholder="hidden" value={phoneNumber} onChange={(e)=> setPhoneNumber(e.target.value)} disabled={disabled} required={true}>
+                        <input className='inputField' id="phoneNumber" type="text" placeholder="hidden" value={phoneNumber} onChange={(e)=> setPhoneNumber(e.target.value)} disabled={disabled} required={true}>
                         </input>
                         <label htmlFor="address">
                         Địa chỉ: 
                         </label>
-                        <input className='basic-slide' id="address" type="text" placeholder="Nhập địa chỉ" value={address} onChange={(e)=> setAddress(e.target.value)} disabled={disabled} required={true}>
+                        <input className='inputField' id="address" type="text" placeholder="Nhập địa chỉ" value={address} onChange={(e)=> setAddress(e.target.value)} disabled={disabled} required={true}>
                         </input>
                         <label htmlFor="occupation">
                         Nghề nghiệp: 
                         </label>
-                        <input className='basic-slide' id="occupation" type="text" placeholder="Nhập nghề nghiệp" value={occupation} onChange={(e)=> setOccupation(e.target.value)} disabled={disabled} required={true}>
+                        <input className='inputField' id="occupation" type="text" placeholder="Nhập nghề nghiệp" value={occupation} onChange={(e)=> setOccupation(e.target.value)} disabled={disabled} required={true}>
                         </input>
                         </>)}
                         {userId && userInfo && userInfo._id === userId &&
-                        <div className="bottom-button-div-group">
-                            <div className="bottom-button-div">
-                                <button className="admin" type="button" onClick={enableEdit}>
-                                {editButtonName? (<label>SỬA</label>)
-                                : (<label>HỦY</label>)
+                        <div className="row">
+                            <div className="">
+                                <button className="clickableIcon" type="button" onClick={enableEdit}>
+                                {editButtonName? (<label><i className="fa fa-pencil"></i></label>)
+                                : (<label><i className="fa fa-close"></i></label>)
                                 }
                                 </button>
                             </div>
-                            {!editButtonName && <div className="bottom-button-div">
-                                <button className="admin" type="submit" disabled={disabled}>
-                                    <label>GỬI</label>
+                            {!editButtonName && <div className="col-0">
+                                <button className="clickableIcon" type="button" onClick={customizationSubmitHandler} disabled={disabled}>
+                                    <label><i className="fa fa-send"></i></label>
                                 </button>
                             </div>}
-                            
                         </div>}
                         
                         
@@ -529,6 +531,9 @@ export default function ProfilePage(){
                 <div>
                     <div className='row center'>
                         {user && user.role!=="bot" ? <div className='col-0'>
+                            <div className='row left'>
+                                <i className='fa fa-calendar'></i><label className='bold-text'>Điểm: ‎</label> {userForumStat && userForumStat.userScore}
+                            </div>
                             <div className='row left'>
                                 <i className='fa fa-calendar'></i><label className='bold-text'>Ngày tham gia: ‎</label> {user && <DateComponent passedDate={user.createdAt} isbirthDate={false}></DateComponent>}
                             </div>
@@ -567,9 +572,9 @@ export default function ProfilePage(){
                         </div>  */}
                         <hr></hr>
                     </div>
-                    {posts && <div>Bài viết ({posts.length})</div>}
+                    {userForumStat && <div>Bài viết ({userForumStat.posts.length})</div>}
                     <div className='col-1'>
-                        {posts && posts.map((post)=>(
+                        {userForumStat && userForumStat.posts && userForumStat.posts.map((post)=>(
                                 <div className='row'>
                                     <div className='interactiveText' onClick={()=>navigate(`/forum/post/${post._id}`)}>
                                         <i className='fa fa-arrow-right'></i> {post.title}
@@ -580,7 +585,7 @@ export default function ProfilePage(){
                 </div>}
             </form>
             : currentTab==='customization' ?
-            <form className="form">
+            <form className={disabled ? "form" : "inputForm"}>
                 {
                     loadingUser? <LoadingBox></LoadingBox>
                     : errorUser ? <MessageBox variant="error">{errorUser}</MessageBox>
@@ -639,9 +644,10 @@ export default function ProfilePage(){
                                         <div className='row top'>Nhạc nền:</div>
                                     </div>
                                     <div className='col-1'>
-                                        {user && user.backgroundMusic &&
+                                        {isBrowser && user && user.backgroundMusic &&
                                         <iframe src={`https://www.youtube.com/embed/${getYouTubeLinkId(user.backgroundMusic)}?mute=0&loop=1`} type="application/x-shockwave-flash" allowscriptaccess="always" allowFullScreen={false} width="300" height="100" allow='autoplay'></iframe>
                                         }
+                                        {isMobile && "Tính năng này chỉ được hỗ trợ trên trình duyệt máy tính"}
                                     </div>
                                 </div>
                                 
@@ -653,7 +659,7 @@ export default function ProfilePage(){
                         <div>
                         <label htmlFor="avatar">
                         Ảnh đại diện (không bắt buộc)</label>
-                            <input type="text" id="avatar" placeholder="Nhập url ảnh đại diện" className='basic-slide' value={avatar}
+                            <input type="text" id="avatar" placeholder="Nhập url ảnh đại diện" className='inputField' value={avatar}
                                 onChange={e => setAvatar(e.target.value)}>
                                 </input>
                         </div>
@@ -661,14 +667,14 @@ export default function ProfilePage(){
                         <div>
                         <label htmlFor="desc">
                         Mô tả ngắn gọn về bản thân (không bắt buộc)</label>
-                            <input type="text" id="desc" placeholder="Nhập mô tả" className='basic-slide' value={desc}
+                            <input type="text" id="desc" placeholder="Nhập mô tả" className='inputField' value={desc}
                                 onChange={e => setDesc(e.target.value)}>
                                 </input>
                         </div>
                         <div>
                         <label htmlFor="backgroundImage">
                         Background (không bắt buộc)</label>
-                            <input type="text" id="backgroundImage" placeholder="Nhập đường dẫn cho background cá nhân" className='basic-slide' value={backgroundImage}
+                            <input type="text" id="backgroundImage" placeholder="Nhập đường dẫn cho background cá nhân" className='inputField' value={backgroundImage}
                                 onChange={e => setBackgroundImage(e.target.value)}>
                                 </input>
                         </div>
@@ -681,23 +687,23 @@ export default function ProfilePage(){
                         </div>
                         <label htmlFor="backgroundMusic">
                         Nhạc Background từ link youtube (không bắt buộc)</label>
-                            <input type="text" id="backgroundMusic" placeholder="Nhập đường dẫn cho video youtube" className='basic-slide' value={backgroundMusic}
+                            <input type="text" id="backgroundMusic" placeholder="Nhập đường dẫn cho video youtube" className='inputField' value={backgroundMusic}
                                 onChange={e => setBackgroundMusic(e.target.value)}>
                                 </input>
                         </div>
                         </>)}
                         {userId && userInfo && userInfo._id === userId &&
-                        <div className="bottom-button-div-group">
-                            <div className="bottom-button-div">
-                                <button className="admin" type="button" onClick={enableEdit}>
-                                {editButtonName? (<label>SỬA</label>)
-                                : (<label>HỦY</label>)
+                        <div className="row">
+                            <div className="">
+                                <button className="clickableIcon" type="button" onClick={enableEdit}>
+                                {editButtonName? (<label><i className="fa fa-pencil"></i></label>)
+                                : (<label><i className="fa fa-close"></i></label>)
                                 }
                                 </button>
                             </div>
-                            {!editButtonName && <div className="bottom-button-div">
-                                <button className="admin" type="button" onClick={customizationSubmitHandler} disabled={disabled}>
-                                    <label>GỬI</label>
+                            {!editButtonName && <div className="col-0">
+                                <button className="clickableIcon" type="button" onClick={customizationSubmitHandler} disabled={disabled}>
+                                    <label><i className="fa fa-send"></i></label>
                                 </button>
                             </div>}
                         </div>}

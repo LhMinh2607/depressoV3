@@ -38,7 +38,7 @@ export default function SigninPage(props) {
 
     return (
         <div>
-            <form className="form" onSubmit={submitHandler}>
+            <form className="inputForm" onSubmit={submitHandler}>
                 <div>
                     <h1>Đăng nhập</h1>
                 </div>
@@ -46,13 +46,13 @@ export default function SigninPage(props) {
                 {error && <MessageBox variant="error">{error}</MessageBox>}
                 <div>
                     <label htmlFor="email">Email</label>
-                    <input type="email" id="email" placeholder="Nhập email" required className='basic-slide'
+                    <input type="email" id="email" placeholder="Nhập email" required className='inputField'
                         onChange={e => setEmail(e.target.value)}>
                         </input>
                 </div>
                 <div>
                     <label htmlFor="password">Mật khẩu</label>
-                    <input type="password" id="password" placeholder="Nhập mật khẩu" required className='basic-slide'
+                    <input type="password" id="password" placeholder="Nhập mật khẩu" required className='inputField'
                         onChange={e => setPassword(e.target.value)}>
                         </input>
                 </div>

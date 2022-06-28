@@ -18,10 +18,16 @@ const postSchema = new mongoose.Schema({
             content: {type: String},
             createdAt: {type: Date},
             updatedAt: {type: Date},
+            upvotes: [{type: String}],
+            downvotes: [{type: String}]
         },
     ],
     upvotes: [{type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}],
     downvotes: [{type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true}],
+    reports: [{userId: {type: String},
+                reason: {type: String, required: true}
+            }],
+    bestAnswer: {type: String, required: false},
 },
     {
         timestamps: true,
