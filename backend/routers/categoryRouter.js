@@ -8,7 +8,7 @@ const Category =  require('../models/Category.js');
 const categoryRouter = express.Router();
 
 categoryRouter.get('/list', expressAsyncHandler(async (req, res)=>{
-    const categories = await Category.find({});
+    const categories = await Category.find({}).sort({priority: 1});
     res.send(categories);
 }));
 

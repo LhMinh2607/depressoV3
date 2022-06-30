@@ -69,7 +69,7 @@ export default function ProfilePage(){
     const genders = [
         {_id: "Nam", name: "Nam"},
         {_id: "Nữ", name: "Nữ"},
-        {_id: "Khác", name: "3D"},
+        {_id: "Khác", name: "Khác"},
     ]
 
     const setTheGender = (selectedValues) =>{
@@ -173,11 +173,15 @@ export default function ProfilePage(){
     // const socketUrl = "https://55c2-27-2-17-107.ngrok.io";
     // const socketUrl = "https://1d35-27-2-17-107.ngrok.io";
     const url = window.location.pathname.split('/').pop();
-
+    // document.addEventListener('wheel', (e) => {
+    //     document.getElementById('navTab').scrollLeft += e.deltaY;
+    //     console.log('wheel')
+    // })
     useEffect(()=>{
         window.scrollTo({
             top: 0, 
           });
+        
         //dispatch(listTotalMoneySpent(userInfo._id));
         //dispatch({type: CLEAR_ALL}); //a simple line of code that solved the worst bug in my project. That later it also caused a loop bug. Thanks so much dickhead.
         setGender("Gay")
@@ -216,7 +220,7 @@ export default function ProfilePage(){
         
     }, [dispatch, userInfo._id, user, url]);
     return (
-        <div className='mainprofile' style={user && user.backgroundImage ? {backgroundImage: `url("${user.backgroundImage}")`, backgroundSize: "contain", backgroundPosition: "top center", backgroundRepeat: "no-repeat"} : 
+        <div className='mainprofile' style={user && user.backgroundImage ? {backgroundImage: `url("${user.backgroundImage}")`, backgroundSize: "contain", backgroundPosition: "top center", backgroundRepeat: "no-repeat",} : 
         {background: "linear-gradient(#04374b, transparent), linear-gradient(to top, rgb(0, 128, 255), transparent), linear-gradient(to bottom, rgb(127, 194, 248), transparent);"}}>
             {/* {userInfo && userInfo.backgroundImage && <img className='userbackground' src={userInfo.backgroundImage}></img>} */}
             <div className='userProfilePicture'>
@@ -252,7 +256,7 @@ export default function ProfilePage(){
                 <iframe src={`https://www.youtube.com/embed/${getYouTubeLinkId(user.backgroundMusic)}?autoplay=1&mute=0&loop=1&playlist=${getYouTubeLinkId(user.backgroundMusic)}`} type="application/x-shockwave-flash" allowscriptaccess="always" allowFullScreen={false} width="500" height="100" allow='autoplay'></iframe>
             </div>}
             <div className='row center'>
-                <div className='navTab'>
+                <div id="navTab" className='navTab'>
                     <div className='tabItem interactiveText noHighlight' onClick={()=>setCurrentTab('info')}>
                         Thông tin
                         {currentTab==='info' ? <div className='tabLine'></div> : <div className='emptyLine'></div>}
@@ -656,7 +660,7 @@ export default function ProfilePage(){
                         )
                         : 
                         (<>
-                        <div>
+                        <div className='row left'>
                         <label htmlFor="avatar">
                         Ảnh đại diện (không bắt buộc)</label>
                             <input type="text" id="avatar" placeholder="Nhập url ảnh đại diện" className='inputField' value={avatar}
@@ -664,14 +668,14 @@ export default function ProfilePage(){
                                 </input>
                         </div>
                         <div></div>
-                        <div>
+                        <div className='row left'>
                         <label htmlFor="desc">
                         Mô tả ngắn gọn về bản thân (không bắt buộc)</label>
                             <input type="text" id="desc" placeholder="Nhập mô tả" className='inputField' value={desc}
                                 onChange={e => setDesc(e.target.value)}>
                                 </input>
                         </div>
-                        <div>
+                        <div className='row left'>
                         <label htmlFor="backgroundImage">
                         Background (không bắt buộc)</label>
                             <input type="text" id="backgroundImage" placeholder="Nhập đường dẫn cho background cá nhân" className='inputField' value={backgroundImage}
@@ -679,17 +683,19 @@ export default function ProfilePage(){
                                 </input>
                         </div>
                         <div>
-                        <div>
-                            <div className='row'>Đặt background cho cả trang?</div>
-                            <div className='row'>
+                        <div className='col-2'>
+                            <div className='row left'>Đặt background cho cả trang?</div>
+                            <div className='row left'>
                                 <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder='' options={bools.map(bool=>({value: bool._id, label: bool.name}))} onChange={setTheBoolean} required={false}/>
                             </div>
                         </div>
-                        <label htmlFor="backgroundMusic">
-                        Nhạc Background từ link youtube (không bắt buộc)</label>
-                            <input type="text" id="backgroundMusic" placeholder="Nhập đường dẫn cho video youtube" className='inputField' value={backgroundMusic}
-                                onChange={e => setBackgroundMusic(e.target.value)}>
-                                </input>
+                        <div className='row left'>
+                            <label htmlFor="backgroundMusic">
+                            Nhạc Background từ link youtube (không bắt buộc)</label>
+                                <input type="text" id="backgroundMusic" placeholder="Nhập đường dẫn cho video youtube" className='inputField' value={backgroundMusic}
+                                    onChange={e => setBackgroundMusic(e.target.value)}>
+                                    </input>
+                            </div>
                         </div>
                         </>)}
                         {userId && userInfo && userInfo._id === userId &&

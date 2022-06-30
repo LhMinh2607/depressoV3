@@ -8,10 +8,10 @@ import { Link } from 'react-router-dom';
 
 
 export default function MobileChatBot() {
-    const socketUrl = "http://localhost:5005"
+    // const socketUrl = "http://localhost:5005"
     // const socketUrl = "https://8102-27-2-16-47.ngrok.io";
     // const socketUrl = "https://1e2b-27-2-16-47.ngrok.io"
-
+    const socketUrl = "https://8131-27-2-16-47.ngrok.io";
     const botId = "629199aaad2ab670dc8a2f45";
     const userSignin = useSelector((state)=> state.userSignin);
     const {userInfo, loading, error} = userSignin;

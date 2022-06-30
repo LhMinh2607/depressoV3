@@ -3,6 +3,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { listOfUsers } from '../actions/userAction';
 import DateComponent from '../components/DateComponent';
+import MUIDataTable from "mui-datatables";
+
+
 
 export default function UserListPage() {
 
@@ -25,9 +28,76 @@ export default function UserListPage() {
     }, [])
 
     const navigate = useNavigate();
+    const options = {
+        filterType: 'checkbox',
+      };
+      const columns = [
+          {
+              name: "counselingRequest",
+              label: "YÊU CẦU TƯ VẤN",
+              options: {
+              filter: true,
+              sort: true,
+                customBodyRender: (value) => {
+                    return (
+                        <div>{value ? <i className='fa fa-check'>"Đã đăng ký"</i> : <i className='fa fa-close'>"Chưa đăng ký"</i>}</div>
+                    )
+                }
+              }
+          },
+          {
+              name: "username",
+              label: "USERNAME",
+              options: {
+              filter: true,
+              sort: true,
+              }
+          },
+          {
+              name: "name",
+              label: "TÊN",
+              options: {
+              filter: true,
+              sort: true,
+              }
+          },
+          {
+              name: "createdAt",
+              label: "NGÀY THAM GIA",
+              options: {
+                filter: false,
+                sort: true,
+                customBodyRender: (value) => {
+                    return (
+                        <DateComponent passedDate = {value}></DateComponent>
+                    );
+                },
+              }
+            
+          },
+          {
+            name: "_id",
+            label: "TRANG CÁ NHÂN",
+            options: {
+                filter: false,
+                sort: false,
+                customBodyRender: (value) => {
+                    return (
+                        <div className="dropDown">
+                            Thao tác<i class="fa fa-caret-down"></i>
+                            <ul className='dropDown-content small interactiveText'>
+                                <li onClick={() => {navigate(`/user/${value}`);}}><i className='fa fa-arrow-right'></i></li>
+                            </ul>
+                        </div>
+                    );
+                },
+            }
+            
+          }
+         ];
     return (
         <div>
-            {users && <table className="table">
+            {/* {users && <table className="table">
                     <thead>
                         <tr>
                             <th>TƯ VẤN</th>
@@ -66,7 +136,14 @@ export default function UserListPage() {
                         </tr>
                     </tbody>
                     
-                </table>}
+                </table>} */}
+
+                {users && <MUIDataTable
+                title={"Employee List"}
+                data={users}
+                columns={columns}
+                options={options}
+                    />}
         </div>
 
     )

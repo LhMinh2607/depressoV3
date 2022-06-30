@@ -127,11 +127,24 @@ export default function PostDetailPage(props) {
         dispatch(editPost(postId, title, content, category));
     }
 
+    const postSubmitingHandler2 = (pId, pTitle, pContent, pCat) =>{
+        // alert(title+" "+content);
+        dispatch(editPost(pId, pTitle, pContent, pCat));
+    }
+
     const deleteHandler = () =>{
         if(window.confirm('BẠN CÓ CHẮC MUỐN XÓA BÀI VIẾT NÀY?'))
         {
             dispatch(deletePost(postId));
         };
+    }
+
+    const changeCategory = () =>{
+        setTitle(post.title);
+        setContent(post.content);
+        setEditPostStatus(!editPostStatus);
+        setCategory(category);
+        postSubmitingHandler2(postId, post.title, post.content, category);
     }
     const postNotification = (receiverId) =>{
         if(receiverId!==userInfo._id){
@@ -265,7 +278,7 @@ export default function PostDetailPage(props) {
         if(voteStatus!=="upvote" || !voteStatus){
             dispatch(accumulatePost(userInfo._id, postId, type))
             console.log("accumulate");
-            socket.emit("addComment", postId);
+            socket.emit("accumulate", postId);
         }
        
         // socket.emit("addComment", postId);
@@ -275,31 +288,31 @@ export default function PostDetailPage(props) {
         if(voteStatus!=="downvote" || !voteStatus){
             dispatch(accumulatePost(userInfo._id, postId, type))
             console.log("accumulate");
-            socket.emit("addComment", postId);
+            socket.emit("accumulate", postId);
         }
     }
 
     const accumulateTheComment = (type, commentId) => {
         dispatch(accumulateComment(userInfo._id, commentId, postId, type))
         console.log("accumulate");
-        socket.emit("addComment", postId);
+        socket.emit("accumulate", postId);
     }
 
     const accumulateDownTheComment = (type, commentId) =>{
         dispatch(accumulateComment(userInfo._id, commentId, postId, type))
         console.log("accumulate");
-        socket.emit("addComment", postId);
+        socket.emit("accumulate", postId);
     }
 
     const report = () => {
         dispatch(accumulatePost(userInfo._id, postId, "report", "Vi phạm nguyên tắc cộng đồng"))
-        socket.emit("addComment", postId);
+        socket.emit("accumulate", postId);
     }
 
     const markAsMostHelpful = (commentId) =>{
         const type = "bestAnswer"
         dispatch(accumulateComment(userInfo._id, commentId, postId, type));
-        socket.emit("addComment", postId);
+        socket.emit("accumulate", postId);
     }
 
     const openCommentBox = (type) => {
@@ -352,6 +365,17 @@ export default function PostDetailPage(props) {
             // socket.emit("stop");
         }, 1);
     });
+    socket.on("loadAccumulations", () => {
+        setTimeout(()=>{
+            dispatch(detailsOfPost(postId));
+            console.log("client loadAccumulations")
+            // alert("loadComments");
+            // socket.disconnect();
+            // socket.off('loadComments');
+            // socket.off("loadComments");
+            // socket.emit("stop");
+        }, 1);
+    });
     useEffect(()=>{
         if(userInfo){
             dispatch(detailsOfUser(userInfo._id))
@@ -370,9 +394,6 @@ export default function PostDetailPage(props) {
         dispatch(listOfRelatedPosts(postId));
         socket.emit("joinPost", postId);
         console.log(socket.emit("joinPost", postId))
-        if(post){
-            setVote(post.upvotes.length - post.downvotes.length)
-        }
         // socket.off('loadComments');
         // return () => {
         //     socket.off('loadComments');
@@ -461,7 +482,7 @@ export default function PostDetailPage(props) {
                         </div>
                         {
                             loadingEditing ? <LoadingBox></LoadingBox> : errorEditing ? <MessageBox variant="error">{errorEditing}</MessageBox> : 
-                            successEditing && <MessageBox>Đã xóa bài viết</MessageBox>
+                            successEditing && <MessageBox>Đã cập nhật bài viết</MessageBox>
                         }
                         {
                             loadingDeleting ? <LoadingBox></LoadingBox> : errorDeleting ? <MessageBox variant="error">{errorDeleting}</MessageBox> : 
@@ -520,7 +541,7 @@ export default function PostDetailPage(props) {
                                 {users.map(u=>(u._id===post.user && ( u.role==='admin' ? (
                                 <div><div className='interactiveUsername' onClick={()=>navigateToProfile(u._id)} title={u.name} style={{padding: "1rem"}}>
                                     {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
-                                    {u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i>
+                                    {u.name}<i className="fa fa-check" title="✓: Administrator/ Quản trị"></i>
                                         <div className="userHoverInfo" style={u ? u.backgroundImage ? {background: `url("${u.backgroundImage}")`, backgroundSize: 'cover'} : {backgroundColor: "#04374b"} : {backgroundColor: "#04374b"}}>
                                             <h1>{u.role==="user"&&<i className='fa fa-user'></i>}{u.username}{u.role==="admin"&&<i className='fa fa-check'></i>}</h1>
                                             <div className='row center userHoverInfoContent'>
@@ -583,16 +604,23 @@ export default function PostDetailPage(props) {
                                 }
                             </div>
                             {
+                                userInfo && (userInfo.role==="admin" || userInfo.role==="contributer" || userInfo.role === "professional") && categories && post && <>
+                                    <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder={categories.filter((cat)=>cat._id===post.category && cat.name)} options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={values => setValuesForCategory(values)} required={true}/>
+                                    <div className='clickableIcon' onClick={changeCategory}><i className='fa fa-send'></i></div>
+                                </>
+                                
+                            }
+                            {
                                 editPostStatus && (
                                 <div>
                                     <div className='row center'>{
                                         userInfo.role==='user' || userInfo.role==='admin' &&
-                                        <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder={categories.map((cat)=>cat._id===category && cat.name)} options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={values => setValuesForCategory(values)} required={true}/>
+                                        <Select style={{width: '60rem'}} dropdownHeight="10rem" placeholder={categories.filter((cat)=>cat._id===category && cat.name)} options={categories.map(ca=>({value: ca._id, label: ca.name}))} onChange={values => setValuesForCategory(values)} required={true}/>
                                         
                                     }</div>    
                                             <form className="editPostForm" onSubmit={postSubmitingHandler}>
                                                 <div>
-                                                    <input placeholder="Tiêu đề" className="basic-slide" required={true} type="text" value={title} onChange={(e)=>setTitle(e.target.value)}></input>
+                                                    <input placeholder="Tiêu đề" className="inputField post" required={true} type="text" value={title} onChange={(e)=>setTitle(e.target.value)}></input>
                                                 </div>
                                                 <div>
                                                     {/* <textarea placeholder="Nội dung" className="basic-slide" required={true} value={content} type="textarea" onChange={(e)=> setContent(e.target.value)}>
@@ -745,7 +773,7 @@ export default function PostDetailPage(props) {
                                         
                                         </div>
                                         
-                                        <div className="content">
+                                        <div className={`content ${userInfo.role}`}>
                                             {/* <p><Linkify>{pc.content}</Linkify></p> */}
                                             <Editor
                                                 defaultValue={pc.content}
@@ -760,7 +788,7 @@ export default function PostDetailPage(props) {
                                     (
                                         <form className="editPostForm" onSubmit={commentEditingHandler}>
                                             <div>
-                                                <textarea placeholder="Nội dung" className="basic-slide" required={true} value={replyContent} type="textarea" onChange={(e)=> setReplyContent(e.target.value)}>
+                                                <textarea placeholder="Nội dung" className="inputField" required={true} value={replyContent} type="textarea" onChange={(e)=> setReplyContent(e.target.value)}>
                                                 </textarea>
                                             </div>
                                             <div><button className="child">PHẢN HỒI</button></div>
@@ -775,7 +803,7 @@ export default function PostDetailPage(props) {
                                     <div className="card card-body postDetail">
                                         {users.map(u=>(
                                             u._id===pc.commenter && (
-                                            <div className="col full">
+                                            <div className={`col full ${u.role}`} >
                                                 <div className="interactiveUsername" onClick={()=>navigateToProfile(u._id)}>
                                                 {u.avatar ? <span className='avatarSquare' style={{background: `url("${u.avatar}")`, backgroundSize: "contain", backgroundPosition: "center center"}}></span> : <span className='avatarSquare'>{u.username[0]}</span>}
                                                     {u.name}

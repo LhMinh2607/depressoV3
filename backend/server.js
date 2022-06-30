@@ -124,6 +124,22 @@ io.on("connection", (socket) => {
       console.log("date: "+newDate);
     }, 1);
   });
+  socket.on("accumulate", (id) => {
+    // interval = setInterval(() => {
+      
+    //   // clearInterval(interval);
+    //   // io.sockets.emit("loadComments");
+        
+    //   // clearInterval(interval);
+    // }, 1000);
+    setTimeout(()=>{
+      socket.to(id).emit("loadAccumulations");
+      console.log(socket.to(id).emit("loadAccumulations"));
+      console.log("server loadAccumulations");
+      const newDate = new Date();
+      console.log("date: "+newDate);
+    }, 1);
+  });
   socket.on("addNotification", () => {
     setTimeout(()=>{
       socket.broadcast.emit("loadNotifications");

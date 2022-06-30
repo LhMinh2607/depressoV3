@@ -470,7 +470,7 @@ export default function ForumPage() {
                             <div id="searchBtn" type="submit" className='clickableIcon' onClick={search}><i className='fa fa-search'></i></div>
                     </div>
                     
-                    {userInfo && <div><button className="admin" onClick={enablePosting}>{createAPost ? <>ĐÓNG</> : <>TẠO BÀI VIẾT</>}</button></div>}
+                    {userInfo && <div><button className="" onClick={enablePosting}>{createAPost ? <>ĐÓNG</> : <>TẠO BÀI VIẾT</>}</button></div>}
 
                 </div>
             </div>
@@ -538,7 +538,7 @@ export default function ForumPage() {
 
                 </div>
                 <div className='row center'>
-                    <button type="submit" className="admin block">ĐĂNG</button>
+                    <button type="submit" className="block">ĐĂNG</button>
                 </div>
             </form></div></div>))
             : (<div>
@@ -588,7 +588,7 @@ export default function ForumPage() {
                                         <div className="row left">
                                             <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
-                                        <label className="bold-text">{u.role==='admin' ? (<label title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></label>) : u.name}</label>
+                                        <label className="bold-text">{u.role==='admin' ? (<label title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Administrator/ Quản trị"></i></label>) : u.name}</label>
                                         <div className="row left">
                                             <CategoryIcon categoryName = {p.category}></CategoryIcon>
                                         </div>
@@ -653,7 +653,7 @@ export default function ForumPage() {
                                         <div className="row left">
                                             <Link to={`/forum/post/${p._id}`}><div>{p.title}</div></Link>
                                         </div>
-                                        <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Signature of Superiority/ Biểu tượng của sự thượng đẳng"></i></p>) :   u.name}</label>
+                                        <label className="bold-text">{u.role==='admin' ? (<p title={u.name} className=''>{u.name}<i className="fa fa-check" title="✓: Administrator/ Quản trị"></i></p>) :   u.name}</label>
                                         <div className="row left">
                                             <CategoryIcon categoryName = {p.category}></CategoryIcon>
                                         </div>

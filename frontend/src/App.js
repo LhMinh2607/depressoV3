@@ -63,9 +63,9 @@ function App() {
   const signOutHandler = () =>{
     dispatch(signout());
   };
-  let socket = io(process.env.REACT_APP_ENDPOINT);
+  // let socket = io(process.env.REACT_APP_ENDPOINT);
   // let socket = io(process.env.REACT_APP_WSENDPOINT);
-  // let socket = io();
+  let socket = io();
   // let socket = io("https://8527-27-2-17-107.ngrok.io");
   // let socket = io("https://b9d3-27-2-17-107.ngrok.io");
   // let socket = io("https://67ca-27-2-17-107.ngrok.io");
@@ -134,11 +134,12 @@ function App() {
     return (match&&match[7].length==11)? match[7] : false;
 }
   // const socketUrl = "https://1d35-27-2-17-107.ngrok.io";
-  const socketUrl = "http://localhost:5005";
+  // const socketUrl = "http://localhost:5005";
   // const socketUrl = "https://e2e3-27-2-16-47.ngrok.io"
   // const socketUrl = "https://b7fe-27-2-17-107.ngrok.io";
   // const socketUrl = "https://8102-27-2-16-47.ngrok.io";
   // const socketUrl = "https://1e2b-27-2-16-47.ngrok.io"
+  const socketUrl = "https://8131-27-2-16-47.ngrok.io";
   const botId = "629199aaad2ab670dc8a2f45";
 
   const addThisFriend = (senderId) => {
@@ -326,7 +327,7 @@ function App() {
       socket.emit("joinUser", userInfo._id);
       console.log(socket.emit("joinUser", userInfo._id))
       dispatch(detailsOfUser(userInfo._id))
-      if(userInfo.role==="contributer" || userInfo.role==="admin"){
+      if(userInfo.role==="contributer" || userInfo.role==="professional" || userInfo.role==="admin"){
         dispatch(listOfAllNotifications());
         dispatch(listOfUsers())
       }
@@ -349,7 +350,7 @@ function App() {
   
     socket.on("loadCounselingRequests", () => {
       // phoneNotificationAudio.play();
-      if(userInfo.role==="contributer" || userInfo.role === "admin"){
+      if(userInfo.role==="contributer" || userInfo.role==="professional" || userInfo.role === "admin"){
         phoneNotificationAudio.play();
         dispatch(listOfAllNotifications());
         dispatch(detailsOfUser(userInfo._id))
@@ -424,7 +425,7 @@ function App() {
                   <div>
                     <Link to={`/forum`} className="">Diễn đàn</Link>
                   </div>
-                      {userInfo && (userInfo.role==="admin" || userInfo.role==="contributer") && <div className='headerBar bell'>
+                      {userInfo && (userInfo.role==="admin" || userInfo.role==="contributer" || userInfo.role==="professional") && <div className='headerBar bell'>
                         <div className=''></div>
                           <div className='row interactiveText' >
                             <i className="fa fa-phone" onClick={()=>setOpenKeyPad(!openKeyPad)} ></i>
@@ -602,7 +603,7 @@ function App() {
                   }
                   
                   
-                  {userInfo && (userInfo.role==="admin" || userInfo.role==="contributer") &&
+                  {userInfo && (userInfo.role==="admin" || userInfo.role==="contributer" || userInfo.role==="professional") &&
                    (openKeyPad && <Keypad currentNumber={currentNumber} setOpenKeyPad={setOpenKeyPad}></Keypad>)
                   
                   }

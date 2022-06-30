@@ -3,7 +3,86 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { listOfFeedbacks } from '../actions/feedbackAction';
 import DateComponent from '../components/DateComponent';
+import MUIDataTable from "mui-datatables";
 
+// const columns = [
+//     {
+//      name: "name",
+//      label: "Name",
+//      options: {
+//       filter: true,
+//       sort: true,
+//      }
+//     },
+//     {
+//      name: "company",
+//      label: "Company",
+//      options: {
+//       filter: true,
+//       sort: false,
+//      }
+//     },
+//     {
+//      name: "city",
+//      label: "City",
+//      options: {
+//       filter: true,
+//       sort: false,
+//      }
+//     },
+//     {
+//      name: "state",
+//      label: "State",
+//      options: {
+//       filter: true,
+//       sort: false,
+//      }
+//     },
+//    ];
+//    const data = [
+//     { name: "Joe James", company: "Test Corp", city: "Yonkers", state: "NY" },
+//     { name: "John Walsh", company: "Test Corp", city: "Hartford", state: "CT" },
+//     { name: "Bob Herm", company: "Test Corp", city: "Tampa", state: "FL" },
+//     { name: "James Houston", company: "Test Corp", city: "Dallas", state: "TX" },
+//    ];
+
+const options = {
+  filterType: 'checkbox',
+};
+const columns = [
+    {
+        name: "content",
+        label: "NỘI DUNG",
+        options: {
+        filter: true,
+        sort: true,
+        }
+    },
+    {
+        name: "username",
+        label: "USERNAME",
+        options: {
+        filter: true,
+        sort: false,
+        }
+    },
+    {
+        name: "createdAt",
+        label: "NGÀY TẠO",
+        options: {
+        filter: true,
+        sort: false,
+        }
+    },
+    {
+        name: "_id",
+        label: "TRANG CÁ NHÂN",
+        options: {
+        filter: true,
+        sort: false,
+        }
+    },
+   ];
 export default function FeedbackPage() {
 
 
@@ -57,6 +136,15 @@ export default function FeedbackPage() {
                     </tbody>
                     
                 </table>}
+
+
+
+            {/* {feedbacks && <MUIDataTable
+                title={"Employee List"}
+                data={feedbacks}
+                columns={columns}
+                options={options}
+            />} */}
         </div>
 
     )
