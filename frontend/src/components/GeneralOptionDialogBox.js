@@ -31,8 +31,8 @@ export default function GeneralOptionDialogBox(props) {
       <div className='popupBackground'>
         <div className='popup option' style={{paddingTop: "2rem"}}>
           <div className='row top right'><button className='phoneConfirmBtn xClose' onClick={closePopup}><i className='fa fa-close'></i></button></div>
-          <div className='row center'><button className='primary2' onClick={()=>function1(func1Name)}>{func1Name}</button></div>
-          <div className='row center'><button className='primary2' onClick={()=>function2(func2Name)}>{func2Name}</button></div>
+          {func1Name && <div className='row center'><button className='primary2' onClick={()=>function1(func1Name)}>{func1Name}</button></div>}
+          {func2Name && <div className='row center'><button className='primary2' onClick={()=>function2(func2Name)}>{func2Name}</button></div>}
         </div>
       </div>}
     </div>

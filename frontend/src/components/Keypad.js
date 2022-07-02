@@ -274,7 +274,7 @@ export default function Keypad(props) {
     //   setOpenPopup(true);
     //   setNum("");
     // }
-    
+    // alert(JSON.stringify(configuration))
     document.getElementById("invisi").style.visibility = "visible";
     console.log("Keypad log._id="+logId);
     dispatch(makeACall(num, name, callStartedBy, ua, logId));

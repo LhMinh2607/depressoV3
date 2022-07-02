@@ -34,7 +34,7 @@ export default function UserListPage() {
       const columns = [
           {
               name: "counselingRequest",
-              label: "YÊU CẦU TƯ VẤN",
+              label: "TƯ VẤN",
               options: {
               filter: true,
               sort: true,
@@ -139,7 +139,7 @@ export default function UserListPage() {
                 </table>} */}
 
                 {users && <MUIDataTable
-                title={"Employee List"}
+                title={"Danh sách người dùng"}
                 data={users}
                 columns={columns}
                 options={options}

@@ -159,7 +159,7 @@ userRouter.get('/:id/conversation/history', expressAsyncHandler(async(req, res)=
     mongoose.connect('mongodb://localhost/mentalBotDB').then(() => {
         const db = mongoose.connection.db;
         db.collection('conversationStore').find({$and: [{"events": {$elemMatch: {"text": req.params.id}}}, {$or: [{"events": {$elemMatch: {"event": "bot"}}}, {"events": {$elemMatch: {"event": "user"}}}]}]}, 
-        {projection: {"events": {"text": 1, "event": 1, "timestamp": 1}}, }, ).toArray((err, result) => {
+        {projection: {"events": {"text": 1, "event": 1, "timestamp": 1, "intent_ranking": 1}}, }, ).toArray((err, result) => {
             // console.log(result)
             res.send(result);
         });

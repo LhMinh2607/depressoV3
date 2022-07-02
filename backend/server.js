@@ -82,6 +82,13 @@ const io = socketIo(server, {cors: {
     origin: "*",
     methods: ["GET", "POST"],
     transports: ["polling", "websocket"]
+  //   cors: {
+  //     origin: "*",
+  //     methods: ["GET", "POST"],
+  //     transports: ['websocket', 'polling'],
+  //     credentials: true
+  // },
+  // allowEIO3: true
   }}); // < Interesting!
 
 
@@ -99,10 +106,10 @@ io.on("connection", (socket) => {
     console.log("joined Post");
     socket.join(id);
   })
-  socket.on("leavePost", (id)=>{
-    console.log("left Post");
-    socket.leave(id);
-  })
+  // socket.on("leavePost", (id)=>{
+  //   console.log("left Post");
+  //   socket.leave(id);
+  // })
   socket.on("joinUser", (id)=>{
     console.log("joined User");
     socket.join(id);
@@ -117,25 +124,21 @@ io.on("connection", (socket) => {
     //   // clearInterval(interval);
     // }, 1000);
     setTimeout(()=>{
-      socket.to(id).emit("loadComments");
-      console.log(socket.to(id).emit("loadComments"));
+      // socket.to(id).emit("loadComments");
+      io.in(id).emit("loadComments")
+      console.log(io.in(id).emit("loadComments"));
       console.log("server addComment");
       const newDate = new Date();
       console.log("date: "+newDate);
     }, 1);
   });
   socket.on("accumulate", (id) => {
-    // interval = setInterval(() => {
-      
-    //   // clearInterval(interval);
-    //   // io.sockets.emit("loadComments");
-        
-    //   // clearInterval(interval);
-    // }, 1000);
     setTimeout(()=>{
-      socket.to(id).emit("loadAccumulations");
-      console.log(socket.to(id).emit("loadAccumulations"));
+      // socket.to(id).emit("loadAccumulations");
+      io.in(id).emit("loadAccumulations")
+      console.log(io.in(id).emit("loadAccumulations"));
       console.log("server loadAccumulations");
+      console.log("postId="+id);
       const newDate = new Date();
       console.log("date: "+newDate);
     }, 1);

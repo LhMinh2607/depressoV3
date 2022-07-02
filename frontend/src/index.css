@@ -333,7 +333,7 @@ header .navbar-button{
 .floatingDiv{
   position: fixed;
   bottom: 3rem;
-  right: 0;
+  left: 0;
   background-color: #6e9fe7;
   /* padding: 2rem; */
   border-radius: 2rem;
@@ -342,7 +342,7 @@ header .navbar-button{
 }
 .floatingDiv.down{
   bottom: 0;
-  right: 0;
+  left: 0;
 }
 .floatingDiv > button:hover{
   transition: .3s;
@@ -561,6 +561,9 @@ button.primary{
 }
 .MuiInput-root{
   color: #fff !important;
+}
+.MuiPaper-root{
+  background-color: transparent !important;
 }
 .tss-djbknv-MUIDataTablePagination-navContainer{
   background-color: #0055ff;
@@ -2685,12 +2688,16 @@ main {
   border: 2rem solid rgb(111, 7, 172);
   border-radius: 1rem;
   padding-right: 1rem;
+  background-color: rgb(111, 7, 172);
+
 }
 .contributer{
   border-color: rgb(7, 73, 128);
   border: 2rem solid rgb(7, 73, 128);
   border-radius: 1rem;
   padding-right: 1rem;
+  background-color: rgb(7, 73, 128);
+
 }
 .admin{
   background-color: rgb(38, 11, 190);
@@ -3433,7 +3440,7 @@ Draggable{
   padding: 1rem;
   color: #fff;
   border-radius: 2rem;
-  transition: 1s;
+  transition: 0.1s;
   opacity: 0;
 }
 .notificationDropdown.mobile{

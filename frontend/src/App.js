@@ -54,6 +54,7 @@ function App() {
   const [speaker, setSpeaker] = useState("");
   const [currentTab, setCurrentTab]  = useState('');
   const [currentNumber, setCurrentNumber] = useState('');
+  const [currentSocket, setCurrentSocket] = useState(null)
 
   const userSignin = useSelector((state)=> state.userSignin);
   const {userInfo, loading, error} = userSignin;
@@ -63,14 +64,7 @@ function App() {
   const signOutHandler = () =>{
     dispatch(signout());
   };
-  // let socket = io(process.env.REACT_APP_ENDPOINT);
-  // let socket = io(process.env.REACT_APP_WSENDPOINT);
-  let socket = io();
-  // let socket = io("https://8527-27-2-17-107.ngrok.io");
-  // let socket = io("https://b9d3-27-2-17-107.ngrok.io");
-  // let socket = io("https://67ca-27-2-17-107.ngrok.io");
-  // let socket = io("https://50ef-2a0d-5600-41-a000-00-5b77.ngrok.io")
-  // let socket = io("https://c220-27-2-17-107.ngrok.io");
+  
   let bellAudio = new Audio("/assets/bellNotification.wav");
   let phoneNotificationAudio = new Audio("/assets/phoneNotification.mp3");
 
@@ -139,7 +133,9 @@ function App() {
   // const socketUrl = "https://b7fe-27-2-17-107.ngrok.io";
   // const socketUrl = "https://8102-27-2-16-47.ngrok.io";
   // const socketUrl = "https://1e2b-27-2-16-47.ngrok.io"
-  const socketUrl = "https://8131-27-2-16-47.ngrok.io";
+  // const socketUrl = "https://8131-27-2-16-47.ngrok.io";
+  // const socketUrl = "https://3545-27-2-16-47.ngrok.io";
+  const socketUrl = "https://d990-27-2-16-47.ngrok.io"
   const botId = "629199aaad2ab670dc8a2f45";
 
   const addThisFriend = (senderId) => {
@@ -281,7 +277,7 @@ function App() {
   const updateNotificationStatus = (notifId) =>{
     dispatch(editNotification(notifId));
     // alert("Test"+notifId)
-    socket.emit("addCounselingRequest");
+    currentSocket.emit("addCounselingRequest");
     console.log("addCounselingRequest")
     dispatch(listOfNotifications(userInfo._id))
   }
@@ -299,13 +295,13 @@ function App() {
     const type = "counselingRequest";
     // if(user && user.counselingRequest === false){
     //   dispatch(createNotification(userInfo._id, "none", content, type, "none"))
-    //   socket.emit("addCounselingRequest");
+    //   currentSocket.emit("addCounselingRequest");
     //   console.log("addCounselingRequest")
     // }else{
     //   alert("Bạn đã đăng ký rồi")
     // }
     dispatch(createNotification(userInfo._id, "none", content, type, "none"))
-    socket.emit("addCounselingRequest");
+    currentSocket.emit("addCounselingRequest");
     console.log("addCounselingRequest")
   }
 
@@ -320,8 +316,18 @@ function App() {
       }, 1)
     }
   }
-  
+
   useEffect(()=>{
+    // let socket = io(process.env.REACT_APP_ENDPOINT);
+    // let socket = io(process.env.REACT_APP_WSENDPOINT);
+    let socket = io();
+    setCurrentSocket(socket)
+    // let socket = io("https://8527-27-2-17-107.ngrok.io");
+    // let socket = io("https://b9d3-27-2-17-107.ngrok.io");
+    // let socket = io("https://67ca-27-2-17-107.ngrok.io");
+    // let socket = io("https://50ef-2a0d-5600-41-a000-00-5b77.ngrok.io")
+    // let socket = io("https://c220-27-2-17-107.ngrok.io");
+    
     if(userInfo){
       dispatch(listOfNotifications(userInfo._id));
       socket.emit("joinUser", userInfo._id);
@@ -342,7 +348,7 @@ function App() {
               // socket.disconnect();
               // socket.off('loadComments');
               // socket.off("loadComments");
-              // socket.emit("stop");
+              // currentSocket.emit("stop");
             
         }, 1);
       }
@@ -629,7 +635,7 @@ function App() {
               </header>
               <main>
               <div>
-              {openCounselingBox && <GeneralOptionDialogBox func1Name={`${userInfo.name} muốn tư vấn qua điện thoại`} func2Name={`${userInfo.name} muốn tư vấn qua tin nhắn`} handleFunc1={makeCounselingRequest} handleFunc2={makeCounselingRequest} handleClosePopup={handleClosePopup}></GeneralOptionDialogBox>}
+              {openCounselingBox && <GeneralOptionDialogBox func1Name={`${userInfo.name} muốn tư vấn qua điện thoại`} handleFunc1={makeCounselingRequest} handleFunc2={makeCounselingRequest} handleClosePopup={handleClosePopup}></GeneralOptionDialogBox>}
 
                 {/* It's <time dateTime={response}>{response}</time> */}
                 {/* <Recorder
@@ -716,10 +722,10 @@ function App() {
                   <Route exact path="/user/list" element={<AdminRoute><UserListPage></UserListPage></AdminRoute>}></Route> 
                   <Route exact path="/admin/stat" element={<AdminRoute><StatisticPage></StatisticPage></AdminRoute>}></Route> 
                   <Route exact path="/forum" element={<ForumPage></ForumPage>}></Route>
-                  <Route exact path="/forum/post/:id" element={<PostDetailPage  socket={socket}></PostDetailPage>}></Route>
+                  {currentSocket !== null && <Route exact path="/forum/post/:id" element={<PostDetailPage currentSocket={currentSocket}></PostDetailPage>}></Route>}
                   <Route exact path="/news" element={<NewsPage></NewsPage>}></Route>
                   <Route exact path="/chatbot" element={<MobileChatBot></MobileChatBot>}></Route>
-                  <Route exact path="/notification" element={<MobileNotification socket={socket}></MobileNotification>}></Route>
+                  {currentSocket !== null &&<Route exact path="/notification" element={<MobileNotification currentSocket={currentSocket}></MobileNotification>}></Route>}
                   <Route exact path="/voicerecorder" element={<VoiceRecorderComponent source="https://webrtc.github.io/samples/src/video/chrome.webm"></VoiceRecorderComponent>}></Route> {/*Easter Eggs*/}
                   <Route path="/mobilePhone" element={<div className='row center top'><Keypad/></div>} /> 
                   <Route path="*" element={<NotFoundPage/>} /> 

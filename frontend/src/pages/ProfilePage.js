@@ -202,7 +202,8 @@ export default function ProfilePage(){
                  setAddress(user.address);
                  setOccupation(user.occupation);
                  setMood(user.mood);
-                 setIssues(user.issues.join(", "))
+                //  setIssues(user.issues.join(", "))
+                 setIssues(user.issues[user.issues.length-1])
                  setUsername(user.username);
                  setDesc(user.desc);
                  setBackgroundImage(user.backgroundImage);

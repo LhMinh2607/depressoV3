@@ -19,10 +19,12 @@ import Select from "react-dropdown-select";
 import { CATEGORY_LIST_RESET } from '../constants/categoryConst';
 import { createNotification } from '../actions/notificationAction';
 import RoleConverterComponnet from '../components/RoleConverterComponnet';
+import { io } from 'socket.io-client';
 
 export default function PostDetailPage(props) {
 
-    const {socket} = props;
+    const {currentSocket} = props;
+
     const params = useParams();
     const postId = params.id;
 
@@ -55,6 +57,7 @@ export default function PostDetailPage(props) {
     const [category, setCategory] = useState('');
     const [commentBox, setCommentBox] = useState(false);
     const [openLoadComment, setOpenLoadComment] = useState(false);
+    // const [currentSocket, setCurrentSocket] = useState(null)
 
     const postDeleting = useSelector(state=>state.postDeleting);
     const {loading: loadingDeleting, error: errorDeleting, success: successDeleting} = postDeleting;
@@ -156,7 +159,7 @@ export default function PostDetailPage(props) {
 
     const commentPostingHandler = () =>{
         dispatch(createPostComment(postId, userInfo._id, replyContent));
-        setTimeout(()=>socket.emit("addNotification"), 1)
+        setTimeout(()=>currentSocket.emit("addNotification"), 1)
         // const newDate = new Date();
         var commenters = [];
         if(post && post.postComments){
@@ -174,9 +177,9 @@ export default function PostDetailPage(props) {
         })
         console.log(commenters);
         
-        socket.emit("addComment", postId);
+        currentSocket.emit("addComment", postId);
         console.log("commentPostingHandler");
-        // socket.leave(room);
+        // currentSocket.leave(room);
     }
 
     const deleteCommentHandler = () =>{
@@ -278,41 +281,42 @@ export default function PostDetailPage(props) {
         if(voteStatus!=="upvote" || !voteStatus){
             dispatch(accumulatePost(userInfo._id, postId, type))
             console.log("accumulate");
-            socket.emit("accumulate", postId);
+            currentSocket.emit("accumulate", postId);
         }
        
-        // socket.emit("addComment", postId);
+        // currentSocket.emit("addComment", postId);
     }
 
     const accumulateDown = (type) =>{
         if(voteStatus!=="downvote" || !voteStatus){
             dispatch(accumulatePost(userInfo._id, postId, type))
             console.log("accumulate");
-            socket.emit("accumulate", postId);
+            currentSocket.emit("accumulate", postId);
+            console.log(currentSocket.emit("accumulate", postId));
         }
     }
 
     const accumulateTheComment = (type, commentId) => {
         dispatch(accumulateComment(userInfo._id, commentId, postId, type))
         console.log("accumulate");
-        socket.emit("accumulate", postId);
+        currentSocket.emit("accumulate", postId);
     }
 
     const accumulateDownTheComment = (type, commentId) =>{
         dispatch(accumulateComment(userInfo._id, commentId, postId, type))
         console.log("accumulate");
-        socket.emit("accumulate", postId);
+        currentSocket.emit("accumulate", postId);
     }
 
     const report = () => {
         dispatch(accumulatePost(userInfo._id, postId, "report", "Vi phạm nguyên tắc cộng đồng"))
-        socket.emit("accumulate", postId);
+        currentSocket.emit("accumulate", postId);
     }
 
     const markAsMostHelpful = (commentId) =>{
         const type = "bestAnswer"
         dispatch(accumulateComment(userInfo._id, commentId, postId, type));
-        socket.emit("accumulate", postId);
+        currentSocket.emit("accumulate", postId);
     }
 
     const openCommentBox = (type) => {
@@ -352,31 +356,11 @@ export default function PostDetailPage(props) {
     //     }
     // }
     
-    // let socket = io(process.env.REACT_APP_WSENDPOINT)
-    socket.on("loadComments", () => {
-        setTimeout(()=>{
-            setOpenLoadComment(true);
-            // dispatch(detailsOfPost(postId));
-            console.log("client loadComments")
-            // alert("loadComments");
-            // socket.disconnect();
-            // socket.off('loadComments');
-            // socket.off("loadComments");
-            // socket.emit("stop");
-        }, 1);
-    });
-    socket.on("loadAccumulations", () => {
-        setTimeout(()=>{
-            dispatch(detailsOfPost(postId));
-            console.log("client loadAccumulations")
-            // alert("loadComments");
-            // socket.disconnect();
-            // socket.off('loadComments');
-            // socket.off("loadComments");
-            // socket.emit("stop");
-        }, 1);
-    });
+    // let currentSocket = io(process.env.REACT_APP_WSENDPOINT)
+    
     useEffect(()=>{
+        // let socket = io()
+        // setCurrentSocket(socket)
         if(userInfo){
             dispatch(detailsOfUser(userInfo._id))
         }
@@ -392,12 +376,36 @@ export default function PostDetailPage(props) {
         dispatch(listOfCategories());
         dispatch(listOfNestedPosts(postId));
         dispatch(listOfRelatedPosts(postId));
-        socket.emit("joinPost", postId);
-        console.log(socket.emit("joinPost", postId))
-        // socket.off('loadComments');
+        currentSocket.emit("joinPost", postId);
+        console.log(currentSocket)
+        console.log(currentSocket.emit("joinPost", postId))
+        // currentSocket.off('loadComments');
         // return () => {
-        //     socket.off('loadComments');
+        //     currentSocket.off('loadComments');
         // }
+        currentSocket.on("loadComments", () => {
+            setTimeout(()=>{
+                setOpenLoadComment(true);
+                // dispatch(detailsOfPost(postId));
+                console.log("client loadComments")
+                // alert("loadComments");
+                // currentSocket.disconnect();
+                // currentSocket.off('loadComments');
+                // currentSocket.off("loadComments");
+                // currentSocket.emit("stop");
+            }, 1);
+        });
+        currentSocket.on("loadAccumulations", () => {
+            setTimeout(()=>{
+                dispatch(detailsOfPost(postId));
+                console.log("client loadAccumulations")
+                // alert("loadComments");
+                // currentSocket.disconnect();
+                // currentSocket.off('loadComments');
+                // currentSocket.off("loadComments");
+                // currentSocket.emit("stop");
+            }, 1);
+        });
         }, [postId]);
 
     return (
