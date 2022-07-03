@@ -135,7 +135,8 @@ function App() {
   // const socketUrl = "https://1e2b-27-2-16-47.ngrok.io"
   // const socketUrl = "https://8131-27-2-16-47.ngrok.io";
   // const socketUrl = "https://3545-27-2-16-47.ngrok.io";
-  const socketUrl = "https://d990-27-2-16-47.ngrok.io"
+  // const socketUrl = "https://d990-27-2-16-47.ngrok.io"
+  const socketUrl = "https://ba5b-27-2-16-47.ngrok.io"
   const botId = "629199aaad2ab670dc8a2f45";
 
   const addThisFriend = (senderId) => {
@@ -316,6 +317,7 @@ function App() {
       }, 1)
     }
   }
+  
 
   useEffect(()=>{
     // let socket = io(process.env.REACT_APP_ENDPOINT);

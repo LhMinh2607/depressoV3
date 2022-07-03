@@ -103,13 +103,17 @@ io.on("connection", (socket) => {
     clearInterval(interval);
   }
   socket.on("joinPost", (id)=>{
+    // socket.connect()
     console.log("joined Post");
     socket.join(id);
   })
-  // socket.on("leavePost", (id)=>{
-  //   console.log("left Post");
-  //   socket.leave(id);
-  // })
+  socket.on("leavePost", (id)=>{
+    console.log("left Post "+id);
+    socket.leave(id);
+    socket.leaveAll();
+    // socket.disconnect()
+    // console.log(socket.adapter.rooms);  // display the same list of rooms
+  })
   socket.on("joinUser", (id)=>{
     console.log("joined User");
     socket.join(id);
@@ -154,8 +158,9 @@ io.on("connection", (socket) => {
   });
   socket.on("addCounselingRequest", ()=> {
     setTimeout(()=>{
-      socket.broadcast.emit("loadCounselingRequests");
-      console.log(socket.broadcast.emit("loadCounselingRequests"));
+      // socket.broadcast.emit("loadCounselingRequests");
+      // console.log(socket.broadcast.emit("loadCounselingRequests"));
+      io.emit("loadCounselingRequests");
       console.log("server loadCounselingRequests");
       const newDate = new Date();
       console.log("date: "+newDate);
@@ -164,7 +169,8 @@ io.on("connection", (socket) => {
   
   socket.on("disconnect", () => {
     console.log("Client disconnected");
-    clearInterval(interval);
+    // clearInterval(interval);
+    // socket.close()
   });
 });
 io.eio.pingInterval = 1000;

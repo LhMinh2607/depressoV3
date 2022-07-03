@@ -357,8 +357,15 @@ export default function PostDetailPage(props) {
     // }
     
     // let currentSocket = io(process.env.REACT_APP_WSENDPOINT)
-    
+    useEffect(() => {
+        return () => {
+            currentSocket.emit("leavePost", postId);
+            // currentSocket.emit("disconnect");
+            console.log("leavePost "+postId);
+        };
+      }, []);
     useEffect(()=>{
+        currentSocket.emit("connection")
         // let socket = io()
         // setCurrentSocket(socket)
         if(userInfo){
@@ -387,7 +394,7 @@ export default function PostDetailPage(props) {
             setTimeout(()=>{
                 setOpenLoadComment(true);
                 // dispatch(detailsOfPost(postId));
-                console.log("client loadComments")
+                console.log("client loadComments "+postId)
                 // alert("loadComments");
                 // currentSocket.disconnect();
                 // currentSocket.off('loadComments');
@@ -398,7 +405,7 @@ export default function PostDetailPage(props) {
         currentSocket.on("loadAccumulations", () => {
             setTimeout(()=>{
                 dispatch(detailsOfPost(postId));
-                console.log("client loadAccumulations")
+                console.log("client loadAccumulations "+postId)
                 // alert("loadComments");
                 // currentSocket.disconnect();
                 // currentSocket.off('loadComments');
@@ -406,6 +413,7 @@ export default function PostDetailPage(props) {
                 // currentSocket.emit("stop");
             }, 1);
         });
+
         }, [postId]);
 
     return (

@@ -575,6 +575,9 @@ export default function Keypad(props) {
                 {/* <button onClick={pause}>Pause</button> */}
                 {/* {connectivity} */}
                 {/* <button onClick={reset}>Reset</button> */}
+                {/* <div><div id="invisi" className='keyRow invisi'>
+                  <div className='row center'><button className='callButton red' id="endButton" onClick={cancel}><i className='fa fa-phone red hangupIcon'></i></button></div>
+                </div></div> */}
               </div>
             </div>
             <div className='pan'>

@@ -10,7 +10,7 @@ export default function MobileNotification(props) {
     const notificationList = useSelector(state=>state.notificationList);
     const {loading: loadingNotifList, error: errorNotifList, notifications} = notificationList;
 
-    const {socket} = props;
+    const {currentSocket} = props;
 
 
     const allNotificationList = useSelector(state=>state.allNotificationList);
@@ -18,7 +18,7 @@ export default function MobileNotification(props) {
     const updateNotificationStatus = (notifId) =>{
         dispatch(editNotification(notifId));
         // alert("Test"+notifId)
-        socket.emit("addCounselingRequest");
+        currentSocket.emit("addCounselingRequest");
         console.log("addCounselingRequest")
         dispatch(listOfNotifications(userInfo._id))
       }
